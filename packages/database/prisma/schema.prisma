@@ -1,0 +1,47 @@
+// =============================================================================
+// FusionOS Prisma Schema
+// =============================================================================
+// This is the foundation schema. Business tables will be added in Phase 2.
+// Never use JSON as a replacement for relational modeling.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Foundation Tables ────────────────────────────────────────────────────────
+// These tables establish the core infrastructure.
+// Business domain tables will be added in Phase 2.
+
+model Tenant {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true)
+  settings  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tenants")
+}
+
+model User {
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String    @unique
+  firstName      String
+  lastName       String
+  passwordHash   String
+  isEmailVerified Boolean @default(false)
+  isActive       Boolean   @default(true)
+  mfaEnabled     Boolean   @default(false)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("users")
+}

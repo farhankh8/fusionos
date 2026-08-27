@@ -1,0 +1,104 @@
+@import 'tailwindcss';
+
+/*
+ * FusionOS Design System — CSS Custom Properties
+ * Enterprise-grade, professional, clean design tokens.
+ */
+
+@theme {
+  /* ── Colors ─────────────────────────────────────────────────────────── */
+  --color-brand-50: oklch(0.97 0.01 250);
+  --color-brand-100: oklch(0.93 0.02 250);
+  --color-brand-200: oklch(0.87 0.04 250);
+  --color-brand-300: oklch(0.78 0.06 250);
+  --color-brand-400: oklch(0.67 0.1 250);
+  --color-brand-500: oklch(0.55 0.15 250);
+  --color-brand-600: oklch(0.47 0.17 250);
+  --color-brand-700: oklch(0.4 0.15 250);
+  --color-brand-800: oklch(0.33 0.12 250);
+  --color-brand-900: oklch(0.27 0.09 250);
+  --color-brand-950: oklch(0.18 0.06 250);
+
+  /* ── Neutral ────────────────────────────────────────────────────────── */
+  --color-surface-50: oklch(0.98 0.002 250);
+  --color-surface-100: oklch(0.96 0.002 250);
+  --color-surface-200: oklch(0.92 0.002 250);
+  --color-surface-300: oklch(0.87 0.002 250);
+  --color-surface-400: oklch(0.7 0.002 250);
+  --color-surface-500: oklch(0.55 0.002 250);
+  --color-surface-600: oklch(0.45 0.002 250);
+  --color-surface-700: oklch(0.35 0.002 250);
+  --color-surface-800: oklch(0.25 0.002 250);
+  --color-surface-900: oklch(0.15 0.002 250);
+  --color-surface-950: oklch(0.1 0.002 250);
+
+  /* ── Semantic ───────────────────────────────────────────────────────── */
+  --color-success-50: oklch(0.97 0.02 155);
+  --color-success-500: oklch(0.62 0.17 155);
+  --color-success-700: oklch(0.44 0.12 155);
+
+  --color-warning-50: oklch(0.97 0.03 85);
+  --color-warning-500: oklch(0.75 0.15 85);
+  --color-warning-700: oklch(0.55 0.12 85);
+
+  --color-danger-50: oklch(0.97 0.02 25);
+  --color-danger-500: oklch(0.63 0.2 25);
+  --color-danger-700: oklch(0.47 0.16 25);
+
+  /* ── Typography ─────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Spacing ────────────────────────────────────────────────────────── */
+  --spacing-sidebar: 260px;
+  --spacing-header: 56px;
+
+  /* ── Radius ─────────────────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/*
+ * Base layer — resets and defaults.
+ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-surface-50);
+    color: var(--color-surface-900);
+    line-height: 1.5;
+  }
+
+  /* Focus visible ring for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@fusionos/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FusionOS Desktop Application — Electron (Phase 22)",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "echo 'Desktop app will be implemented in Phase 22'",
+    "typecheck": "echo 'Desktop app will be implemented in Phase 22'",
+    "clean": "echo 'No build outputs to clean'"
+  }
+}
