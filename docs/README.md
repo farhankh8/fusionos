@@ -30,7 +30,9 @@ running code and tests. See [Definition of Done](14-mvp-definition-of-done.md).
 
 | # | Document | Status |
 |---|---|---|
-| 05 | [Database Foundation](05-database-foundation.md) — eventual schema requirements, tenancy strategy | PLANNED |
+| 00 | [Master Blueprint](00-fusionos-master-blueprint.md) — complete project specification & Phase 0 analysis | ASSESSMENT |
+| 05 | [Database Architecture](database-architecture.md) — schema, tenancy, money, indexing, constraints | AUTHORITATIVE |
+| 06 | [Database Foundation](05-database-foundation.md) — eventual schema requirements, tenancy strategy | PLANNED |
 | 06 | [Security Foundation](06-security-foundation.md) — authn/z, isolation, AI security, secrets | PLANNED |
 | 07 | [Event-Driven Architecture](07-event-driven-architecture.md) — domain event catalog & infra | PLANNED |
 
