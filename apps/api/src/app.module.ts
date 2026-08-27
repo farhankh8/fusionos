@@ -8,6 +8,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { HealthModule } from './health/health.module';
 
     // ── Domain Modules ────────────────────────────────────────────────────
     // Phase 2: DatabaseModule
-    // Phase 3: AuthModule
+    AuthModule,
     // Phase 4: TenancyModule
     // Phase 5: OrganizationModule
     // Phase 6: EmployeesModule

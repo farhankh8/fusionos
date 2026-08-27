@@ -39,6 +39,11 @@ export type {
   Designation,
   Gender,
   MaritalStatus,
+  // Auth
+  Session,
+  VerificationToken,
+  PasswordResetToken,
+  AuthEvent,
   // Events
   EventOutbox,
 } from '@prisma/client';

@@ -274,16 +274,22 @@ model User {
   email           String    @db.VarChar(255)
   firstName       String    @db.VarChar(255)
   lastName        String    @db.VarChar(255)
+  passwordHash    String    @db.VarChar(255)  // Argon2id hash — never exposed via API
   status          UserStatus @default(PENDING_VERIFICATION)
   isEmailVerified Boolean   @default(false)
   mfaEnabled      Boolean   @default(false)
+  mfaSecret       String?   @db.VarChar(255)  // TOTP secret — encrypted at rest in production
   lastLoginAt     DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   // Relations
-  tenants     UserRole[]
-  employees   Employee[]
+  tenants             UserRole[]
+  employees           Employee[]
+  sessions            Session[]
+  verificationTokens  VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  authEvents          AuthEvent[]
 
   @@unique([email])
   @@index([email])
@@ -530,6 +536,94 @@ model EventOutbox {
   @@index([createdAt])
   @@index([status, createdAt])  // For polling pending events
   @@map("event_outbox")
+}
+
+// =============================================================================
+// AUTHENTICATION — Phase 3
+// =============================================================================
+// These models support the authentication system: sessions, verification,
+// password reset, and security event logging.
+
+/// Session represents an authenticated user session.
+/// Sessions are invalidated on logout and can be revoked by the user.
+model Session {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @db.Uuid
+  token         String    @unique @db.VarChar(500)  // Opaque session identifier
+  refreshToken  String    @unique @db.VarChar(500)  // Refresh token hash
+  expiresAt     DateTime  // When the session expires
+  lastUsedAt    DateTime?
+  ipAddress     String?   @db.VarChar(45)  // IPv4 or IPv6
+  userAgent     String?   @db.VarChar(500)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+/// VerificationToken for email verification.
+/// Single-use, short-lived tokens for verifying user email addresses.
+model VerificationToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique @db.VarChar(500)  // Hashed token — never stored plaintext
+  type      String   @db.VarChar(50)  // "email_verification" or "password_reset"
+  expiresAt DateTime // Token expiration
+  usedAt    DateTime? // When the token was consumed (null = unused)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([type, userId])
+  @@map("verification_tokens")
+}
+
+/// PasswordResetToken for secure password reset flow.
+/// Single-use, short-lived tokens with hashed storage.
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique @db.VarChar(500)  // Hashed token — never stored plaintext
+  expiresAt DateTime // Token expiration (short-lived: 1 hour)
+  usedAt    DateTime? // When the token was consumed (null = unused)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
+}
+
+/// AuthEvent logs security-relevant authentication events.
+/// Append-only — never updated or deleted.
+model AuthEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String?  @db.Uuid  // null for events on unknown emails (enumeration protection)
+  eventType   String   @db.VarChar(50)  // login_success, login_failure, logout, password_reset, etc.
+  ipAddress   String?  @db.VarChar(45)
+  userAgent   String?  @db.VarChar(500)
+  metadata    Json?    // Additional context (e.g., MFA method, failure reason)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@map("auth_events")
 }
 
 // =============================================================================
