@@ -7,8 +7,12 @@
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RBACGuard } from './common/guards/rbac.guard';
 
 @Module({
   imports: [
@@ -18,10 +22,11 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: ['.env.local', '.env'],
     }),
 
+    // ── Infrastructure ────────────────────────────────────────────────────
+    CommonModule, // Global module — exports TenantContextService, RBACGuard, etc.
+
     // ── Domain Modules ────────────────────────────────────────────────────
-    // Phase 2: DatabaseModule
     AuthModule,
-    // Phase 4: TenancyModule
     // Phase 5: OrganizationModule
     // Phase 6: EmployeesModule
     // Phase 7: AttendanceModule
@@ -39,6 +44,19 @@ import { AuthModule } from './auth/auth.module';
 
     // ── Infrastructure ────────────────────────────────────────────────────
     HealthModule,
+  ],
+  providers: [
+    // Global guards — executed in order
+    // 1. JwtAuthGuard: authenticates the user (checks JWT)
+    // 2. RBACGuard: authorizes the action (checks permissions/roles)
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RBACGuard,
+    },
   ],
 })
 export class AppModule {}

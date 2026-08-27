@@ -3,9 +3,7 @@
 /**
  * FusionOS Application Shell
  *
- * The main layout wrapper that provides the sidebar navigation and header.
- * All pages render inside this shell.
- * One application experience — no compromise.
+ * Clean enterprise layout. Sidebar + top bar + content area.
  */
 
 import { Sidebar } from './sidebar';
@@ -17,12 +15,12 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-50">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar Navigation */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="ml-[260px] flex flex-1 flex-col overflow-hidden">
+      <div className="ml-[240px] flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <Header />
 

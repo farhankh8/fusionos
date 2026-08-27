@@ -219,6 +219,7 @@ export class AuthService {
         lastName: user.lastName,
       },
       session: {
+        sessionId: session.sessionId,
         accessToken: session.accessToken,
         refreshToken: session.refreshToken,
         accessTokenExpiresAt: session.accessTokenExpiresAt,
@@ -235,6 +236,15 @@ export class AuthService {
     await this.sessionService.revokeSession(sessionId);
     await this.logAuthEvent(userId, 'logout');
     this.logger.log(`User logged out: session ${sessionId}`);
+  }
+
+  /**
+   * Log out by finding the session from the access token hash.
+   */
+  async logoutByAccessToken(accessToken: string, userId: string): Promise<void> {
+    await this.sessionService.revokeSessionByAccessToken(accessToken);
+    await this.logAuthEvent(userId, 'logout');
+    this.logger.log(`User logged out by access token: ${userId}`);
   }
 
   /**

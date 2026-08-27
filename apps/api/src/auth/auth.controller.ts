@@ -105,12 +105,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(
     @CurrentUser() user: AuthenticatedUser,
-    @Req() req: Request & { sessionId?: string },
+    @Req() req: Request,
   ) {
-    // Get session ID from the request (set by JWT strategy or middleware)
-    const sessionId = req.headers['x-session-id'] as string | undefined;
-    if (sessionId) {
-      await this.authService.logout(sessionId, user.userId);
+    // Find session by access token hash from the Authorization header
+    const authHeader = req.headers['authorization'] as string | undefined;
+    const accessToken = authHeader?.replace('Bearer ', '');
+    if (accessToken) {
+      await this.authService.logoutByAccessToken(accessToken, user.userId);
     }
     return { message: 'Logged out successfully' };
   }

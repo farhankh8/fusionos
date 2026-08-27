@@ -178,6 +178,20 @@ export class SessionService {
   }
 
   /**
+   * Revoke a session by looking up its access token hash.
+   */
+  async revokeSessionByAccessToken(accessToken: string): Promise<void> {
+    const tokenHash = this.tokenService.hashToken(accessToken);
+    const session = await this.prisma.session.findFirst({
+      where: { token: tokenHash },
+      select: { id: true },
+    });
+    if (session) {
+      await this.prisma.session.delete({ where: { id: session.id } });
+    }
+  }
+
+  /**
    * Revoke all sessions for a user (logout everywhere).
    */
   async revokeAllSessions(userId: string): Promise<void> {

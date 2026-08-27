@@ -1,28 +1,16 @@
 /**
- * FusionOS Database Seed Script
+ * FusionOS Database Seed Script (Phase 4)
  *
- * This script creates legitimate foundational data for local development.
- * It does NOT create fake business transactions, fake payroll, fake attendance,
- * fake invoices, or fake financial statements.
+ * Creates development data for local development AND cross-tenant security testing.
  *
- * Seed data is DEVELOPMENT-ONLY and must never be used in production.
+ * Seed data includes:
+ *   - Tenant A (FusionOS Development) — primary dev tenant
+ *   - Tenant B (Acme Corporation) — for cross-tenant security testing
+ *   - System roles and permissions
+ *   - Users with different roles in each tenant
+ *   - User-role assignments
  *
- * What this seed creates:
- *   - Development tenant
- *   - Development company
- *   - System roles (Super Admin, Company Owner, etc.)
- *   - System permissions (read, create, update, delete, approve, etc.)
- *   - Role-permission mappings
- *   - Development user (admin@fusionos.dev)
- *   - User-role assignment
- *
- * What this seed does NOT create:
- *   - Fake employees (those belong in the Employee module)
- *   - Fake attendance records
- *   - Fake payroll data
- *   - Fake financial transactions
- *   - Fake CRM data
- *   - Any data that would misrepresent implemented features
+ * SECURITY: All seed data is DEVELOPMENT-ONLY. Never used in production.
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -31,13 +19,15 @@ const prisma = new PrismaClient();
 
 // ── Development Constants ────────────────────────────────────────────────────
 
-const DEV_TENANT = {
+// ── Tenant A: FusionOS Development ──────────────────────────────────────────
+
+const TENANT_A = {
   id: '00000000-0000-0000-0000-000000000001',
   name: 'FusionOS Development',
   slug: 'fusionos-dev',
 };
 
-const DEV_COMPANY = {
+const COMPANY_A = {
   id: '00000000-0000-0000-0000-000000000002',
   name: 'FusionOS Corp',
   legalName: 'FusionOS Corporation Ltd.',
@@ -45,11 +35,55 @@ const DEV_COMPANY = {
   email: 'info@fusionos.dev',
 };
 
-const DEV_USER = {
+const USER_A_ADMIN = {
   id: '00000000-0000-0000-0000-000000000003',
   email: 'admin@fusionos.dev',
   firstName: 'Admin',
   lastName: 'User',
+};
+
+const USER_A_HR = {
+  id: '00000000-0000-0000-0000-000000000010',
+  email: 'hr@fusionos.dev',
+  firstName: 'HR',
+  lastName: 'Manager',
+};
+
+const USER_A_EMPLOYEE = {
+  id: '00000000-0000-0000-0000-000000000011',
+  email: 'employee@fusionos.dev',
+  firstName: 'Test',
+  lastName: 'Employee',
+};
+
+// ── Tenant B: Acme Corporation (for cross-tenant testing) ──────────────────
+
+const TENANT_B = {
+  id: '10000000-0000-0000-0000-000000000001',
+  name: 'Acme Corporation',
+  slug: 'acme-corp',
+};
+
+const COMPANY_B = {
+  id: '10000000-0000-0000-0000-000000000002',
+  name: 'Acme Industries',
+  legalName: 'Acme Industries Inc.',
+  code: 'ACM',
+  email: 'info@acme.dev',
+};
+
+const USER_B_ADMIN = {
+  id: '10000000-0000-0000-0000-000000000003',
+  email: 'admin@acme.dev',
+  firstName: 'Acme',
+  lastName: 'Admin',
+};
+
+const USER_B_EMPLOYEE = {
+  id: '10000000-0000-0000-0000-000000000010',
+  email: 'employee@acme.dev',
+  firstName: 'Acme',
+  lastName: 'Employee',
 };
 
 // ── System Roles ─────────────────────────────────────────────────────────────
@@ -105,38 +139,37 @@ const SYSTEM_PERMISSIONS = [
 // ── Seed Function ────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('🌱 Seeding FusionOS development database...\n');
+  console.log('🌱 Seeding FusionOS development database (Phase 4)...\n');
 
-  // ── 1. Tenant ────────────────────────────────────────────────────────────
-  console.log('  📦 Creating development tenant...');
-  const tenant = await prisma.tenant.upsert({
-    where: { id: DEV_TENANT.id },
+  // ── 1. Tenants ───────────────────────────────────────────────────────────
+  console.log('  📦 Creating tenants...');
+  const tenantA = await prisma.tenant.upsert({
+    where: { id: TENANT_A.id },
     update: {},
-    create: {
-      id: DEV_TENANT.id,
-      name: DEV_TENANT.name,
-      slug: DEV_TENANT.slug,
-      status: 'ACTIVE',
-    },
+    create: { id: TENANT_A.id, name: TENANT_A.name, slug: TENANT_A.slug, status: 'ACTIVE' },
   });
-  console.log(`     ✅ Tenant: ${tenant.name} (${tenant.id})`);
+  const tenantB = await prisma.tenant.upsert({
+    where: { id: TENANT_B.id },
+    update: {},
+    create: { id: TENANT_B.id, name: TENANT_B.name, slug: TENANT_B.slug, status: 'ACTIVE' },
+  });
+  console.log(`     ✅ Tenant A: ${tenantA.name}`);
+  console.log(`     ✅ Tenant B: ${tenantB.name}`);
 
-  // ── 2. Company ───────────────────────────────────────────────────────────
-  console.log('  🏢 Creating development company...');
-  const company = await prisma.company.upsert({
-    where: { id: DEV_COMPANY.id },
+  // ── 2. Companies ─────────────────────────────────────────────────────────
+  console.log('  🏢 Creating companies...');
+  const companyA = await prisma.company.upsert({
+    where: { id: COMPANY_A.id },
     update: {},
-    create: {
-      id: DEV_COMPANY.id,
-      tenantId: tenant.id,
-      name: DEV_COMPANY.name,
-      legalName: DEV_COMPANY.legalName,
-      code: DEV_COMPANY.code,
-      email: DEV_COMPANY.email,
-      status: 'ACTIVE',
-    },
+    create: { id: COMPANY_A.id, tenantId: tenantA.id, name: COMPANY_A.name, legalName: COMPANY_A.legalName, code: COMPANY_A.code, email: COMPANY_A.email, status: 'ACTIVE' },
   });
-  console.log(`     ✅ Company: ${company.name} (${company.id})`);
+  const companyB = await prisma.company.upsert({
+    where: { id: COMPANY_B.id },
+    update: {},
+    create: { id: COMPANY_B.id, tenantId: tenantB.id, name: COMPANY_B.name, legalName: COMPANY_B.legalName, code: COMPANY_B.code, email: COMPANY_B.email, status: 'ACTIVE' },
+  });
+  console.log(`     ✅ Company A: ${companyA.name}`);
+  console.log(`     ✅ Company B: ${companyB.name}`);
 
   // ── 3. System Permissions ────────────────────────────────────────────────
   console.log('  🔑 Creating system permissions...');
@@ -155,21 +188,42 @@ async function main() {
   console.log('  👤 Creating system roles...');
   const roles = [];
   for (const roleDef of SYSTEM_ROLES) {
-    const r = await prisma.role.upsert({
-      where: {
-        tenantId_name: {
-          tenantId: roleDef.isSystem ? null : tenant.id,
-          name: roleDef.name,
+    const roleTenantId = roleDef.isSystem ? null : tenantA.id;
+    let r;
+    if (roleDef.isSystem) {
+      // System roles have null tenantId — can't use upsert with null composite unique
+      const existing = await prisma.role.findFirst({
+        where: { tenantId: null, name: roleDef.name },
+      });
+      if (existing) {
+        r = existing;
+      } else {
+        r = await prisma.role.create({
+          data: {
+            tenantId: null,
+            name: roleDef.name,
+            description: roleDef.description,
+            isSystem: roleDef.isSystem,
+          },
+        });
+      }
+    } else {
+      r = await prisma.role.upsert({
+        where: {
+          tenantId_name: {
+            tenantId: tenantA.id,
+            name: roleDef.name,
+          },
         },
-      },
-      update: {},
-      create: {
-        tenantId: roleDef.isSystem ? null : tenant.id,
-        name: roleDef.name,
-        description: roleDef.description,
-        isSystem: roleDef.isSystem,
-      },
-    });
+        update: {},
+        create: {
+          tenantId: tenantA.id,
+          name: roleDef.name,
+          description: roleDef.description,
+          isSystem: roleDef.isSystem,
+        },
+      });
+    }
     roles.push(r);
   }
   console.log(`     ✅ Roles: ${roles.length} created`);
@@ -177,93 +231,146 @@ async function main() {
   // ── 5. Role-Permission Mappings ──────────────────────────────────────────
   console.log('  🔗 Creating role-permission mappings...');
 
-  // Super Admin gets all permissions
+  // Helper to assign permissions to a role by name pattern
+  async function assignPermissions(roleName: string, permPatterns: string[]) {
+    const role = roles.find((r) => r.name === roleName);
+    if (!role) return;
+    const matched = permissions.filter((p) => permPatterns.includes(p.name));
+    for (const perm of matched) {
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: role.id, permissionId: perm.id } },
+        update: {},
+        create: { roleId: role.id, permissionId: perm.id },
+      });
+    }
+    console.log(`     ✅ ${roleName}: ${matched.length} permissions assigned`);
+  }
+
+  // Super Admin: ALL permissions
   const superAdminRole = roles.find((r) => r.name === 'super_admin');
   if (superAdminRole) {
     for (const perm of permissions) {
       await prisma.rolePermission.upsert({
-        where: {
-          roleId_permissionId: {
-            roleId: superAdminRole.id,
-            permissionId: perm.id,
-          },
-        },
+        where: { roleId_permissionId: { roleId: superAdminRole.id, permissionId: perm.id } },
         update: {},
-        create: {
-          roleId: superAdminRole.id,
-          permissionId: perm.id,
-        },
+        create: { roleId: superAdminRole.id, permissionId: perm.id },
       });
     }
-    console.log('     ✅ Super Admin: all permissions assigned');
+    console.log('     ✅ super_admin: all permissions assigned');
   }
 
-  // Company Owner gets all permissions
+  // Company Owner: ALL permissions
   const companyOwnerRole = roles.find((r) => r.name === 'company_owner');
   if (companyOwnerRole) {
     for (const perm of permissions) {
       await prisma.rolePermission.upsert({
-        where: {
-          roleId_permissionId: {
-            roleId: companyOwnerRole.id,
-            permissionId: perm.id,
-          },
-        },
+        where: { roleId_permissionId: { roleId: companyOwnerRole.id, permissionId: perm.id } },
         update: {},
-        create: {
-          roleId: companyOwnerRole.id,
-          permissionId: perm.id,
-        },
+        create: { roleId: companyOwnerRole.id, permissionId: perm.id },
       });
     }
-    console.log('     ✅ Company Owner: all permissions assigned');
+    console.log('     ✅ company_owner: all permissions assigned');
   }
 
-  // ── 6. Development User ──────────────────────────────────────────────────
-  console.log('  👤 Creating development user...');
-  const user = await prisma.user.upsert({
-    where: { id: DEV_USER.id },
-    update: {},
-    create: {
-      id: DEV_USER.id,
-      email: DEV_USER.email,
-      firstName: DEV_USER.firstName,
-      lastName: DEV_USER.lastName,
-      status: 'ACTIVE',
-      isEmailVerified: true,
-    },
-  });
-  console.log(`     ✅ User: ${user.email} (${user.id})`);
+  // HR Manager: employee + attendance + leave + payroll (read/manage)
+  await assignPermissions('hr_manager', [
+    'employee:read', 'employee:create', 'employee:update',
+    'attendance:read', 'attendance:manage',
+    'leave:read', 'leave:approve',
+    'payroll:read', 'payroll:manage',
+  ]);
 
-  // ── 7. User-Role Assignment ──────────────────────────────────────────────
-  console.log('  🔗 Assigning roles to development user...');
+  // Finance Manager: finance + payroll
+  await assignPermissions('finance_manager', [
+    'finance:read', 'finance:manage',
+    'payroll:read', 'payroll:approve',
+  ]);
+
+  // CRM Manager: CRM
+  await assignPermissions('crm_manager', [
+    'crm:read', 'crm:manage',
+  ]);
+
+  // Team Manager: employee read
+  await assignPermissions('team_manager', [
+    'employee:read',
+  ]);
+
+  // Employee: self-service only
+  await assignPermissions('employee', [
+    'employee:read',
+  ]);
+
+  // ── 6. Users ─────────────────────────────────────────────────────────────
+  console.log('  👤 Creating users...');
+  // Dev password: Admin@123 — only for local development
+  const DEV_PASSWORD_HASH = '$argon2id$v=19$m=65536,p=4,t=3$wyIJ2LQvLUxniIOIcBDRZQ$IY8gnp/onjcgYtRba1FonRiHkwyYhFBnWVBqh9pQv/I';
+
+  const allUsers = [USER_A_ADMIN, USER_A_HR, USER_A_EMPLOYEE, USER_B_ADMIN, USER_B_EMPLOYEE];
+  for (const u of allUsers) {
+    await prisma.user.upsert({
+      where: { id: u.id },
+      update: {},
+      create: { id: u.id, email: u.email, firstName: u.firstName, lastName: u.lastName, passwordHash: DEV_PASSWORD_HASH, status: 'ACTIVE', isEmailVerified: true },
+    });
+  }
+  console.log(`     ✅ Users: ${allUsers.length} created`);
+
+  // ── 7. User-Role Assignments ──────────────────────────────────────────────
+  console.log('  🔗 Assigning roles...');
+  const hrManagerRole = roles.find((r) => r.name === 'hr_manager');
+  const employeeRole = roles.find((r) => r.name === 'employee');
+  const companyOwnerRole2 = roles.find((r) => r.name === 'company_owner');
+
+  // Tenant A assignments
   if (superAdminRole) {
     await prisma.userRole.upsert({
-      where: {
-        userId_roleId_tenantId: {
-          userId: user.id,
-          roleId: superAdminRole.id,
-          tenantId: tenant.id,
-        },
-      },
+      where: { userId_roleId_tenantId: { userId: USER_A_ADMIN.id, roleId: superAdminRole.id, tenantId: tenantA.id } },
       update: {},
-      create: {
-        userId: user.id,
-        roleId: superAdminRole.id,
-        tenantId: tenant.id,
-      },
+      create: { userId: USER_A_ADMIN.id, roleId: superAdminRole.id, tenantId: tenantA.id },
     });
-    console.log('     ✅ User assigned: super_admin in fusionos-dev tenant');
   }
+  if (hrManagerRole) {
+    await prisma.userRole.upsert({
+      where: { userId_roleId_tenantId: { userId: USER_A_HR.id, roleId: hrManagerRole.id, tenantId: tenantA.id } },
+      update: {},
+      create: { userId: USER_A_HR.id, roleId: hrManagerRole.id, tenantId: tenantA.id },
+    });
+  }
+  if (employeeRole) {
+    await prisma.userRole.upsert({
+      where: { userId_roleId_tenantId: { userId: USER_A_EMPLOYEE.id, roleId: employeeRole.id, tenantId: tenantA.id } },
+      update: {},
+      create: { userId: USER_A_EMPLOYEE.id, roleId: employeeRole.id, tenantId: tenantA.id },
+    });
+  }
+  console.log('     ✅ Tenant A: super_admin, hr_manager, employee');
+
+  // Tenant B assignments
+  if (companyOwnerRole2) {
+    await prisma.userRole.upsert({
+      where: { userId_roleId_tenantId: { userId: USER_B_ADMIN.id, roleId: companyOwnerRole2.id, tenantId: tenantB.id } },
+      update: {},
+      create: { userId: USER_B_ADMIN.id, roleId: companyOwnerRole2.id, tenantId: tenantB.id },
+    });
+  }
+  if (employeeRole) {
+    await prisma.userRole.upsert({
+      where: { userId_roleId_tenantId: { userId: USER_B_EMPLOYEE.id, roleId: employeeRole.id, tenantId: tenantB.id } },
+      update: {},
+      create: { userId: USER_B_EMPLOYEE.id, roleId: employeeRole.id, tenantId: tenantB.id },
+    });
+  }
+  console.log('     ✅ Tenant B: company_owner, employee');
 
   // ── Summary ──────────────────────────────────────────────────────────────
   console.log('\n📊 Seed Summary:');
-  console.log(`   Tenants:    1`);
-  console.log(`   Companies:  1`);
-  console.log(`   Roles:      ${roles.length}`);
+  console.log(`   Tenants:     2 (A: ${tenantA.slug}, B: ${tenantB.slug})`);
+  console.log(`   Companies:   2`);
+  console.log(`   Roles:       ${roles.length}`);
   console.log(`   Permissions: ${permissions.length}`);
-  console.log(`   Users:      1`);
-  console.log(`   UserRoles:  1`);
+  console.log(`   Users:       ${allUsers.length}`);
+  console.log(`   UserRoles:   6 (3 per tenant)`);
   console.log('\n✅ Development seed complete.');
   console.log('   ⚠️  This data is for development only — not production.');
 }
