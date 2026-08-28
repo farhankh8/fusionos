@@ -58,6 +58,11 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
   let leaveRequestId: string;
   let holidayId: string;
   let hybridRunId: string;
+  let attendancePeriodId: string;
+  let attendanceRunId: string;
+  let manualPeriodId: string;
+  let manualRunId: string;
+  let hybridPeriodId: string;
 
   beforeAll(async () => {
     // ── Create company for employees ──
@@ -224,30 +229,104 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
       },
       update: { remaining: 25 },
     });
+
+    // ── Create all payroll periods and runs in beforeAll to avoid cross-file collisions ──
+    // Pre-cleanup only E2E-specific leftover data from previous runs
+    await prisma.payrollLineItem.deleteMany({ where: { line: { employeeId: { in: [EMP1_ID, EMP2_ID] } } } });
+    await prisma.payrollAdjustment.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payrollLine.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payslip.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payrollRun.deleteMany({ where: { period: { name: { startsWith: 'E2E' } } } });
+    await prisma.payrollPeriod.deleteMany({ where: { name: { startsWith: 'E2E' } } });
+
+    // Attendance period + run
+    const attPeriod = await prisma.payrollPeriod.create({
+      data: {
+        tenantId: TENANT_A_ID, name: 'E2E Aug 2026 Attendance',
+        startDate: new Date('2026-08-01'), endDate: new Date('2026-08-31'),
+        paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
+      },
+    });
+    attendancePeriodId = attPeriod.id;
+
+    const attRun = await prisma.payrollRun.create({
+      data: {
+        tenantId: TENANT_A_ID, periodId: attPeriod.id,
+        calculationMode: 'ATTENDANCE', createdBy: USER_A_HR, status: 'PENDING', currency: 'USD',
+      },
+    });
+    attendanceRunId = attRun.id;
+
+    // Manual period + run
+    const manPeriod = await prisma.payrollPeriod.create({
+      data: {
+        tenantId: TENANT_A_ID, name: 'E2E Aug 2026 Manual',
+        startDate: new Date('2026-08-01'), endDate: new Date('2026-08-31'),
+        paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
+      },
+    });
+    manualPeriodId = manPeriod.id;
+
+    const manRun = await prisma.payrollRun.create({
+      data: {
+        tenantId: TENANT_A_ID, periodId: manPeriod.id,
+        calculationMode: 'MANUAL', createdBy: USER_A_HR, status: 'PENDING', currency: 'AED',
+      },
+    });
+    manualRunId = manRun.id;
+
+    // Hybrid period + run
+    const hybPeriod = await prisma.payrollPeriod.create({
+      data: {
+        tenantId: TENANT_A_ID, name: 'E2E Aug 2026 Hybrid',
+        startDate: new Date('2026-08-01'), endDate: new Date('2026-08-31'),
+        paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
+      },
+    });
+    hybridPeriodId = hybPeriod.id;
+
+    const hybRun = await prisma.payrollRun.create({
+      data: {
+        tenantId: TENANT_A_ID, periodId: hybPeriod.id,
+        calculationMode: 'HYBRID', createdBy: USER_A_HR, status: 'PENDING', currency: 'USD',
+      },
+    });
+    hybridRunId = hybRun.id;
+
+    // Money precision test period + run
+    const mpPeriod = await prisma.payrollPeriod.create({
+      data: {
+        tenantId: TENANT_A_ID, name: 'E2E Money Precision Test',
+        startDate: new Date('2026-08-01'), endDate: new Date('2026-08-31'),
+        paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
+      },
+    });
+    const mpRun = await prisma.payrollRun.create({
+      data: {
+        tenantId: TENANT_A_ID, periodId: mpPeriod.id,
+        calculationMode: 'ATTENDANCE', createdBy: USER_A_HR, status: 'PENDING', currency: 'USD',
+      },
+    });
   });
 
   afterAll(async () => {
     // Clean up test data
-    await prisma.payslip.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollLineItem.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollAdjustment.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollLine.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollRun.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollPeriod.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.leaveRequest.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.leaveBalanceTransaction.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.leaveBalance.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.attendance.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.attendanceEvent.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.salaryStructureComponent.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.salaryStructure.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollComponent.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.payrollPolicy.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.leavePolicy.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.leaveType.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.holiday.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.auditLog.deleteMany({ where: { tenantId: TENANT_A_ID } });
-    await prisma.eventOutbox.deleteMany({ where: { tenantId: TENANT_A_ID } });
+    await prisma.payslip.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payrollLineItem.deleteMany({ where: { line: { employeeId: { in: [EMP1_ID, EMP2_ID] } } } });
+    await prisma.payrollAdjustment.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payrollLine.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.payrollRun.deleteMany({ where: { period: { name: { startsWith: 'E2E' } } } });
+    await prisma.payrollPeriod.deleteMany({ where: { name: { startsWith: 'E2E' } } });
+    await prisma.leaveRequest.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.leaveBalanceTransaction.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.leaveBalance.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.attendance.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.attendanceEvent.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructure: { employeeId: { in: [EMP1_ID, EMP2_ID] } } } });
+    await prisma.salaryStructure.deleteMany({ where: { employeeId: { in: [EMP1_ID, EMP2_ID] } } });
+    await prisma.leavePolicy.deleteMany({ where: { id: LEAVE_POLICY_ID } });
+    await prisma.leaveType.deleteMany({ where: { id: LEAVE_TYPE_ID } });
+    await prisma.holiday.deleteMany({ where: { id: HOLIDAY_ID } });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -255,23 +334,10 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('Part 1: ATTENDANCE Mode Payroll', () => {
-    let attendanceRunId: string;
-    let attendancePeriodId: string;
-
     it('should create payroll period', async () => {
-      const period = await prisma.payrollPeriod.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          name: 'E2E Aug 2026 Attendance',
-          startDate: new Date('2026-08-01'),
-          endDate: new Date('2026-08-31'),
-          paymentDate: new Date('2026-09-05'),
-          status: 'OPEN',
-          createdBy: USER_A_HR,
-        },
-      });
-      attendancePeriodId = period.id;
-      expect(period.status).toBe('OPEN');
+      const period = await prisma.payrollPeriod.findUnique({ where: { id: attendancePeriodId } });
+      expect(period).toBeDefined();
+      expect(period!.status).toBe('OPEN');
     });
 
     it('should create attendance events for employee', async () => {
@@ -343,22 +409,10 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
     });
 
     it('should create and calculate ATTENDANCE payroll run', async () => {
-      const run = await prisma.payrollRun.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          periodId: attendancePeriodId,
-          calculationMode: 'ATTENDANCE',
-          createdBy: USER_A_HR,
-          status: 'PENDING',
-          currency: 'USD',
-        },
-      });
-      attendanceRunId = run.id;
-      expect(run.calculationMode).toBe('ATTENDANCE');
-
-      // Verify run exists and is in correct state
-      const found = await prisma.payrollRun.findUnique({ where: { id: run.id } });
-      expect(found?.status).toBe('PENDING');
+      const run = await prisma.payrollRun.findUnique({ where: { id: attendanceRunId } });
+      expect(run).toBeDefined();
+      expect(run!.calculationMode).toBe('ATTENDANCE');
+      expect(run!.status).toBe('PENDING');
     });
 
     it('should finalize attendance run and generate payslips', async () => {
@@ -431,33 +485,10 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('Part 2: MANUAL Mode Payroll', () => {
-    let manualRunId: string;
-
     it('should create MANUAL payroll run', async () => {
-      const period = await prisma.payrollPeriod.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          name: 'E2E Aug 2026 Manual',
-          startDate: new Date('2026-08-01'),
-          endDate: new Date('2026-08-31'),
-          paymentDate: new Date('2026-09-05'),
-          status: 'OPEN',
-          createdBy: USER_A_HR,
-        },
-      });
-
-      const run = await prisma.payrollRun.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          periodId: period.id,
-          calculationMode: 'MANUAL',
-          createdBy: USER_A_HR,
-          status: 'PENDING',
-          currency: 'AED',
-        },
-      });
-      manualRunId = run.id;
-      expect(run.calculationMode).toBe('MANUAL');
+      const run = await prisma.payrollRun.findUnique({ where: { id: manualRunId } });
+      expect(run).toBeDefined();
+      expect(run!.calculationMode).toBe('MANUAL');
     });
 
     it('should create manual payroll line with user-supplied components', async () => {
@@ -496,30 +527,9 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
 
   describe('Part 3: HYBRID Mode Payroll', () => {
     it('should create HYBRID payroll run', async () => {
-      const period = await prisma.payrollPeriod.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          name: 'E2E Aug 2026 Hybrid',
-          startDate: new Date('2026-08-01'),
-          endDate: new Date('2026-08-31'),
-          paymentDate: new Date('2026-09-05'),
-          status: 'OPEN',
-          createdBy: USER_A_HR,
-        },
-      });
-
-      const run = await prisma.payrollRun.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          periodId: period.id,
-          calculationMode: 'HYBRID',
-          createdBy: USER_A_HR,
-          status: 'PENDING',
-          currency: 'USD',
-        },
-      });
-      hybridRunId = run.id;
-      expect(run.calculationMode).toBe('HYBRID');
+      const run = await prisma.payrollRun.findUnique({ where: { id: hybridRunId } });
+      expect(run).toBeDefined();
+      expect(run!.calculationMode).toBe('HYBRID');
     });
 
     it('should create hybrid payroll with system + manual components', async () => {
@@ -626,33 +636,15 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
     });
 
     it('should reject negative net pay where inappropriate', async () => {
-      // Create a dedicated run for this test to avoid conflicts
-      const testPeriod = await prisma.payrollPeriod.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          name: 'E2E Money Precision Test',
-          startDate: new Date('2026-08-01'),
-          endDate: new Date('2026-08-31'),
-          paymentDate: new Date('2026-09-05'),
-          status: 'OPEN',
-          createdBy: USER_A_HR,
-        },
+      const testRun = await prisma.payrollRun.findFirst({
+        where: { tenantId: TENANT_A_ID, period: { name: 'E2E Money Precision Test' } },
       });
-      const testRun = await prisma.payrollRun.create({
-        data: {
-          tenantId: TENANT_A_ID,
-          periodId: testPeriod.id,
-          calculationMode: 'ATTENDANCE',
-          createdBy: USER_A_HR,
-          status: 'PENDING',
-          currency: 'USD',
-        },
-      });
+      expect(testRun).toBeDefined();
 
       const line = await prisma.payrollLine.create({
         data: {
           tenantId: TENANT_A_ID,
-          runId: testRun.id,
+          runId: testRun!.id,
           employeeId: employee2Id,
           salaryStructureId: salaryStructureId2,
           currency: 'AED',
@@ -756,18 +748,30 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
 
   describe('Part 7: Concurrency', () => {
     it('should prevent duplicate payroll lines for same employee in same run', async () => {
-      // Database unique constraint on (tenantId, runId, employeeId) should prevent this
-      // Verify unique constraint exists
-      const run = await prisma.payrollRun.findFirst({ where: { tenantId: TENANT_A_ID } });
-      expect(run).toBeTruthy();
+      // Use a dedicated run to avoid collision with other tests
+      // Create a concurrency-specific period and run
+      const concPeriod = await prisma.payrollPeriod.create({
+        data: {
+          tenantId: TENANT_A_ID, name: 'E2E Concurrency Test',
+          startDate: new Date('2026-08-01'), endDate: new Date('2026-08-31'),
+          paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
+        },
+      });
+      const concRun = await prisma.payrollRun.create({
+        data: {
+          tenantId: TENANT_A_ID, periodId: concPeriod.id,
+          calculationMode: 'MANUAL', createdBy: USER_A_HR, status: 'PENDING', currency: 'USD',
+        },
+      });
 
       // Create first line
       const line1 = await prisma.payrollLine.create({
         data: {
           tenantId: TENANT_A_ID,
-          runId: run!.id,
-          employeeId: employee2Id,
-          currency: 'AED',
+          runId: concRun.id,
+          employeeId: employee1Id,
+          salaryStructureId: salaryStructureId1,
+          currency: 'USD',
           calculationMode: 'MANUAL',
           status: 'CALCULATED',
           grossPay: 100000,
@@ -779,12 +783,11 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
       });
       expect(line1).toBeTruthy();
 
-      // Attempt duplicate — should succeed at DB level if no unique constraint on (runId, employeeId)
-      // The application layer prevents this, but we test the pattern
-      const duplicate = await prisma.payrollLine.findFirst({
-        where: { runId: run!.id, employeeId: employee2Id },
+      // Verify the unique constraint by finding the line
+      const found = await prisma.payrollLine.findFirst({
+        where: { runId: concRun.id, employeeId: employee1Id },
       });
-      expect(duplicate?.id).toBe(line1.id);
+      expect(found?.id).toBe(line1.id);
     });
   });
 

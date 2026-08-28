@@ -26,6 +26,17 @@ let empB: string;
 
 describe('Attendance Management', () => {
   beforeAll(async () => {
+    // Pre-cleanup: remove leftover data from previous crashed runs
+    for (const code of ['ATT-TEST-001', 'ATT-TEST-B01']) {
+      const emp = await prisma.employee.findFirst({ where: { employeeCode: code }, select: { id: true } });
+      if (emp) {
+        await prisma.attendanceCorrection.deleteMany({ where: { employeeId: emp.id } });
+        await prisma.attendance.deleteMany({ where: { employeeId: emp.id } });
+        await prisma.attendanceEvent.deleteMany({ where: { employeeId: emp.id } });
+        await prisma.employee.delete({ where: { id: emp.id } });
+      }
+    }
+
     // Create test employees for Tenant A
     const employeeA = await prisma.employee.upsert({
       where: { tenantId_employeeCode: { tenantId: TENANT_A, employeeCode: 'ATT-TEST-001' } },
@@ -68,7 +79,6 @@ describe('Attendance Management', () => {
     await prisma.attendance.deleteMany({ where: { employeeId: { in: [empA, empB] } } });
     await prisma.attendanceEvent.deleteMany({ where: { employeeId: { in: [empA, empB] } } });
     await prisma.employee.deleteMany({ where: { id: { in: [empA, empB] } } });
-    await prisma.$disconnect();
   });
 
   // ── Clock-In ─────────────────────────────────────────────────────────────

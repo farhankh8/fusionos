@@ -55,6 +55,10 @@ describe('Employee Lifecycle & Business Rules', () => {
   // ── Setup & Teardown ────────────────────────────────────────────────────────
 
   beforeAll(async () => {
+    // Pre-cleanup: remove leftover data from previous crashed runs
+    await prisma.employeeHistory.deleteMany({ where: { employeeId: { in: [EMP_A1, EMP_A2, EMP_B1] } } });
+    await prisma.employee.deleteMany({ where: { id: { in: [EMP_A1, EMP_A2, EMP_B1] } } });
+
     // Create test employees
     await prisma.employee.createMany({
       data: [
@@ -100,7 +104,6 @@ describe('Employee Lifecycle & Business Rules', () => {
     // Clean up test data
     await prisma.employeeHistory.deleteMany({ where: { employeeId: { in: [EMP_A1, EMP_A2, EMP_B1] } } });
     await prisma.employee.deleteMany({ where: { id: { in: [EMP_A1, EMP_A2, EMP_B1] } } });
-    await prisma.$disconnect();
   });
 
   // ── Employee Creation ──────────────────────────────────────────────────────

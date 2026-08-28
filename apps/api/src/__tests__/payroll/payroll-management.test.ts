@@ -46,6 +46,25 @@ let periodA: any;
 let periodB: any;
 
 beforeAll(async () => {
+  // Pre-cleanup: remove leftover data from previous crashed runs
+  const empCodes = ['PAY-TEST-001', 'PAY-TEST-B01'];
+  for (const code of empCodes) {
+    const emp = await prisma.employee.findFirst({ where: { employeeCode: code }, select: { id: true } });
+    if (emp) {
+      await prisma.payslip.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.payrollAdjustment.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.payrollLineItem.deleteMany({ where: { line: { employeeId: emp.id } } });
+      await prisma.payrollLine.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.leaveRequest.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.attendance.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructure: { employeeId: emp.id } } });
+      await prisma.salaryStructure.deleteMany({ where: { employeeId: emp.id } });
+      await prisma.employee.delete({ where: { id: emp.id } });
+    }
+  }
+  // Clean up only our own test periods (not other test files' periods)
+  await prisma.payrollPeriod.deleteMany({ where: { name: 'August 2026', tenantId: { in: [TENANT_A, TENANT_B] } } });
+
   // Create test employees
   employeeA = await prisma.employee.upsert({
     where: { tenantId_employeeCode: { tenantId: TENANT_A, employeeCode: 'PAY-TEST-001' } },
@@ -121,25 +140,32 @@ beforeAll(async () => {
   });
 
   // Create salary structures (basicSalary in minor units: 3000000 = 30,000.00)
-  salaryA = await prisma.salaryStructure.create({
-    data: {
+  salaryA = await prisma.salaryStructure.upsert({
+    where: { id: 'f0a00000-0000-0000-0000-000000000001' },
+    create: {
+      id: 'f0a00000-0000-0000-0000-000000000001',
       tenantId: TENANT_A, employeeId: employeeA.id,
       currency: 'USD', payFrequency: 'MONTHLY',
       basicSalary: 3000000, effectiveFrom: new Date('2026-01-01'),
       isActive: true, status: 'ACTIVE',
     },
+    update: { basicSalary: 3000000 },
   });
 
-  salaryB = await prisma.salaryStructure.create({
-    data: {
+  salaryB = await prisma.salaryStructure.upsert({
+    where: { id: 'f0b00000-0000-0000-0000-000000000001' },
+    create: {
+      id: 'f0b00000-0000-0000-0000-000000000001',
       tenantId: TENANT_B, employeeId: employeeB.id,
       currency: 'AED', payFrequency: 'MONTHLY',
       basicSalary: 5000000, effectiveFrom: new Date('2026-01-01'),
       isActive: true, status: 'ACTIVE',
     },
+    update: { basicSalary: 5000000 },
   });
 
-  // Create salary structure components
+  // Create salary structure components (idempotent — delete existing first)
+  await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructureId: salaryA.id } });
   await prisma.salaryStructureComponent.create({
     data: {
       tenantId: TENANT_A, salaryStructureId: salaryA.id,
@@ -165,13 +191,22 @@ beforeAll(async () => {
     });
   }
 
-  // Create a paid leave request
+  // Create a paid leave request (idempotent)
   const leaveType = await prisma.leaveType.upsert({
-    where: { tenantId_code: { tenantId: TENANT_A, code: 'ANNUAL' } },
+    where: { tenantId_code: { tenantId: TENANT_A, code: 'PAY-ANNUAL' } },
     update: {},
     create: {
-      tenantId: TENANT_A, name: 'Annual Leave', code: 'ANNUAL',
+      tenantId: TENANT_A, name: 'Annual Leave', code: 'PAY-ANNUAL',
       isPaid: true, requiresApproval: true,
+    },
+  });
+
+  // Clean up existing leave request for this employee in this period to avoid duplicates
+  await prisma.leaveRequest.deleteMany({
+    where: {
+      employeeId: employeeA.id,
+      startDate: { gte: new Date('2026-08-01') },
+      endDate: { lte: new Date('2026-08-31') },
     },
   });
 
@@ -199,10 +234,9 @@ afterAll(async () => {
   await prisma.payrollComponent.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
   await prisma.payrollPolicy.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
   await prisma.leaveRequest.deleteMany({ where: { employeeId: employeeA.id } });
-  await prisma.leaveType.deleteMany({ where: { code: 'ANNUAL' } });
+  await prisma.leaveType.deleteMany({ where: { code: 'PAY-ANNUAL' } });
   await prisma.attendance.deleteMany({ where: { employeeId: employeeA.id } });
   await prisma.employee.deleteMany({ where: { email: { in: ['pay.testa@test.com', 'pay.testb@test.com'] } } });
-  await prisma.$disconnect();
 });
 
 describe('Payroll Management', () => {
@@ -286,9 +320,13 @@ describe('Payroll Management', () => {
     });
 
     it('should track salary history without overwriting', async () => {
+      // Pre-cleanup any leftover from previous runs
+      await prisma.salaryStructure.deleteMany({ where: { id: 'f0c00000-0000-0000-0000-000000000001' } });
+
       // Create a new salary structure for same employee
       const newSalary = await prisma.salaryStructure.create({
         data: {
+          id: 'f0c00000-0000-0000-0000-000000000001',
           tenantId: TENANT_A, employeeId: employeeA.id,
           currency: 'USD', payFrequency: 'MONTHLY',
           basicSalary: 3500000, effectiveFrom: new Date('2026-09-01'),
@@ -509,7 +547,7 @@ describe('Payroll Management', () => {
 
     it('should NOT count pending leave as paid leave', async () => {
       // Create a pending leave request
-      const leaveType = await prisma.leaveType.findFirst({ where: { code: 'ANNUAL' } });
+      const leaveType = await prisma.leaveType.findFirst({ where: { code: 'PAY-ANNUAL' } });
       const pending = await prisma.leaveRequest.create({
         data: {
           tenantId: TENANT_A, employeeId: employeeA.id,

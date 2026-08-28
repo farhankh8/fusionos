@@ -15,6 +15,26 @@ describe('Leave Management', () => {
   let employeeIdA: string;
 
   beforeAll(async () => {
+    // Pre-cleanup: remove leftover data from previous crashed runs
+    for (const code of ['LV-ANNUAL']) {
+      const lt = await prisma.leaveType.findFirst({ where: { code }, select: { id: true } });
+      if (lt) {
+        await prisma.leaveBalanceTransaction.deleteMany({ where: { balance: { leaveType: { code } } } });
+        await prisma.leaveBalance.deleteMany({ where: { leaveType: { code } } });
+        await prisma.leaveRequest.deleteMany({ where: { leaveType: { code } } });
+        await prisma.leaveType.deleteMany({ where: { code } });
+      }
+    }
+    // Also clean up any leftover leave requests for the test employee
+    const existingEmp = await prisma.employee.findFirst({ where: { email: 'leave-test@fusionos.dev' }, select: { id: true } });
+    if (existingEmp) {
+      await prisma.leaveBalanceTransaction.deleteMany({ where: { employeeId: existingEmp.id } });
+      await prisma.leaveBalance.deleteMany({ where: { employeeId: existingEmp.id } });
+      await prisma.leaveRequest.deleteMany({ where: { employeeId: existingEmp.id } });
+    }
+    // Clean up leftover holidays
+    await prisma.holiday.deleteMany({ where: { name: 'Test Holiday' } });
+
     // Get or create employee (use upsert with unique code to avoid race conditions)
     const emp = await prisma.employee.upsert({
       where: { tenantId_employeeCode: { tenantId: TENANT_A_ID, employeeCode: 'TEST-LV-001' } },
@@ -140,6 +160,5 @@ describe('Leave Management', () => {
     await prisma.holiday.deleteMany({ where: { tenantId: TENANT_A_ID, name: 'Test Holiday' } });
     await prisma.leaveType.deleteMany({ where: { code: 'LV-ANNUAL' } });
     await prisma.employee.deleteMany({ where: { email: 'leave-test@fusionos.dev' } });
-    await prisma.$disconnect();
   });
 });

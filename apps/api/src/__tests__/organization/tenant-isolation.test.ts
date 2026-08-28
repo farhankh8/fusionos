@@ -143,7 +143,6 @@ describe('Organization Tenant Isolation & IDOR', () => {
     if (desigIds.length) await prisma.designation.deleteMany({ where: { id: { in: desigIds } } });
     if (branchIds.length) await prisma.branch.deleteMany({ where: { id: { in: branchIds } } });
     if (compIds.length) await prisma.company.deleteMany({ where: { id: { in: compIds } } });
-    await prisma.$disconnect();
   });
 
   // ── Company Isolation ──────────────────────────────────────────────────────
