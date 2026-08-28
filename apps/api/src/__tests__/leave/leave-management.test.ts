@@ -5,7 +5,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const TENANT_A_ID = 'a0000000-0000-0000-0000-000000000001';
+const TENANT_A_ID = '00000000-0000-0000-0000-000000000001';
 const TENANT_B_ID = 'b0000000-0000-0000-0000-000000000001';
 const COMPANY_A_ID = '00000000-0000-0000-0000-000000000002';
 
