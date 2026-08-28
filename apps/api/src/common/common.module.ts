@@ -1,14 +1,15 @@
 /**
  * FusionOS Common Module
  *
- * Provides shared infrastructure for authorization, guards, and audit logging.
- * Import this module in any feature module that needs authorization.
+ * Provides shared infrastructure for authorization, guards, audit logging,
+ * and event publishing.
  */
 
 import { Module, Global } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { RBACGuard } from './guards/rbac.guard';
 import { SecurityAuditService } from './services/security-audit.service';
+import { EventPublisherService } from './services/event-publisher.service';
 import { TenantContextService } from '../auth/services/tenant-context.service';
 
 @Global()
@@ -18,11 +19,13 @@ import { TenantContextService } from '../auth/services/tenant-context.service';
     TenantContextService,
     RBACGuard,
     SecurityAuditService,
+    EventPublisherService,
   ],
   exports: [
     TenantContextService,
     RBACGuard,
     SecurityAuditService,
+    EventPublisherService,
   ],
 })
 export class CommonModule {}

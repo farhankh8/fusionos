@@ -8,6 +8,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
@@ -18,6 +19,7 @@ import { LeaveModule } from './leave/leave.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RBACGuard } from './common/guards/rbac.guard';
+import { AppThrottlerGuard } from './common/throttler/throttler.guard';
 
 @Module({
   imports: [
@@ -26,6 +28,20 @@ import { RBACGuard } from './common/guards/rbac.guard';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+
+    // ── Rate Limiting ─────────────────────────────────────────────────────
+    ThrottlerModule.forRoot([
+      {
+        name: 'auth',
+        ttl: 15 * 60 * 1000, // 15 minutes
+        limit: 5,            // 5 attempts per window
+      },
+      {
+        name: 'general',
+        ttl: 15 * 60 * 1000, // 15 minutes
+        limit: 100,          // 100 requests per window
+      },
+    ]),
 
     // ── Infrastructure ────────────────────────────────────────────────────
     CommonModule, // Global module — exports TenantContextService, RBACGuard, etc.
@@ -37,24 +53,19 @@ import { RBACGuard } from './common/guards/rbac.guard';
     AttendanceModule,
     LeaveModule,
     PayrollModule,
-    // Phase 9: PayrollModule
-    // Phase 10: FinanceModule
-    // Phase 11: CrmModule
-    // Phase 12: ProjectsModule
-    // Phase 13: AssetsModule
-    // Phase 14: NotificationsModule
-    // Phase 15: AiModule
-    // Phase 17: EventsModule
-    // Phase 18: AutomationModule
-    // Phase 21: AnalyticsModule
 
     // ── Infrastructure ────────────────────────────────────────────────────
     HealthModule,
   ],
   providers: [
     // Global guards — executed in order
-    // 1. JwtAuthGuard: authenticates the user (checks JWT)
-    // 2. RBACGuard: authorizes the action (checks permissions/roles)
+    // 1. ThrottlerGuard: rate limiting
+    // 2. JwtAuthGuard: authenticates the user (checks JWT)
+    // 3. RBACGuard: authorizes the action (checks permissions/roles)
+    {
+      provide: APP_GUARD,
+      useClass: AppThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

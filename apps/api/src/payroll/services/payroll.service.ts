@@ -401,7 +401,7 @@ export class PayrollService {
         calculationMode: dto.calculationMode as any,
         employeeScope: dto.employeeScope,
         createdBy: ctx.userId,
-        currency: 'USD', // TODO: get from policy/company
+        currency: 'USD', // Default currency — resolved per-employee during calculation
       },
     });
   }
@@ -547,7 +547,7 @@ export class PayrollService {
           tenantId: ctx.tenantId,
           runId: run.id,
           employeeId: employee.id,
-          currency: 'USD',
+          currency: employee.currency ?? 'USD',
           calculationMode,
           status: 'DRAFT',
           grossPay: 0,
