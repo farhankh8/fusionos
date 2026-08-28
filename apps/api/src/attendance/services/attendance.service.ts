@@ -636,6 +636,104 @@ export class AttendanceService {
     const dateStart = new Date(date); dateStart.setUTCHours(0, 0, 0, 0);
     const dateEnd = new Date(date); dateEnd.setUTCHours(23, 59, 59, 999);
 
+    // Get employee tenant info
+    const employee = await tx.employee.findUnique({ where: { id: employeeId }, select: { tenantId: true } });
+    if (!employee) return;
+
+    // ── LEAVE INTEGRATION: Check for approved leave covering this date ──
+    const approvedLeave = await tx.leaveRequest.findFirst({
+      where: {
+        tenantId: employee.tenantId,
+        employeeId,
+        status: 'APPROVED',
+        startDate: { lte: dateEnd },
+        endDate: { gte: dateStart },
+      },
+      include: { leaveType: { select: { id: true, name: true, isPaid: true } } },
+    });
+
+    if (approvedLeave) {
+      // Employee has approved leave on this date — mark as ON_LEAVE
+      await tx.attendance.upsert({
+        where: {
+          tenantId_employeeId_date: {
+            tenantId: employee.tenantId,
+            employeeId,
+            date: dateStart,
+          },
+        },
+        create: {
+          tenantId: employee.tenantId,
+          employeeId,
+          date: dateStart,
+          status: 'ON_LEAVE',
+          totalWorkedMinutes: 0,
+          source: 'SYSTEM',
+          calculatedAt: new Date(),
+          notes: `Approved ${approvedLeave.leaveType?.isPaid ? 'paid' : 'unpaid'} leave: ${approvedLeave.leaveType?.name ?? approvedLeave.leaveTypeId}`,
+        },
+        update: {
+          status: 'ON_LEAVE',
+          totalWorkedMinutes: 0,
+          totalBreakMinutes: 0,
+          lateMinutes: 0,
+          earlyDepartureMinutes: 0,
+          overtimeMinutes: 0,
+          firstClockIn: null,
+          lastClockOut: null,
+          source: 'SYSTEM',
+          calculatedAt: new Date(),
+          notes: `Approved ${approvedLeave.leaveType?.isPaid ? 'paid' : 'unpaid'} leave: ${approvedLeave.leaveType?.name ?? approvedLeave.leaveTypeId}`,
+        },
+      });
+      return;
+    }
+
+    // ── HOLIDAY INTEGRATION: Check for holidays on this date ──
+    const holiday = await tx.holiday.findFirst({
+      where: {
+        tenantId: employee.tenantId,
+        isActive: true,
+        date: { gte: dateStart, lte: dateEnd },
+      },
+    });
+
+    if (holiday) {
+      await tx.attendance.upsert({
+        where: {
+          tenantId_employeeId_date: {
+            tenantId: employee.tenantId,
+            employeeId,
+            date: dateStart,
+          },
+        },
+        create: {
+          tenantId: employee.tenantId,
+          employeeId,
+          date: dateStart,
+          status: 'HOLIDAY',
+          totalWorkedMinutes: 0,
+          source: 'SYSTEM',
+          calculatedAt: new Date(),
+          notes: `Holiday: ${holiday.name}`,
+        },
+        update: {
+          status: 'HOLIDAY',
+          totalWorkedMinutes: 0,
+          totalBreakMinutes: 0,
+          lateMinutes: 0,
+          earlyDepartureMinutes: 0,
+          overtimeMinutes: 0,
+          firstClockIn: null,
+          lastClockOut: null,
+          source: 'SYSTEM',
+          calculatedAt: new Date(),
+          notes: `Holiday: ${holiday.name}`,
+        },
+      });
+      return;
+    }
+
     // Fetch all events for this employee on this date
     const events = await tx.attendanceEvent.findMany({
       where: {
@@ -645,7 +743,38 @@ export class AttendanceService {
       orderBy: { eventTime: 'asc' },
     });
 
-    if (events.length === 0) return;
+    // If no clock events, check if this is a working day
+    if (events.length === 0) {
+      // Check day of week — if weekend, mark as WEEK_OFF
+      const dayOfWeek = dateStart.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        await tx.attendance.upsert({
+          where: {
+            tenantId_employeeId_date: {
+              tenantId: employee.tenantId,
+              employeeId,
+              date: dateStart,
+            },
+          },
+          create: {
+            tenantId: employee.tenantId,
+            employeeId,
+            date: dateStart,
+            status: 'WEEK_OFF',
+            totalWorkedMinutes: 0,
+            source: 'SYSTEM',
+            calculatedAt: new Date(),
+          },
+          update: {
+            status: 'WEEK_OFF',
+            totalWorkedMinutes: 0,
+            source: 'SYSTEM',
+            calculatedAt: new Date(),
+          },
+        });
+      }
+      return;
+    }
 
     // Extract clock events
     const clockIns = events.filter((e) => e.eventType === 'CLOCK_IN');
@@ -721,10 +850,6 @@ export class AttendanceService {
     } else if (firstClockIn && !lastClockOut) {
       status = 'INCOMPLETE'; // Clocked in but not out
     }
-
-    // Get tenant from employee
-    const employee = await tx.employee.findUnique({ where: { id: employeeId }, select: { tenantId: true } });
-    if (!employee) return;
 
     // Upsert attendance record
     await tx.attendance.upsert({

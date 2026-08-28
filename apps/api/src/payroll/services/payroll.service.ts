@@ -24,6 +24,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient, Prisma } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
+import { EventPublisherService } from '../../common/services/event-publisher.service';
 import {
   CreatePayrollPolicyDto,
   UpdatePayrollPolicyDto,
@@ -66,7 +67,10 @@ const RUN_TRANSITIONS: Record<string, string[]> = {
 export class PayrollService {
   private readonly logger = new Logger(PayrollService.name);
 
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly eventPublisher: EventPublisherService,
+  ) {}
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PAYROLL POLICIES
@@ -401,7 +405,7 @@ export class PayrollService {
         calculationMode: dto.calculationMode as any,
         employeeScope: dto.employeeScope,
         createdBy: ctx.userId,
-        currency: 'USD', // Default currency — resolved per-employee during calculation
+        currency: dto.currency ?? 'USD', // Run-level default — resolved per-employee from SalaryStructure during calculation
       },
     });
   }
@@ -683,8 +687,22 @@ export class PayrollService {
       }
     }
 
-    const grossPay = totalEarnings;
-    const netPay = grossPay - totalDeductions;
+    // Apply rounding using PayrollPolicy rounding configuration
+    const roundingMode = (policy.roundingMode as any) ?? 'HALF_UP';
+    const roundingPrecision = policy.roundingPrecision ?? 0;
+
+    // Round individual item amounts according to precision
+    const roundedItems = items.map((item) => ({
+      ...item,
+      amount: this.applyRounding(item.amount, roundingPrecision, roundingMode),
+    }));
+
+    // Recalculate totals from rounded items
+    const roundedEarnings = roundedItems.filter(i => i.type === 'EARNING').reduce((s, i) => s + i.amount, 0);
+    const roundedDeductions = roundedItems.filter(i => i.type === 'DEDUCTION').reduce((s, i) => s + i.amount, 0);
+    const grossPay = this.applyRounding(roundedEarnings, roundingPrecision, roundingMode);
+    const totalDeductionsRounded = this.applyRounding(roundedDeductions, roundingPrecision, roundingMode);
+    const netPay = this.applyRounding(grossPay - totalDeductionsRounded, roundingPrecision, roundingMode);
 
     // Create payroll line
     const line = await this.prisma.payrollLine.create({
@@ -703,15 +721,15 @@ export class PayrollService {
         unpaidLeaveDays,
         overtimeMinutes: totalOvertimeMinutes,
         grossPay,
-        totalDeductions,
-        totalEarnings,
+        totalDeductions: totalDeductionsRounded,
+        totalEarnings: grossPay,
         netPay,
         calculatedAt: new Date(),
       },
     });
 
-    // Create line items
-    for (const item of items) {
+    // Create line items (using rounded amounts)
+    for (const item of roundedItems) {
       await this.prisma.payrollLineItem.create({
         data: {
           tenantId: ctx.tenantId,
@@ -738,6 +756,39 @@ export class PayrollService {
       current.setDate(current.getDate() + 1);
     }
     return count;
+  }
+
+  /**
+   * Apply rounding to a monetary amount based on PayrollPolicy configuration.
+   * @param amount The amount in integer minor units
+   * @param precision Number of decimal places for rounding (0 = nearest integer)
+   * @param mode Rounding mode: HALF_UP, HALF_DOWN, HALF_EVEN, CEIL, FLOOR
+   */
+  private applyRounding(amount: number, precision: number, mode: string): number {
+    if (precision <= 0) return Math.round(amount);
+    const factor = Math.pow(10, precision);
+    switch (mode) {
+      case 'HALF_UP':
+        return Math.round(amount * factor) / factor;
+      case 'HALF_DOWN': {
+        const val = amount * factor;
+        const floor = Math.floor(val);
+        if (val - floor === 0.5) return floor / factor;
+        return Math.round(val) / factor;
+      }
+      case 'HALF_EVEN': {
+        const val = amount * factor;
+        const floor = Math.floor(val);
+        if (val - floor === 0.5) return (floor % 2 === 0 ? floor : floor + 1) / factor;
+        return Math.round(val) / factor;
+      }
+      case 'CEIL':
+        return Math.ceil(amount * factor) / factor;
+      case 'FLOOR':
+        return Math.floor(amount * factor) / factor;
+      default:
+        return Math.round(amount);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -768,6 +819,38 @@ export class PayrollService {
     if (targetStatus === 'FINALIZED') {
       await this.finalizeRunLines(ctx, id);
       await this.generatePayslips(ctx, id);
+
+      // Publish domain event for future Finance/Automation integration
+      await this.eventPublisher.publish(ctx, {
+        eventType: 'payroll.finalized',
+        aggregateType: 'payrollRun',
+        aggregateId: id,
+        payload: {
+          runId: id,
+          periodId: run.periodId,
+          totalEmployees: updated.totalEmployees,
+          totalGross: updated.totalGross,
+          totalDeductions: updated.totalDeductions,
+          totalNet: updated.totalNet,
+          currency: run.currency,
+          calculatedAt: updated.calculatedAt,
+          finalizedAt: updated.finalizedAt,
+        },
+      });
+    }
+
+    // Publish event on approval
+    if (targetStatus === 'APPROVED') {
+      await this.eventPublisher.publish(ctx, {
+        eventType: 'payroll.approved',
+        aggregateType: 'payrollRun',
+        aggregateId: id,
+        payload: {
+          runId: id,
+          periodId: run.periodId,
+          approvedBy: ctx.userId,
+        },
+      });
     }
 
     return updated;
@@ -967,10 +1050,24 @@ export class PayrollService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   async findAllPayslips(ctx: TenantContext, employeeId?: string, periodId?: string) {
+    // Self-service: if the user is an employee (not HR/payroll), restrict to own payslips
+    const hasPayrollManage = await this.hasPermission(ctx, 'payroll:manage');
+    let effectiveEmployeeId = employeeId;
+
+    if (!hasPayrollManage && !employeeId) {
+      // Non-HR users can only see their own payslips
+      const employee = await this.prisma.employee.findFirst({
+        where: { userId: ctx.userId, tenantId: ctx.tenantId, deletedAt: null },
+      });
+      if (employee) {
+        effectiveEmployeeId = employee.id;
+      }
+    }
+
     return this.prisma.payslip.findMany({
       where: {
         tenantId: ctx.tenantId,
-        ...(employeeId && { employeeId }),
+        ...(effectiveEmployeeId && { employeeId: effectiveEmployeeId }),
         ...(periodId && { periodId }),
       },
       include: {
@@ -985,7 +1082,7 @@ export class PayrollService {
     const payslip = await this.prisma.payslip.findUnique({
       where: { id },
       include: {
-        employee: { select: { id: true, firstName: true, lastName: true, employeeCode: true, email: true } },
+        employee: { select: { id: true, userId: true, firstName: true, lastName: true, employeeCode: true, email: true } },
         line: { include: { items: true, adjustments: true } },
       },
     });
@@ -993,7 +1090,36 @@ export class PayrollService {
     if (payslip.tenantId !== ctx.tenantId) {
       throw new ForbiddenException('Access denied: payslip belongs to another tenant');
     }
+
+    // Employee self-service: employees can only view their own payslips
+    // Check if the requesting user is the employee (self-service) or has payroll:read permission
+    const isOwnPayslip = payslip.employee.userId === ctx.userId;
+    if (!isOwnPayslip) {
+      // For cross-employee access, the RBAC guard already enforces payroll:read
+      // But we add an explicit check here for defense-in-depth
+      const hasPayrollManage = await this.hasPermission(ctx, 'payroll:manage');
+      if (!hasPayrollManage) {
+        throw new ForbiddenException('Access denied: you can only view your own payslips.');
+      }
+    }
+
     return payslip;
+  }
+
+  private async hasPermission(ctx: TenantContext, permissionName: string): Promise<boolean> {
+    const userRoles = await this.prisma.userRole.findMany({
+      where: { userId: ctx.userId, tenantId: ctx.tenantId },
+      include: {
+        role: {
+          include: {
+            rolePermissions: { include: { permission: true } },
+          },
+        },
+      },
+    });
+    return userRoles.some((ur) =>
+      ur.role.rolePermissions.some((rp) => rp.permission.name === permissionName),
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -37,6 +37,17 @@ let employeeB: string;
 
 describe('Organization Tenant Isolation & IDOR', () => {
   beforeAll(async () => {
+    // Clean up any leftover test data from previous failed runs
+    for (const tid of [TENANT_A.id, TENANT_B.id]) {
+      await prisma.employeeHistory.deleteMany({ where: { employee: { tenantId: tid } } });
+      await prisma.employee.deleteMany({ where: { tenantId: tid, employeeCode: { startsWith: 'TEST-' } } });
+      await prisma.team.deleteMany({ where: { tenantId: tid, code: { startsWith: 'TT' } } });
+      await prisma.department.deleteMany({ where: { tenantId: tid, code: { startsWith: 'TD' } } });
+      await prisma.designation.deleteMany({ where: { tenantId: tid, code: { startsWith: 'TD' } } });
+      await prisma.branch.deleteMany({ where: { tenantId: tid, code: { startsWith: 'TB' } } });
+      await prisma.company.deleteMany({ where: { tenantId: tid, code: { startsWith: 'TCH' } } });
+    }
+
     // Create test companies
     const compA = await prisma.company.create({
       data: { tenantId: TENANT_A.id, name: 'Test Company A', code: 'TCHA' },
@@ -115,14 +126,23 @@ describe('Organization Tenant Isolation & IDOR', () => {
   });
 
   afterAll(async () => {
-    // Clean up
-    await prisma.employeeHistory.deleteMany({ where: { employeeId: { in: [employeeA, employeeB] } } });
-    await prisma.employee.deleteMany({ where: { id: { in: [employeeA, employeeB] } } });
-    await prisma.team.deleteMany({ where: { id: { in: [teamA, teamB] } } });
-    await prisma.department.deleteMany({ where: { id: { in: [departmentA, departmentB] } } });
-    await prisma.designation.deleteMany({ where: { id: { in: [designationA, designationB] } } });
-    await prisma.branch.deleteMany({ where: { id: { in: [branchA, branchB] } } });
-    await prisma.company.deleteMany({ where: { id: { in: [companyA, companyB] } } });
+    // Clean up — filter out undefined values to prevent Prisma validation errors
+    const empIds = [employeeA, employeeB].filter((id): id is string => !!id);
+    const teamIds = [teamA, teamB].filter((id): id is string => !!id);
+    const deptIds = [departmentA, departmentB].filter((id): id is string => !!id);
+    const desigIds = [designationA, designationB].filter((id): id is string => !!id);
+    const branchIds = [branchA, branchB].filter((id): id is string => !!id);
+    const compIds = [companyA, companyB].filter((id): id is string => !!id);
+
+    if (empIds.length) {
+      await prisma.employeeHistory.deleteMany({ where: { employeeId: { in: empIds } } });
+      await prisma.employee.deleteMany({ where: { id: { in: empIds } } });
+    }
+    if (teamIds.length) await prisma.team.deleteMany({ where: { id: { in: teamIds } } });
+    if (deptIds.length) await prisma.department.deleteMany({ where: { id: { in: deptIds } } });
+    if (desigIds.length) await prisma.designation.deleteMany({ where: { id: { in: desigIds } } });
+    if (branchIds.length) await prisma.branch.deleteMany({ where: { id: { in: branchIds } } });
+    if (compIds.length) await prisma.company.deleteMany({ where: { id: { in: compIds } } });
     await prisma.$disconnect();
   });
 

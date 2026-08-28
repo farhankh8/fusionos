@@ -23,6 +23,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient, Prisma, LeaveRequestStatus, LeaveBalanceTransactionType } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
+import { EventPublisherService } from '../../common/services/event-publisher.service';
 import {
   CreateLeaveTypeDto,
   UpdateLeaveTypeDto,
@@ -52,7 +53,10 @@ const DEFAULT_WORKING_DAYS_PER_WEEK = 5;
 export class LeaveService {
   private readonly logger = new Logger(LeaveService.name);
 
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly eventPublisher: EventPublisherService,
+  ) {}
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LEAVE TYPES
@@ -411,6 +415,22 @@ export class LeaveService {
         await this.consumeBalance(tx, ctx, request.employeeId, request.leaveTypeId, request.duration, request.id);
       }
 
+      // Publish domain event
+      await this.eventPublisher.publish(ctx, {
+        eventType: 'leave.approved',
+        aggregateType: 'leaveRequest',
+        aggregateId: request.id,
+        payload: {
+          requestId: request.id,
+          employeeId: request.employeeId,
+          leaveTypeId: request.leaveTypeId,
+          duration: request.duration,
+          startDate: request.startDate,
+          endDate: request.endDate,
+          isPaid: leaveType?.isPaid,
+        },
+      });
+
       this.logger.log(`Leave approved: id=${request.id} by=${ctx.userId}`);
       return updated;
     });
@@ -573,10 +593,35 @@ export class LeaveService {
     unit: string,
     timezone: string,
   ): Promise<number> {
-    if (unit === 'HALF_DAY') return 1; // Half day = 1 unit
-    if (unit === 'HOURS') return 1; // Hours-based = 1 unit per request
+    if (unit === 'HALF_DAY') return 0.5; // Half day = 0.5 working days
+    if (unit === 'HOURS') return 1; // Hours-based = 1 day-unit per request (hours tracked separately)
 
-    // Full day calculation: count working days (exclude weekends and holidays)
+    // Fetch the working calendar for this tenant
+    const calendar = await this.prisma.workingCalendar.findFirst({
+      where: { tenantId: ctx.tenantId, isDefault: true },
+    });
+
+    // Parse weekend days from calendar (e.g., "SATURDAY,SUNDAY" → [6, 0])
+    const weekendDayNames = calendar
+      ? calendar.weekendDays.split(',').map((d) => d.trim().toUpperCase())
+      : ['SATURDAY', 'SUNDAY'];
+
+    const DAY_MAP: Record<string, number> = {
+      SUNDAY: 0, MONDAY: 1, TUESDAY: 2, WEDNESDAY: 3,
+      THURSDAY: 4, FRIDAY: 5, SATURDAY: 6,
+    };
+
+    const weekendDayNumbers = new Set(
+      weekendDayNames.map((name) => DAY_MAP[name]).filter((v) => v !== undefined),
+    );
+
+    // Default to [0, 6] (Sun, Sat) if parsing failed
+    if (weekendDayNumbers.size === 0) {
+      weekendDayNumbers.add(0);
+      weekendDayNumbers.add(6);
+    }
+
+    // Fetch holidays in the range
     const holidays = await this.prisma.holiday.findMany({
       where: {
         tenantId: ctx.tenantId,
@@ -594,8 +639,8 @@ export class LeaveService {
       const dayOfWeek = current.getDay(); // 0=Sunday, 6=Saturday
       const dateStr = current.toISOString().split('T')[0];
 
-      // Exclude weekends (Saturday=6, Sunday=0) and holidays
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayDates.has(dateStr)) {
+      // Exclude configured weekend days and holidays
+      if (!weekendDayNumbers.has(dayOfWeek) && !holidayDates.has(dateStr)) {
         workingDays++;
       }
       current.setDate(current.getDate() + 1);
@@ -650,6 +695,114 @@ export class LeaveService {
         `Insufficient leave balance. Available: ${available} days, Requested: ${duration} days.`,
       );
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LEAVE ACCRUAL ENGINE (Idempotent, ledger-based)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Run accrual for all employees on a given leave policy.
+   * Idempotent: running twice for the same tenant/employee/type/year does NOT double-credit.
+   * Uses a unique constraint on the ledger transaction reference to prevent duplicates.
+   */
+  async runAccrual(
+    ctx: TenantContext,
+    leavePolicyId: string,
+    accrualYear?: number,
+  ) {
+    const year = accrualYear ?? new Date().getFullYear();
+    const policy = await this.findOneLeavePolicy(ctx, leavePolicyId);
+
+    if (!policy.accrualFrequency || !policy.accrualAmount) {
+      throw new BadRequestException('Policy does not have accrual configured.');
+    }
+
+    // Get all active employees in the tenant
+    const employees = await this.prisma.employee.findMany({
+      where: { tenantId: ctx.tenantId, deletedAt: null, employmentStatus: 'ACTIVE' },
+      select: { id: true },
+    });
+
+    let accruedCount = 0;
+    let skippedCount = 0;
+
+    for (const employee of employees) {
+      // Check idempotency: has an ACCRUAL already been recorded for this employee/type/year/policy?
+      const idempotencyKey = `ACCRUAL:${ctx.tenantId}:${employee.id}:${policy.leaveTypeId}:${year}:${policy.id}`;
+      const existingTx = await this.prisma.leaveBalanceTransaction.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          employeeId: employee.id,
+          transactionType: 'ACCRUAL',
+          referenceId: policy.id,
+        },
+      });
+
+      // Also check via a more specific pattern in reason
+      const alreadyAccrued = await this.prisma.leaveBalanceTransaction.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          employeeId: employee.id,
+          transactionType: 'ACCRUAL',
+          reason: { contains: `policy:${policy.id}:year:${year}` },
+        },
+      });
+
+      if (alreadyAccrued) {
+        skippedCount++;
+        continue;
+      }
+
+      // Upsert balance
+      const balance = await this.prisma.leaveBalance.upsert({
+        where: {
+          tenantId_employeeId_leaveTypeId_year: {
+            tenantId: ctx.tenantId,
+            employeeId: employee.id,
+            leaveTypeId: policy.leaveTypeId,
+            year,
+          },
+        },
+        create: {
+          tenantId: ctx.tenantId,
+          employeeId: employee.id,
+          leaveTypeId: policy.leaveTypeId,
+          year,
+          opening: 0,
+          accrued: policy.accrualAmount,
+          used: 0,
+          pending: 0,
+          adjustments: 0,
+          carryForward: 0,
+          remaining: policy.accrualAmount,
+        },
+        update: {
+          accrued: { increment: policy.accrualAmount },
+          remaining: { increment: policy.accrualAmount },
+        },
+      });
+
+      // Create ledger transaction (audit trail)
+      await this.prisma.leaveBalanceTransaction.create({
+        data: {
+          tenantId: ctx.tenantId,
+          balanceId: balance.id,
+          employeeId: employee.id,
+          transactionType: 'ACCRUAL',
+          amount: policy.accrualAmount,
+          referenceId: policy.id,
+          referenceType: 'LeavePolicy',
+          reason: `Accrual: ${policy.accrualFrequency} accrual of ${policy.accrualAmount} days — policy:${policy.id}:year:${year}`,
+          actorId: ctx.userId,
+        },
+      });
+
+      accruedCount++;
+    }
+
+    this.logger.log(`Leave accrual completed: policy=${leavePolicyId} year=${year} accrued=${accruedCount} skipped=${skippedCount}`);
+    return { accruedCount, skippedCount, total: employees.length };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

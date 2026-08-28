@@ -55,6 +55,11 @@ export default function LeavePage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
+  const [calendarData, setCalendarData] = useState<{ requests: LeaveRequest[]; holidays: any[] }>({ requests: [], holidays: [] });
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  });
 
   const fetchRequests = useCallback(async () => {
     try {
@@ -87,10 +92,26 @@ export default function LeavePage() {
     }
   }, []);
 
+  const fetchCalendar = useCallback(async () => {
+    try {
+      setLoading(true);
+      const responseData = await apiClient.get<{ requests: LeaveRequest[]; holidays: any[] }>(
+        '/leave/calendar',
+        { year: calendarMonth.year.toString(), month: calendarMonth.month.toString() },
+      );
+      setCalendarData(responseData || { requests: [], holidays: [] });
+    } catch (error) {
+      console.error('Failed to fetch leave calendar:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [calendarMonth]);
+
   useEffect(() => {
     if (activeTab === 'requests') fetchRequests();
     if (activeTab === 'balances') fetchBalances();
-  }, [activeTab, fetchRequests, fetchBalances]);
+    if (activeTab === 'calendar') fetchCalendar();
+  }, [activeTab, fetchRequests, fetchBalances, fetchCalendar]);
 
   const getStatusStyle = (status: string) => STATUS_STYLES[status] || STATUS_STYLES['DRAFT'];
 
@@ -281,12 +302,122 @@ export default function LeavePage() {
           renderBalances()
         ) : (
           <Card>
-            <div className="p-8 text-center">
-              <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Coming Soon</h3>
-              <p className="text-sm text-gray-500">This section will be available soon.</p>
+            <div className="p-6">
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {new Date(calendarMonth.year, calendarMonth.month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                    onClick={() => {
+                      setCalendarMonth(prev => {
+                        const newMonth = prev.month === 1 ? 12 : prev.month - 1;
+                        const newYear = prev.month === 1 ? prev.year - 1 : prev.year;
+                        return { year: newYear, month: newMonth };
+                      });
+                    }}
+                  >
+                    ← Prev
+                  </button>
+                  <button
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                    onClick={() => {
+                      setCalendarMonth(prev => {
+                        const newMonth = prev.month === 12 ? 1 : prev.month + 1;
+                        const newYear = prev.month === 12 ? prev.year + 1 : prev.year;
+                        return { year: newYear, month: newMonth };
+                      });
+                    }}
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                {/* Day headers */}
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="bg-gray-50 px-2 py-2 text-xs font-medium text-gray-500 text-center">
+                    {day}
+                  </div>
+                ))}
+
+                {/* Calendar days */}
+                {(() => {
+                  const year = calendarMonth.year;
+                  const month = calendarMonth.month - 1;
+                  const firstDay = new Date(year, month, 1);
+                  const lastDay = new Date(year, month + 1, 0);
+                  const startPad = firstDay.getDay();
+                  const days: React.ReactNode[] = [];
+
+                  // Pad before
+                  for (let i = 0; i < startPad; i++) {
+                    days.push(<div key={`pad-${i}`} className="bg-white p-2 min-h-[80px]" />);
+                  }
+
+                  // Days
+                  for (let d = 1; d <= lastDay.getDate(); d++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const isHoliday = calendarData.holidays.some((h: any) => {
+                      const hDate = new Date(h.date).toISOString().split('T')[0];
+                      return hDate === dateStr;
+                    });
+                    const holidayName = calendarData.holidays.find((h: any) => {
+                      const hDate = new Date(h.date).toISOString().split('T')[0];
+                      return hDate === dateStr;
+                    })?.name;
+
+                    // Find leave requests that include this day
+                    const dayLeaves = calendarData.requests.filter((r: LeaveRequest) => {
+                      const start = new Date(r.startDate).toISOString().split('T')[0] ?? '';
+                      const end = new Date(r.endDate).toISOString().split('T')[0] ?? '';
+                      return start !== '' && end !== '' && dateStr >= start && dateStr <= end;
+                    });
+
+                    const isToday = new Date().toISOString().split('T')[0] === dateStr;
+
+                    days.push(
+                      <div key={d} className={`bg-white p-2 min-h-[80px] ${isToday ? 'bg-blue-50' : ''}`}>
+                        <div className={`text-sm font-medium ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>{d}</div>
+                        {isHoliday && (
+                          <div className="mt-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-700 rounded truncate">
+                            🎉 {holidayName}
+                          </div>
+                        )}
+                        {dayLeaves.map((leave: LeaveRequest) => (
+                          <div
+                            key={leave.id}
+                            className={`mt-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded truncate ${
+                              leave.status === 'APPROVED'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : leave.status === 'PENDING'
+                                ? 'bg-amber-50 text-amber-700'
+                                : 'bg-gray-50 text-gray-500'
+                            }`}
+                            title={`${leave.employee.firstName} ${leave.employee.lastName} — ${leave.leaveType.name} (${leave.status})`}
+                          >
+                            {leave.employee.firstName} {leave.employee.lastName}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  return days;
+                })()}
+              </div>
+
+              {/* Legend */}
+              <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-50 border border-emerald-200"></div>Approved Leave</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-amber-50 border border-amber-200"></div>Pending Leave</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 border border-red-200"></div>Holiday</div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-blue-50 border border-blue-200"></div>Today</div>
+              </div>
             </div>
           </Card>
         )}

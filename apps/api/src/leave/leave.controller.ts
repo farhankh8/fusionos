@@ -262,4 +262,16 @@ export class LeaveController {
   ) {
     return this.leaveService.getLeaveCalendar(ctx, parseInt(year, 10), parseInt(month, 10));
   }
+
+  // ── Accrual ────────────────────────────────────────────────────────────────
+
+  @Post('accrual/:policyId')
+  @RequirePermission('leave:manage')
+  async runAccrual(
+    @CurrentTenant() ctx: TenantContext,
+    @Param('policyId') policyId: string,
+    @Query('year') year?: string,
+  ) {
+    return this.leaveService.runAccrual(ctx, policyId, year ? parseInt(year, 10) : undefined);
+  }
 }

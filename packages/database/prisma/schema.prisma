@@ -1447,6 +1447,33 @@ model Payslip {
 }
 
 // =============================================================================
+// AUDIT & EVENTS — Append-only business audit log and event outbox
+// =============================================================================
+
+/// AuditLog is an append-only business audit trail.
+/// Records important mutations for investigation and compliance.
+/// Never stores passwords, tokens, or secrets.
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid
+  actorId     String?  @db.Uuid // User who performed the action
+  action      String   @db.VarChar(100) // e.g. EMPLOYEE_CREATED, PAYROLL_APPROVED
+  entityType  String   @db.VarChar(100) // e.g. Employee, PayrollRun
+  entityId    String?  @db.Uuid
+  previousValue Json?  // Snapshot of previous state (where applicable)
+  newValue      Json?  // Snapshot of new state (where applicable)
+  metadata    Json?    // Additional context (requestId, IP, etc.)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([tenantId, action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// =============================================================================
 // SCHEMA NOTES
 // =============================================================================
 //

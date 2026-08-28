@@ -10,6 +10,7 @@ import { PrismaClient } from '@prisma/client';
 import { RBACGuard } from './guards/rbac.guard';
 import { SecurityAuditService } from './services/security-audit.service';
 import { EventPublisherService } from './services/event-publisher.service';
+import { AuditLogService } from './services/audit-log.service';
 import { TenantContextService } from '../auth/services/tenant-context.service';
 
 @Global()
@@ -20,12 +21,14 @@ import { TenantContextService } from '../auth/services/tenant-context.service';
     RBACGuard,
     SecurityAuditService,
     EventPublisherService,
+    AuditLogService,
   ],
   exports: [
     TenantContextService,
     RBACGuard,
     SecurityAuditService,
     EventPublisherService,
+    AuditLogService,
   ],
 })
 export class CommonModule {}

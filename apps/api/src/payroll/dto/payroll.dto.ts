@@ -107,6 +107,7 @@ export class CreatePayrollRunDto {
   @IsString() periodId!: string;
   @IsEnum(['ATTENDANCE', 'MANUAL', 'HYBRID']) calculationMode!: string;
   @IsOptional() @IsString() employeeScope?: string;
+  @IsOptional() @IsString() currency?: string; // Run-level default currency — overridden per-employee from SalaryStructure
 }
 
 // ── Payroll Adjustment DTOs ─────────────────────────────────────────────────
