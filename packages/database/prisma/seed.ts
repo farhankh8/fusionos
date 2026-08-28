@@ -134,8 +134,12 @@ const SYSTEM_PERMISSIONS = [
   { name: 'employee:update', description: 'Update employees', resource: 'employee', action: 'update' },
   { name: 'employee:manage', description: 'Manage employees (status changes, soft-delete)', resource: 'employee', action: 'manage' },
   { name: 'employee:delete', description: 'Delete employees', resource: 'employee', action: 'delete' },
+  // Attendance permissions
   { name: 'attendance:read', description: 'Read attendance', resource: 'attendance', action: 'read' },
-  { name: 'attendance:manage', description: 'Manage attendance', resource: 'attendance', action: 'manage' },
+  { name: 'attendance:create', description: 'Clock in/out, breaks', resource: 'attendance', action: 'create' },
+  { name: 'attendance:correct', description: 'Request attendance correction', resource: 'attendance', action: 'correct' },
+  { name: 'attendance:approve', description: 'Approve/reject corrections', resource: 'attendance', action: 'approve' },
+  { name: 'attendance:manage', description: 'Manage attendance (admin)', resource: 'attendance', action: 'manage' },
   { name: 'leave:read', description: 'Read leave', resource: 'leave', action: 'read' },
   { name: 'leave:approve', description: 'Approve leave', resource: 'leave', action: 'approve' },
   { name: 'payroll:read', description: 'Read payroll', resource: 'payroll', action: 'read' },
@@ -293,7 +297,7 @@ async function main() {
   // HR Manager: employee + attendance + leave + payroll (read/manage)
   await assignPermissions('hr_manager', [
     'employee:read', 'employee:create', 'employee:update',
-    'attendance:read', 'attendance:manage',
+    'attendance:read', 'attendance:create', 'attendance:correct', 'attendance:approve', 'attendance:manage',
     'leave:read', 'leave:approve',
     'payroll:read', 'payroll:manage',
   ]);
@@ -314,9 +318,10 @@ async function main() {
     'employee:read',
   ]);
 
-  // Employee: self-service only
+  // Employee: self-service (read own attendance + clock in/out)
   await assignPermissions('employee', [
     'employee:read',
+    'attendance:read', 'attendance:create',
   ]);
 
   // ── 6. Users ─────────────────────────────────────────────────────────────

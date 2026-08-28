@@ -83,7 +83,7 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Attendance',
         href: '/people/attendance',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Leave',

@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { OrganizationModule } from './organization/organization.module';
 import { EmployeeModule } from './employee/employee.module';
+import { AttendanceModule } from './attendance/attendance.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RBACGuard } from './common/guards/rbac.guard';
 
@@ -31,7 +32,7 @@ import { RBACGuard } from './common/guards/rbac.guard';
     AuthModule,
     OrganizationModule,
     EmployeeModule,
-    // Phase 7: AttendanceModule
+    AttendanceModule,
     // Phase 8: LeaveModule
     // Phase 9: PayrollModule
     // Phase 10: FinanceModule

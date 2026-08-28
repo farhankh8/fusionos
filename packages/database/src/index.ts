@@ -47,4 +47,13 @@ export type {
   AuthEvent,
   // Events
   EventOutbox,
+  // Attendance
+  Attendance,
+  AttendanceEvent,
+  AttendanceCorrection,
+  AttendanceStatus,
+  AttendanceRecordStatus,
+  AttendanceEventSource,
+  AttendanceEventType,
+  CorrectionStatus,
 } from '@prisma/client';

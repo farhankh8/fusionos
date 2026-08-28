@@ -128,6 +128,60 @@ enum DayOfWeek {
 }
 
 // =============================================================================
+// ATTENDANCE ENUMS — Phase 6
+// =============================================================================
+
+/// Source of attendance data (extensible for future biometric, desktop, etc.)
+enum AttendanceEventSource {
+  WEB
+  DESKTOP
+  MOBILE
+  BIOMETRIC
+  ADMIN
+  IMPORT
+  API
+  SYSTEM
+}
+
+/// Raw attendance event type
+enum AttendanceEventType {
+  CLOCK_IN
+  CLOCK_OUT
+  BREAK_START
+  BREAK_END
+  MANUAL_CORRECTION
+  SYSTEM_ADJUSTMENT
+}
+
+/// Calculated daily attendance status
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  LATE
+  EARLY_DEPARTURE
+  OVERTIME
+  ON_LEAVE
+  HOLIDAY
+  WEEK_OFF
+  INCOMPLETE
+}
+
+/// Attendance record lifecycle status
+enum AttendanceRecordStatus {
+  DRAFT
+  CONFIRMED
+  LOCKED
+}
+
+/// Correction approval status
+enum CorrectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// =============================================================================
 // PLATFORM KERNEL
 // =============================================================================
 // These entities establish the core infrastructure that every module depends on.
@@ -484,6 +538,9 @@ model Employee {
   manager           Employee?       @relation("EmployeeHierarchy", fields: [managerId], references: [id], onDelete: SetNull)
   directReports     Employee[]      @relation("EmployeeHierarchy")
   employmentHistory EmployeeHistory[]
+  attendanceEvents  AttendanceEvent[]
+  attendance        Attendance[]
+  attendanceCorrections AttendanceCorrection[]
 
   @@unique([tenantId, employeeCode])
   @@unique([tenantId, email])
@@ -650,6 +707,112 @@ model AuthEvent {
   @@index([createdAt])
   @@index([userId, createdAt])
   @@map("auth_events")
+}
+
+// =============================================================================
+// ATTENDANCE — Phase 6
+// =============================================================================
+// Raw events preserve evidence. Calculated results are derived deterministically.
+// Attendance records become the source of truth for future Leave and Payroll.
+
+/// AttendanceEvent captures raw clock-in, clock-out, break events.
+/// These are immutable evidence — never overwritten, only corrected by new events.
+model AttendanceEvent {
+  id            String                 @id @default(uuid()) @db.Uuid
+  tenantId      String                 @db.Uuid
+  employeeId    String                 @db.Uuid
+  eventType     AttendanceEventType
+  eventTime     DateTime               // When the event occurred (in employee timezone)
+  source        AttendanceEventSource  @default(WEB)
+  sourceRef     String?                @db.VarChar(255) // Device/session/reference ID
+  idempotencyKey String?               @db.VarChar(255) // Prevent duplicate events
+  notes         String?                @db.Text
+  actorId       String?                @db.Uuid         // User who performed the action
+  metadata      Json?                  // Additional context (ip, device, etc.)
+  createdAt     DateTime               @default(now())
+
+  // Relations
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([employeeId, eventTime])
+  @@index([tenantId, eventTime])
+  @@index([idempotencyKey])
+  @@map("attendance_events")
+}
+
+/// Attendance is the calculated daily attendance record.
+/// Derived deterministically from valid AttendanceEvents.
+/// This becomes the source of truth for Payroll (Phase 8).
+model Attendance {
+  id                    String                @id @default(uuid()) @db.Uuid
+  tenantId              String                @db.Uuid
+  employeeId            String                @db.Uuid
+  date                  DateTime              @db.Date // The attendance date (in employee timezone)
+  status                AttendanceStatus      @default(INCOMPLETE)
+  recordStatus          AttendanceRecordStatus @default(DRAFT)
+
+  // Calculated times (integer minutes — never floats)
+  firstClockIn          DateTime?             // First clock-in of the day
+  lastClockOut          DateTime?             // Last clock-out of the day
+  totalWorkedMinutes    Int                   @default(0) // Total worked minutes
+  totalBreakMinutes     Int                   @default(0) // Total break minutes
+  lateMinutes           Int                   @default(0) // Minutes late
+  earlyDepartureMinutes Int                   @default(0) // Minutes early departure
+  overtimeMinutes       Int                   @default(0) // Overtime minutes
+
+  source                AttendanceEventSource @default(WEB)
+  notes                 String?               @db.Text
+  calculatedAt          DateTime?             // When the calculation was performed
+  confirmedAt           DateTime?             // When confirmed by HR/manager
+  lockedAt              DateTime?             // When locked for payroll
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Relations
+  employee    Employee               @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  corrections AttendanceCorrection[]
+
+  @@unique([tenantId, employeeId, date])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([tenantId, date])
+  @@index([employeeId, date])
+  @@index([tenantId, status])
+  @@index([tenantId, recordStatus])
+  @@map("attendance")
+}
+
+/// AttendanceCorrection tracks authorized corrections to attendance.
+/// Original events are preserved; corrections create new events and recalculate.
+model AttendanceCorrection {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  attendanceId  String           @db.Uuid
+  employeeId    String           @db.Uuid
+  requestedBy   String           @db.Uuid // userId who requested
+  status        CorrectionStatus @default(PENDING)
+  correctionType String          @db.VarChar(50) // e.g., "clock_in_adjustment", "clock_out_add"
+  originalValue Json?            // What the value was
+  newValue      Json?            // What it should be
+  reason        String           @db.VarChar(500)
+  reviewedBy    String?          @db.Uuid // userId who approved/rejected
+  reviewedAt    DateTime?
+  reviewNotes   String?          @db.VarChar(500)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  attendance Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  employee   Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([attendanceId])
+  @@index([employeeId])
+  @@index([status])
+  @@map("attendance_corrections")
 }
 
 // =============================================================================
