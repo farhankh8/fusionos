@@ -541,6 +541,10 @@ model Employee {
   attendanceEvents  AttendanceEvent[]
   attendance        Attendance[]
   attendanceCorrections AttendanceCorrection[]
+  leavePolicyAssignments LeavePolicyAssignment[]
+  leaveBalances         LeaveBalance[]
+  leaveBalanceTransactions LeaveBalanceTransaction[]
+  leaveRequests            LeaveRequest[]
 
   @@unique([tenantId, employeeCode])
   @@unique([tenantId, email])
@@ -813,6 +817,256 @@ model AttendanceCorrection {
   @@index([employeeId])
   @@index([status])
   @@map("attendance_corrections")
+}
+
+// =============================================================================
+// LEAVE MANAGEMENT — Phase 7
+// =============================================================================
+// Leave types, policies, balances, requests, and holidays.
+// Integrates with Attendance (Phase 6) and provides contract for Payroll (Phase 8).
+
+enum LeaveTypeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum LeaveRequestStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum LeaveRequestUnit {
+  FULL_DAY
+  HALF_DAY
+  HOURS
+}
+
+enum LeaveBalanceTransactionType {
+  OPENING
+  ACCRUAL
+  CONSUMPTION
+  REVERSAL
+  CARRY_FORWARD
+  ADJUSTMENT
+  EXPIRY
+}
+
+enum AccrualFrequency {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  ONE_TIME
+}
+
+/// LeaveType defines a category of leave (Annual, Sick, Casual, etc.)
+model LeaveType {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @db.Uuid
+  companyId         String?          @db.Uuid
+  name              String           @db.VarChar(100)
+  code              String           @db.VarChar(20)
+  description       String?          @db.VarChar(500)
+  isPaid            Boolean          @default(true)
+  status            LeaveTypeStatus  @default(ACTIVE)
+  requiresApproval  Boolean          @default(true)
+  requiresDocument  Boolean          @default(false)
+  allowHalfDay      Boolean          @default(true)
+  allowHourly       Boolean          @default(false)
+  maxAccrualDays    Int?             // Max days that can accrue per year
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  // Relations
+  policies          LeavePolicy[]
+  balances          LeaveBalance[]
+  requests          LeaveRequest[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("leave_types")
+}
+
+/// LeavePolicy defines entitlement rules for a leave type
+model LeavePolicy {
+  id                   String            @id @default(uuid()) @db.Uuid
+  tenantId             String            @db.Uuid
+  companyId            String?           @db.Uuid
+  name                 String            @db.VarChar(100)
+  leaveTypeId          String            @db.Uuid
+  entitlementDays      Int               @default(0) // Annual entitlement in days
+  accrualFrequency     AccrualFrequency  @default(YEARLY)
+  accrualAmount        Int               @default(0) // Days per accrual period
+  carryForward         Boolean           @default(false)
+  carryForwardLimit    Int?              // Max days that can carry forward
+  minNoticeDays        Int               @default(0) // Minimum notice required
+  maxConsecutiveDays   Int?              // Max consecutive days allowed
+  isActive             Boolean           @default(true)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  // Relations
+  leaveType           LeaveType         @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)
+  assignments         LeavePolicyAssignment[]
+  balances            LeaveBalance[]
+
+  @@unique([tenantId, leaveTypeId, name])
+  @@index([tenantId])
+  @@index([leaveTypeId])
+  @@map("leave_policies")
+}
+
+/// LeavePolicyAssignment assigns a policy to an employee (or group)
+model LeavePolicyAssignment {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @db.Uuid
+  policyId       String   @db.Uuid
+  employeeId     String   @db.Uuid
+  effectiveFrom  DateTime @db.Date
+  effectiveTo    DateTime? @db.Date
+  createdAt      DateTime @default(now())
+
+  // Relations
+  policy         LeavePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  employee       Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, employeeId])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([policyId])
+  @@map("leave_policy_assignments")
+}
+
+/// LeaveBalance tracks an employee's balance for a leave type in a period
+model LeaveBalance {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @db.Uuid
+  employeeId     String   @db.Uuid
+  leaveTypeId    String   @db.Uuid
+  policyId       String?  @db.Uuid
+  year           Int      // Calendar year (e.g., 2026)
+  opening        Int      @default(0) // Opening balance from previous year
+  accrued        Int      @default(0) // Total accrued this period
+  used           Int      @default(0) // Total consumed (approved requests)
+  pending        Int      @default(0) // Reserved by pending requests
+  adjustments    Int      @default(0) // Manual adjustments (+/-)
+  carryForward   Int      @default(0) // Carried forward from previous year
+  remaining      Int      @default(0) // Computed: opening + accrued + carryForward + adjustments - used
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  employee       Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType      LeaveType         @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)
+  policy         LeavePolicy?      @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  transactions   LeaveBalanceTransaction[]
+
+  @@unique([tenantId, employeeId, leaveTypeId, year])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([leaveTypeId])
+  @@index([employeeId, year])
+  @@map("leave_balances")
+}
+
+/// LeaveBalanceTransaction is the immutable ledger for balance changes
+model LeaveBalanceTransaction {
+  id              String                       @id @default(uuid()) @db.Uuid
+  tenantId        String                       @db.Uuid
+  balanceId       String                       @db.Uuid
+  employeeId      String                       @db.Uuid
+  transactionType LeaveBalanceTransactionType
+  amount          Int                          // Positive = credit, negative = debit
+  referenceId     String?                      @db.Uuid // e.g., leaveRequestId
+  referenceType   String?                      @db.VarChar(50) // e.g., "LeaveRequest"
+  reason          String?                      @db.VarChar(500)
+  actorId         String?                      @db.Uuid
+  createdAt       DateTime                     @default(now())
+
+  // Relations
+  employee        Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  balance         LeaveBalance @relation(fields: [balanceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([balanceId])
+  @@index([employeeId])
+  @@index([referenceId])
+  @@map("leave_balance_transactions")
+}
+
+/// LeaveRequest is an employee's request for time off
+model LeaveRequest {
+  id             String              @id @default(uuid()) @db.Uuid
+  tenantId       String              @db.Uuid
+  employeeId     String              @db.Uuid
+  leaveTypeId    String              @db.Uuid
+  startDate      DateTime            @db.Date
+  endDate        DateTime            @db.Date
+  duration       Int                 @default(0) // Calculated by backend (integer days)
+  unit           LeaveRequestUnit    @default(FULL_DAY)
+  reason         String?             @db.VarChar(1000)
+  attachmentUrl  String?             @db.VarChar(500)
+  status         LeaveRequestStatus  @default(DRAFT)
+  submittedAt    DateTime?
+  reviewedAt     DateTime?
+  reviewedBy     String?             @db.Uuid
+  rejectionReason String?            @db.VarChar(500)
+  cancelledAt    DateTime?
+  cancelledBy    String?             @db.Uuid
+  cancellationReason String?         @db.VarChar(500)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  // Relations
+  employee       Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType      LeaveType  @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([leaveTypeId])
+  @@index([tenantId, status])
+  @@index([employeeId, startDate])
+  @@map("leave_requests")
+}
+
+/// Holiday represents a company/tenant-wide non-working day
+model Holiday {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid
+  companyId   String?   @db.Uuid
+  branchId    String?   @db.Uuid
+  name        String    @db.VarChar(100)
+  date        DateTime  @db.Date
+  description String?   @db.VarChar(500)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([tenantId, date, name])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([date])
+  @@map("holidays")
+}
+
+/// WorkingCalendar defines which days are working days for a tenant/company
+model WorkingCalendar {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid
+  companyId   String?   @db.Uuid
+  name        String    @db.VarChar(100)
+  weekendDays String    @default("SATURDAY,SUNDAY") @db.VarChar(100) // Comma-separated DayOfWeek
+  timezone    String    @default("UTC") @db.VarChar(100)
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("working_calendars")
 }
 
 // =============================================================================

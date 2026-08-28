@@ -88,7 +88,7 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Leave',
         href: '/people/leave',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Payroll',

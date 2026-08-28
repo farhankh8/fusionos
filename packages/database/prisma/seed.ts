@@ -141,7 +141,18 @@ const SYSTEM_PERMISSIONS = [
   { name: 'attendance:approve', description: 'Approve/reject corrections', resource: 'attendance', action: 'approve' },
   { name: 'attendance:manage', description: 'Manage attendance (admin)', resource: 'attendance', action: 'manage' },
   { name: 'leave:read', description: 'Read leave', resource: 'leave', action: 'read' },
+  { name: 'leave:create', description: 'Create leave request', resource: 'leave', action: 'create' },
+  { name: 'leave:submit', description: 'Submit leave request', resource: 'leave', action: 'submit' },
   { name: 'leave:approve', description: 'Approve leave', resource: 'leave', action: 'approve' },
+  { name: 'leave:reject', description: 'Reject leave', resource: 'leave', action: 'reject' },
+  { name: 'leave:cancel', description: 'Cancel leave', resource: 'leave', action: 'cancel' },
+  { name: 'leave:manage', description: 'Manage leave (admin)', resource: 'leave', action: 'manage' },
+  { name: 'leave.balance:read', description: 'Read leave balance', resource: 'leave.balance', action: 'read' },
+  { name: 'leave.balance:adjust', description: 'Adjust leave balance', resource: 'leave.balance', action: 'adjust' },
+  { name: 'leave.policy:read', description: 'Read leave policy', resource: 'leave.policy', action: 'read' },
+  { name: 'leave.policy:manage', description: 'Manage leave policy', resource: 'leave.policy', action: 'manage' },
+  { name: 'leave.type:read', description: 'Read leave type', resource: 'leave.type', action: 'read' },
+  { name: 'leave.type:manage', description: 'Manage leave type', resource: 'leave.type', action: 'manage' },
   { name: 'payroll:read', description: 'Read payroll', resource: 'payroll', action: 'read' },
   { name: 'payroll:manage', description: 'Manage payroll', resource: 'payroll', action: 'manage' },
   { name: 'payroll:approve', description: 'Approve payroll', resource: 'payroll', action: 'approve' },
@@ -298,7 +309,10 @@ async function main() {
   await assignPermissions('hr_manager', [
     'employee:read', 'employee:create', 'employee:update',
     'attendance:read', 'attendance:create', 'attendance:correct', 'attendance:approve', 'attendance:manage',
-    'leave:read', 'leave:approve',
+    'leave:read', 'leave:create', 'leave:submit', 'leave:approve', 'leave:reject', 'leave:cancel', 'leave:manage',
+    'leave.balance:read', 'leave.balance:adjust',
+    'leave.policy:read', 'leave.policy:manage',
+    'leave.type:read', 'leave.type:manage',
     'payroll:read', 'payroll:manage',
   ]);
 
@@ -318,10 +332,12 @@ async function main() {
     'employee:read',
   ]);
 
-  // Employee: self-service (read own attendance + clock in/out)
+  // Employee: self-service (read own attendance + clock in/out + leave self-service)
   await assignPermissions('employee', [
     'employee:read',
     'attendance:read', 'attendance:create',
+    'leave:read', 'leave:create', 'leave:submit', 'leave:cancel',
+    'leave.balance:read',
   ]);
 
   // ── 6. Users ─────────────────────────────────────────────────────────────

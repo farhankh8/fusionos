@@ -56,4 +56,18 @@ export type {
   AttendanceEventSource,
   AttendanceEventType,
   CorrectionStatus,
+  // Leave
+  LeaveType,
+  LeaveTypeStatus,
+  LeavePolicy,
+  LeavePolicyAssignment,
+  AccrualFrequency,
+  LeaveBalance,
+  LeaveBalanceTransaction,
+  LeaveBalanceTransactionType,
+  LeaveRequest,
+  LeaveRequestStatus,
+  LeaveRequestUnit,
+  Holiday,
+  WorkingCalendar,
 } from '@prisma/client';

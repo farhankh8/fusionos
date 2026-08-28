@@ -5,7 +5,7 @@
 | **Document** | 16 — Current State Assessment |
 | **Status** | `ASSESSMENT` |
 | **Last Updated** | 2026-08-28 |
-| **Current Phase** | Phase 5 — Organization & Employee Management (COMPLETE) |
+| **Current Phase** | Phase 7 — Leave Management (COMPLETE) |
 
 ---
 
