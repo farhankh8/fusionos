@@ -94,12 +94,22 @@ export interface Employee extends SoftDeletableEntity {
 }
 
 export type EmploymentStatus =
+  | 'draft'
   | 'active'
+  | 'probation'
   | 'on_leave'
+  | 'suspended'
   | 'terminated'
   | 'resigned'
   | 'retired'
-  | 'probation';
+  | 'inactive';
+
+export type EmploymentType =
+  | 'full_time'
+  | 'part_time'
+  | 'contract'
+  | 'intern'
+  | 'temporary';
 
 export interface EmergencyContact {
   name: string;

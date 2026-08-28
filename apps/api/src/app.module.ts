@@ -11,6 +11,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
+import { OrganizationModule } from './organization/organization.module';
+import { EmployeeModule } from './employee/employee.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RBACGuard } from './common/guards/rbac.guard';
 
@@ -27,8 +29,8 @@ import { RBACGuard } from './common/guards/rbac.guard';
 
     // ── Domain Modules ────────────────────────────────────────────────────
     AuthModule,
-    // Phase 5: OrganizationModule
-    // Phase 6: EmployeesModule
+    OrganizationModule,
+    EmployeeModule,
     // Phase 7: AttendanceModule
     // Phase 8: LeaveModule
     // Phase 9: PayrollModule

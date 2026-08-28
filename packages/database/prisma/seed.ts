@@ -112,9 +112,27 @@ const SYSTEM_PERMISSIONS = [
   { name: 'admin', description: 'Admin access', resource: 'global', action: 'admin' },
 
   // Resource-specific permissions (predefined for Phase 3+)
+  // Organization permissions
+  { name: 'company:read', description: 'Read companies', resource: 'company', action: 'read' },
+  { name: 'company:create', description: 'Create companies', resource: 'company', action: 'create' },
+  { name: 'company:update', description: 'Update companies', resource: 'company', action: 'update' },
+  { name: 'branch:read', description: 'Read branches', resource: 'branch', action: 'read' },
+  { name: 'branch:create', description: 'Create branches', resource: 'branch', action: 'create' },
+  { name: 'branch:update', description: 'Update branches', resource: 'branch', action: 'update' },
+  { name: 'department:read', description: 'Read departments', resource: 'department', action: 'read' },
+  { name: 'department:create', description: 'Create departments', resource: 'department', action: 'create' },
+  { name: 'department:update', description: 'Update departments', resource: 'department', action: 'update' },
+  { name: 'team:read', description: 'Read teams', resource: 'team', action: 'read' },
+  { name: 'team:create', description: 'Create teams', resource: 'team', action: 'create' },
+  { name: 'team:update', description: 'Update teams', resource: 'team', action: 'update' },
+  { name: 'designation:read', description: 'Read designations', resource: 'designation', action: 'read' },
+  { name: 'designation:create', description: 'Create designations', resource: 'designation', action: 'create' },
+  { name: 'designation:update', description: 'Update designations', resource: 'designation', action: 'update' },
+  // Employee permissions
   { name: 'employee:read', description: 'Read employees', resource: 'employee', action: 'read' },
   { name: 'employee:create', description: 'Create employees', resource: 'employee', action: 'create' },
   { name: 'employee:update', description: 'Update employees', resource: 'employee', action: 'update' },
+  { name: 'employee:manage', description: 'Manage employees (status changes, soft-delete)', resource: 'employee', action: 'manage' },
   { name: 'employee:delete', description: 'Delete employees', resource: 'employee', action: 'delete' },
   { name: 'attendance:read', description: 'Read attendance', resource: 'attendance', action: 'read' },
   { name: 'attendance:manage', description: 'Manage attendance', resource: 'attendance', action: 'manage' },

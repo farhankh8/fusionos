@@ -83,12 +83,15 @@ enum UserStatus {
 }
 
 enum EmploymentStatus {
+  DRAFT
   ACTIVE
   PROBATION
   ON_LEAVE
+  SUSPENDED
   TERMINATED
   RESIGNED
   RETIRED
+  INACTIVE
 }
 
 enum Gender {
@@ -104,6 +107,14 @@ enum MaritalStatus {
   DIVORCED
   WIDOWED
   OTHER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+  TEMPORARY
 }
 
 enum DayOfWeek {
@@ -164,6 +175,9 @@ model Company {
   phone       String?      @db.VarChar(50)
   website     String?      @db.VarChar(500)
   logo        String?      @db.VarChar(500)
+  address     Json?
+  timezone    String?      @db.VarChar(100)
+  currency    String?      @db.VarChar(3)  // ISO 4217
   settings    Json         @default("{}")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -192,6 +206,7 @@ model Branch {
   address     Json?
   phone       String?      @db.VarChar(50)
   email       String?      @db.VarChar(255)
+  timezone    String?      @db.VarChar(100)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
@@ -415,7 +430,9 @@ model Employee {
   userId            String?         @db.Uuid  // Linked auth user (nullable for future onboarding)
   employeeCode      String          @db.VarChar(50)  // Tenant-scoped business identifier
   firstName         String          @db.VarChar(255)
+  middleName        String?         @db.VarChar(255)
   lastName          String          @db.VarChar(255)
+  preferredName     String?         @db.VarChar(255)
   email             String          @db.VarChar(255)
   phone             String?         @db.VarChar(50)
   dateOfBirth       DateTime?       @db.Date
@@ -431,6 +448,8 @@ model Employee {
   designationId     String?         @db.Uuid
   managerId         String?         @db.Uuid  // Self-referential: reports-to
   employmentStatus  EmploymentStatus @default(ACTIVE)
+  employmentType    EmploymentType? @default(FULL_TIME)
+  workLocation      String?         @db.VarChar(255)
   joiningDate       DateTime        @db.Date
   probationEndDate  DateTime?       @db.Date
   confirmationDate  DateTime?       @db.Date
@@ -444,6 +463,10 @@ model Employee {
   emergencyContactName     String? @db.VarChar(255)
   emergencyContactPhone    String? @db.VarChar(50)
   emergencyContactRelation String? @db.VarChar(100)
+
+  // Additional
+  timezone          String?         @db.VarChar(100)
+  notes             String?         @db.Text
 
   // Metadata
   createdAt         DateTime        @default(now())
@@ -492,6 +515,9 @@ model EmployeeHistory {
   designationId String?         @db.Uuid
   managerId     String?         @db.Uuid
   employmentStatus EmploymentStatus?
+  previousValue    Json?  // Snapshot of changed fields before the event
+  newValue         Json?  // Snapshot of changed fields after the event
+  actorId          String? @db.Uuid  // User who made the change
   reason        String?         @db.VarChar(500)
   notes         String?         @db.Text
   createdAt     DateTime        @default(now())

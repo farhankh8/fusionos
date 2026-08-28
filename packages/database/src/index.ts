@@ -36,6 +36,7 @@ export type {
   Employee,
   EmployeeHistory,
   EmploymentStatus,
+  EmploymentType,
   Designation,
   Gender,
   MaritalStatus,

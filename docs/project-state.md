@@ -4,8 +4,8 @@
 |---|---|
 | **Document** | 16 — Current State Assessment |
 | **Status** | `ASSESSMENT` |
-| **Last Updated** | 2026-08-27 |
-| **Current Phase** | Phase 3 — Authentication Foundation (COMPLETE) |
+| **Last Updated** | 2026-08-28 |
+| **Current Phase** | Phase 5 — Organization & Employee Management (COMPLETE) |
 
 ---
 
@@ -25,7 +25,7 @@
 | 10 | Environment configuration template (.env.example) | Phase 1 | ✅ |
 | 11 | Desktop app placeholder | Phase 1 | ✅ |
 | 12 | Quality gates (typecheck, build) | Phase 1 | ✅ |
-| 13 | Complete Prisma schema (20 models, relationships, indexes, constraints) | Phase 2 | ✅ |
+| 13 | Complete Prisma schema (20+ models, relationships, indexes, constraints) | Phase 2 | ✅ |
 | 14 | Multi-tenancy foundation (tenantId on all tenant-sensitive tables) | Phase 2 | ✅ |
 | 15 | Organization foundation (Company, Branch, Department, Team) | Phase 2 | ✅ |
 | 16 | Identity foundation (User, Role, Permission, UserRole, RolePermission) | Phase 2 | ✅ |
@@ -46,6 +46,36 @@
 | 31 | Frontend auth (login page, register page, auth context, token management) | Phase 3 | ✅ |
 | 32 | 15 auth API endpoints | Phase 3 | ✅ |
 | 33 | Authentication architecture documentation | Phase 3 | ✅ |
+| 34 | Tenant isolation guards (TenantContextService, RBACGuard) | Phase 4 | ✅ |
+| 35 | @CurrentTenant decorator | Phase 4 | ✅ |
+| 36 | @RequirePermission, @RequireRole decorators | Phase 4 | ✅ |
+| 37 | Security audit service | Phase 4 | ✅ |
+| 38 | Cross-tenant isolation tests | Phase 4 | ✅ |
+| 39 | RBAC authorization tests | Phase 4 | ✅ |
+| 40 | Security documentation | Phase 4 | ✅ |
+| 41 | Schema enhancement: EmploymentType enum, address/timezone/currency fields | Phase 5 | ✅ |
+| 42 | Database migration: Phase 5 schema changes | Phase 5 | ✅ |
+| 43 | Organization API: Company, Branch, Department, Team, Designation CRUD | Phase 5 | ✅ |
+| 44 | Employee API: Full CRUD with search, pagination, filtering, sorting | Phase 5 | ✅ |
+| 45 | Employee lifecycle management with status transitions | Phase 5 | ✅ |
+| 46 | Employee history tracking (append-only audit trail) | Phase 5 | ✅ |
+| 47 | Manager relationship validation (same tenant, no self-management) | Phase 5 | ✅ |
+| 48 | Employee code uniqueness within tenant | Phase 5 | ✅ |
+| 49 | Employee email uniqueness within tenant | Phase 5 | ✅ |
+| 50 | User ↔ Employee relationship management | Phase 5 | ✅ |
+| 51 | 46 RBAC permissions (company, branch, department, team, designation, employee) | Phase 5 | ✅ |
+| 52 | Frontend: Company profile page | Phase 5 | ✅ |
+| 53 | Frontend: Branches list page with search/pagination | Phase 5 | ✅ |
+| 54 | Frontend: Departments list page with search/pagination | Phase 5 | ✅ |
+| 55 | Frontend: Teams list page with search/pagination | Phase 5 | ✅ |
+| 56 | Frontend: Designations list page with search/pagination | Phase 5 | ✅ |
+| 57 | Frontend: Employee list page with search/filter/pagination | Phase 5 | ✅ |
+| 58 | Frontend: Employee profile with tabs (Overview, Personal, Employment, History) | Phase 5 | ✅ |
+| 59 | Organization tenant isolation tests (24 tests) | Phase 5 | ✅ |
+| 60 | Employee lifecycle & business rules tests (27 tests) | Phase 5 | ✅ |
+| 61 | TypeScript typecheck (API + Web) | Phase 5 | ✅ |
+| 62 | NestJS build | Phase 5 | ✅ |
+| 63 | Organization & Employee architecture documentation | Phase 5 | ✅ |
 
 ## In Progress
 
@@ -57,46 +87,37 @@
 
 | # | Item | Phase | Priority |
 |---|---|---|---|
-| 1 | Multi-tenancy (isolation guards, RLS) | Phase 4 | Critical |
-| 2 | Organization module (API, UI) | Phase 5 | High |
-| 3 | Employee module (API, UI) | Phase 6 | High |
-| 4 | Attendance | Phase 7 | High |
-| 5 | Leave | Phase 8 | High |
-| 6 | Payroll | Phase 9 | High |
-| 7 | Finance | Phase 10 | High |
-| 8 | CRM | Phase 11 | Medium |
-| 9 | Projects | Phase 12 | Medium |
-| 10 | Assets | Phase 13 | Medium |
-| 11 | Notifications | Phase 14 | Medium |
-| 12 | AI Foundation | Phase 15 | Medium |
-| 13 | AI Command Center | Phase 16 | Medium |
-| 14 | Event Infrastructure | Phase 17 | Medium |
-| 15 | Automation Engine | Phase 18 | Low |
-| 16 | AI Agents | Phase 19 | Low |
-| 17 | Automation Studio | Phase 20 | Low |
-| 18 | Analytics | Phase 21 | Low |
-| 19 | Desktop Application | Phase 22 | Low |
-| 20 | Security Hardening | Phase 23 | Medium |
-| 21 | Testing | Phase 24 | Medium |
-| 22 | CI/CD | Phase 25 | Medium |
-| 23 | Cloud Deployment | Phase 26 | Low |
-| 24 | Production Hardening | Phase 27 | Low |
+| 1 | Attendance Management | Phase 6 | High |
+| 2 | Leave Management | Phase 7 | High |
+| 3 | Payroll | Phase 8 | High |
+| 4 | Finance | Phase 9 | High |
+| 5 | CRM | Phase 10 | Medium |
+| 6 | Projects | Phase 11 | Medium |
+| 7 | Assets | Phase 12 | Medium |
+| 8 | Notifications | Phase 13 | Medium |
+| 9 | AI Foundation | Phase 14 | Medium |
+| 10 | AI Command Center | Phase 15 | Medium |
+| 11 | Event Infrastructure | Phase 16 | Medium |
+| 12 | Automation Engine | Phase 17 | Low |
+| 13 | AI Agents | Phase 18 | Low |
+| 14 | Automation Studio | Phase 19 | Low |
+| 15 | Analytics | Phase 20 | Low |
+| 16 | Desktop Application | Phase 21 | Low |
+| 17 | Security Hardening | Phase 22 | Medium |
+| 18 | Testing Expansion | Phase 23 | Medium |
+| 19 | CI/CD | Phase 24 | Medium |
+| 20 | Cloud Deployment | Phase 25 | Low |
+| 21 | Production Hardening | Phase 26 | Low |
 
 ## Blocked
 
 | # | Item | Reason |
 |---|---|---|
-| 1 | Database migrations (runtime) | Docker/PostgreSQL not installed locally |
-| 2 | Redis integration | Docker/Redis not installed locally |
-| 3 | Seed execution against real DB | Requires running PostgreSQL |
-| 4 | End-to-end testing | Requires running database and Redis |
-| 5 | Real email delivery | No email provider configured (dev mode logs to console) |
+| 1 | Real email delivery | No email provider configured (dev mode logs to console) |
 
 ## Unknown
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | PostgreSQL availability | Docker not in PATH; needs Docker Desktop or native install |
-| 2 | Redis availability | Same as above |
-| 3 | AI provider selection | Phase 15 decision |
-| 4 | Target jurisdiction for payroll/tax | User must specify before Phase 9 |
+| 1 | AI provider selection | Phase 14 decision |
+| 2 | Target jurisdiction for payroll/tax | User must specify before Phase 8 |

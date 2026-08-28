@@ -46,22 +46,27 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Company',
         href: '/organization/company',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Branches',
         href: '/organization/branches',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Departments',
         href: '/organization/departments',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Teams',
         href: '/organization/teams',
-        isImplemented: false,
+        isImplemented: true,
+      },
+      {
+        label: 'Designations',
+        href: '/organization/designations',
+        isImplemented: true,
       },
     ],
   },
@@ -73,7 +78,7 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Employees',
         href: '/people/employees',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Attendance',
