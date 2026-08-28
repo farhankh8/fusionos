@@ -156,6 +156,16 @@ const SYSTEM_PERMISSIONS = [
   { name: 'payroll:read', description: 'Read payroll', resource: 'payroll', action: 'read' },
   { name: 'payroll:manage', description: 'Manage payroll', resource: 'payroll', action: 'manage' },
   { name: 'payroll:approve', description: 'Approve payroll', resource: 'payroll', action: 'approve' },
+  { name: 'payroll:calculate', description: 'Calculate payroll', resource: 'payroll', action: 'calculate' },
+  { name: 'payroll:finalize', description: 'Finalize payroll', resource: 'payroll', action: 'finalize' },
+  { name: 'payroll.salary:read', description: 'Read salary structures', resource: 'payroll.salary', action: 'read' },
+  { name: 'payroll.salary:manage', description: 'Manage salary structures', resource: 'payroll.salary', action: 'manage' },
+  { name: 'payroll.component:read', description: 'Read payroll components', resource: 'payroll.component', action: 'read' },
+  { name: 'payroll.component:manage', description: 'Manage payroll components', resource: 'payroll.component', action: 'manage' },
+  { name: 'payroll.adjustment:read', description: 'Read payroll adjustments', resource: 'payroll.adjustment', action: 'read' },
+  { name: 'payroll.adjustment:create', description: 'Create payroll adjustments', resource: 'payroll.adjustment', action: 'create' },
+  { name: 'payroll.adjustment:approve', description: 'Approve payroll adjustments', resource: 'payroll.adjustment', action: 'approve' },
+  { name: 'payroll.payslip:read', description: 'Read payslips', resource: 'payroll.payslip', action: 'read' },
   { name: 'finance:read', description: 'Read finance', resource: 'finance', action: 'read' },
   { name: 'finance:manage', description: 'Manage finance', resource: 'finance', action: 'manage' },
   { name: 'crm:read', description: 'Read CRM', resource: 'crm', action: 'read' },
@@ -313,13 +323,21 @@ async function main() {
     'leave.balance:read', 'leave.balance:adjust',
     'leave.policy:read', 'leave.policy:manage',
     'leave.type:read', 'leave.type:manage',
-    'payroll:read', 'payroll:manage',
+    'payroll:read', 'payroll:manage', 'payroll:calculate', 'payroll:finalize',
+    'payroll.salary:read', 'payroll.salary:manage',
+    'payroll.component:read', 'payroll.component:manage',
+    'payroll.adjustment:read', 'payroll.adjustment:create', 'payroll.adjustment:approve',
+    'payroll.payslip:read',
   ]);
 
   // Finance Manager: finance + payroll
   await assignPermissions('finance_manager', [
     'finance:read', 'finance:manage',
-    'payroll:read', 'payroll:approve',
+    'payroll:read', 'payroll:approve', 'payroll:finalize',
+    'payroll.salary:read',
+    'payroll.component:read',
+    'payroll.adjustment:read', 'payroll.adjustment:approve',
+    'payroll.payslip:read',
   ]);
 
   // CRM Manager: CRM

@@ -15,17 +15,16 @@ describe('Leave Management', () => {
   let employeeIdA: string;
 
   beforeAll(async () => {
-    // Get or create employee
-    let emp = await prisma.employee.findFirst({ where: { tenantId: TENANT_A_ID, deletedAt: null } });
-    if (!emp) {
-      emp = await prisma.employee.create({
-        data: {
-          tenantId: TENANT_A_ID, companyId: COMPANY_A_ID,
-          employeeCode: 'TEST-LV-001', firstName: 'Leave', lastName: 'Test',
-          email: 'leave-test@fusionos.dev', joiningDate: new Date('2026-01-01'),
-        },
-      });
-    }
+    // Get or create employee (use upsert with unique code to avoid race conditions)
+    const emp = await prisma.employee.upsert({
+      where: { tenantId_employeeCode: { tenantId: TENANT_A_ID, employeeCode: 'TEST-LV-001' } },
+      update: {},
+      create: {
+        tenantId: TENANT_A_ID, companyId: COMPANY_A_ID,
+        employeeCode: 'TEST-LV-001', firstName: 'Leave', lastName: 'Test',
+        email: 'leave-test@fusionos.dev', joiningDate: new Date('2026-01-01'),
+      },
+    });
     employeeIdA = emp.id;
 
     // Create leave types

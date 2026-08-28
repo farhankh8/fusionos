@@ -200,10 +200,14 @@ model Tenant {
   updatedAt DateTime     @updatedAt
 
   // Relations
-  companies   Company[]
-  userRoles   UserRole[]
-  roles       Role[]
-  employees   Employee[]
+  companies        Company[]
+  userRoles        UserRole[]
+  roles            Role[]
+  employees        Employee[]
+  payrollPolicies  PayrollPolicy[]
+  payrollComponents PayrollComponent[]
+  payrollPeriods   PayrollPeriod[]
+  payrollRuns      PayrollRun[]
 
   @@map("tenants")
 }
@@ -545,6 +549,10 @@ model Employee {
   leaveBalances         LeaveBalance[]
   leaveBalanceTransactions LeaveBalanceTransaction[]
   leaveRequests            LeaveRequest[]
+  salaryStructures         SalaryStructure[]
+  payrollLines             PayrollLine[]
+  payrollAdjustments       PayrollAdjustment[]
+  payslips                 Payslip[]
 
   @@unique([tenantId, employeeCode])
   @@unique([tenantId, email])
@@ -1067,6 +1075,375 @@ model WorkingCalendar {
   @@unique([tenantId, name])
   @@index([tenantId])
   @@map("working_calendars")
+}
+
+// =============================================================================
+// PAYROLL MANAGEMENT — Phase 8
+// =============================================================================
+// Payroll engine supporting attendance-based, manual, and hybrid calculation.
+// All monetary amounts use INTEGER minor units (consistent with Phase 1 strategy).
+// Calculation snapshots are preserved for auditability.
+// Finalized payroll is immutable.
+
+enum PayrollPeriodStatus {
+  DRAFT
+  OPEN
+  PROCESSING
+  CALCULATED
+  UNDER_REVIEW
+  APPROVED
+  FINALIZED
+  CLOSED
+}
+
+enum PayrollRunStatus {
+  PENDING
+  CALCULATING
+  CALCULATED
+  REVIEWING
+  REVIEWED
+  APPROVED
+  FINALIZED
+  FAILED
+}
+
+enum PayrollCalculationMode {
+  ATTENDANCE
+  MANUAL
+  HYBRID
+}
+
+enum PayrollComponentType {
+  EARNING
+  DEDUCTION
+  EMPLOYER_CONTRIBUTION
+  REIMBURSEMENT
+}
+
+enum PayFrequency {
+  MONTHLY
+  BIWEEKLY
+  WEEKLY
+  DAILY
+}
+
+enum PayrollLineStatus {
+  DRAFT
+  CALCULATED
+  REVIEWED
+  ADJUSTED
+  FINALIZED
+  CORRECTED
+}
+
+enum PayrollAdjustmentStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayslipStatus {
+  GENERATED
+  FINALIZED
+  CORRECTED
+}
+
+/// PayrollPolicy defines configurable rules for payroll calculation within a tenant.
+model PayrollPolicy {
+  id                  String         @id @default(uuid()) @db.Uuid
+  tenantId            String         @db.Uuid
+  name                String         @db.VarChar(100)
+  companyId           String?        @db.Uuid
+  workingDaysPerWeek  Int            @default(5)
+  workingDaysPerMonth Int            @default(22) // Standard divisor for monthly salary
+  payFrequency        PayFrequency   @default(MONTHLY)
+  defaultCalcMode     PayrollCalculationMode @default(ATTENDANCE)
+  overtimeEnabled     Boolean        @default(true)
+  overtimeMultiplier  Int            @default(150) // Percentage: 150 = 1.5x
+  overtimeCapMinutes  Int?           // Max overtime per day in minutes
+  absenceDeduct       Boolean        @default(true)
+  absenceDivisor      Int            @default(22) // Days to divide monthly salary for per-day rate
+  roundingPrecision   Int            @default(2)  // Decimal places for final amounts
+  roundingMode        String         @default("HALF_UP") @db.VarChar(20) // HALF_UP, HALF_DOWN, CEIL, FLOOR
+  isActive            Boolean        @default(true)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@map("payroll_policies")
+}
+
+/// PayrollComponent defines configurable earning/deduction types.
+model PayrollComponent {
+  id            String               @id @default(uuid()) @db.Uuid
+  tenantId      String               @db.Uuid
+  companyId     String?              @db.Uuid
+  name          String               @db.VarChar(100)
+  code          String               @db.VarChar(30)
+  type          PayrollComponentType
+  isStatutory   Boolean              @default(false)
+  isFixed       Boolean              @default(true) // true = fixed amount, false = calculated
+  defaultValue  Int?                 // Default amount in minor units
+  calculationBasis String?           @db.VarChar(50) // e.g., "basic_salary", "gross_pay"
+  isActive      Boolean              @default(true)
+  sortOrder     Int                  @default(0)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  salaryStructureComponents SalaryStructureComponent[]
+  lineItems                 PayrollLineItem[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([tenantId, type])
+  @@index([tenantId, isActive])
+  @@map("payroll_components")
+}
+
+/// SalaryStructure defines an employee's compensation with effective dates.
+model SalaryStructure {
+  id             String       @id @default(uuid()) @db.Uuid
+  tenantId       String       @db.Uuid
+  employeeId     String       @db.Uuid
+  companyId      String?      @db.Uuid
+  currency       String       @default("USD") @db.VarChar(3) // ISO 4217
+  payFrequency   PayFrequency @default(MONTHLY)
+  basicSalary    Int          // Integer minor units — never floats
+  effectiveFrom  DateTime     @db.Date
+  effectiveTo    DateTime?    @db.Date
+  isActive       Boolean      @default(true)
+  status         String       @default("ACTIVE") @db.VarChar(20) // ACTIVE, INACTIVE, SUPERSEDED
+  notes          String?      @db.Text
+  createdBy      String?      @db.Uuid
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  employee  Employee                @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  components SalaryStructureComponent[]
+  lines     PayrollLine[]
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([employeeId, effectiveFrom])
+  @@index([tenantId, isActive])
+  @@index([employeeId, isActive])
+  @@map("salary_structures")
+}
+
+/// SalaryStructureComponent stores individual salary components for a structure.
+model SalaryStructureComponent {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @db.Uuid
+  salaryStructureId String  @db.Uuid
+  componentId      String   @db.Uuid
+  amount           Int      // Integer minor units
+  createdAt        DateTime @default(now())
+
+  salaryStructure SalaryStructure  @relation(fields: [salaryStructureId], references: [id], onDelete: Cascade)
+  component       PayrollComponent @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@unique([salaryStructureId, componentId])
+  @@index([tenantId])
+  @@index([salaryStructureId])
+  @@index([componentId])
+  @@map("salary_structure_components")
+}
+
+/// PayrollPeriod represents a payroll time period (e.g., January 2026).
+model PayrollPeriod {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @db.Uuid
+  companyId     String?            @db.Uuid
+  name          String             @db.VarChar(100)
+  startDate     DateTime           @db.Date
+  endDate       DateTime           @db.Date
+  paymentDate   DateTime           @db.Date
+  status        PayrollPeriodStatus @default(DRAFT)
+  createdBy     String?            @db.Uuid
+  approvedBy    String?            @db.Uuid
+calculatedAt  DateTime?
+  finalizedAt   DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runs   PayrollRun[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, startDate])
+  @@map("payroll_periods")
+}
+
+/// PayrollRun represents a single payroll execution for a period.
+model PayrollRun {
+  id               String              @id @default(uuid()) @db.Uuid
+  tenantId         String              @db.Uuid
+  periodId         String              @db.Uuid
+  companyId        String?             @db.Uuid
+  calculationMode  PayrollCalculationMode @default(ATTENDANCE)
+  status           PayrollRunStatus    @default(PENDING)
+  employeeScope    String?             @db.VarChar(50) // "all" or specific filter
+  calculatedAt     DateTime?
+  reviewedAt       DateTime?
+  approvedBy       String?             @db.Uuid
+  approvedAt       DateTime?
+  finalizedAt      DateTime?
+  createdBy        String?             @db.Uuid
+  totalEmployees   Int                 @default(0)
+  totalGross       Int                 @default(0) // Integer minor units
+  totalDeductions  Int                 @default(0)
+  totalNet         Int                 @default(0)
+  currency         String              @default("USD") @db.VarChar(3)
+  errorCount       Int                 @default(0)
+  warningCount     Int                 @default(0)
+  errors           Json?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  period PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lines  PayrollLine[]
+
+  @@unique([tenantId, periodId, calculationMode])
+  @@index([tenantId])
+  @@index([periodId])
+  @@index([tenantId, status])
+  @@map("payroll_runs")
+}
+
+/// PayrollLine represents one employee's calculated payroll for a run.
+/// This is the immutable calculation snapshot.
+model PayrollLine {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @db.Uuid
+  runId             String           @db.Uuid
+  employeeId        String           @db.Uuid
+  salaryStructureId String?          @db.Uuid
+  currency          String           @default("USD") @db.VarChar(3)
+  calculationMode   PayrollCalculationMode @default(ATTENDANCE)
+  status            PayrollLineStatus @default(DRAFT)
+  workingDays       Int              @default(0) // Days in period
+  workedDays        Int              @default(0) // Days actually worked
+  absentDays        Int              @default(0)
+  paidLeaveDays     Int              @default(0)
+  unpaidLeaveDays   Int              @default(0)
+  overtimeMinutes   Int              @default(0)
+  grossPay          Int              @default(0) // Integer minor units
+  totalDeductions   Int              @default(0)
+  totalEarnings     Int              @default(0)
+  netPay            Int              @default(0)
+  calculatedAt      DateTime?
+  reviewedAt        DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  run             PayrollRun        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  employee        Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  salaryStructure SalaryStructure?  @relation(fields: [salaryStructureId], references: [id], onDelete: SetNull)
+  items           PayrollLineItem[]
+  adjustments     PayrollAdjustment[]
+  payslip         Payslip?
+
+  @@unique([runId, employeeId])
+  @@index([tenantId])
+  @@index([runId])
+  @@index([employeeId])
+  @@index([tenantId, employeeId])
+  @@index([runId, status])
+  @@map("payroll_lines")
+}
+
+/// PayrollLineItem stores individual earning/deduction items for a payroll line.
+model PayrollLineItem {
+  id            String               @id @default(uuid()) @db.Uuid
+  tenantId      String               @db.Uuid
+  lineId        String               @db.Uuid
+  componentId   String?              @db.Uuid
+  type          PayrollComponentType
+  code          String               @db.VarChar(30)
+  name          String               @db.VarChar(100)
+  amount        Int                  // Integer minor units (positive for earnings, positive for deductions)
+  source        String               @default("SYSTEM") @db.VarChar(20) // SYSTEM, MANUAL, ADJUSTMENT
+  calculationBasis String?           @db.VarChar(100) // Description of how it was calculated
+  referenceId   String?              @db.Uuid // e.g., adjustmentId
+  createdAt     DateTime             @default(now())
+
+  line      PayrollLine       @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  component PayrollComponent? @relation(fields: [componentId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([lineId])
+  @@index([componentId])
+  @@index([lineId, type])
+  @@map("payroll_line_items")
+}
+
+/// PayrollAdjustment represents manual adjustments to a payroll line.
+model PayrollAdjustment {
+  id            String                 @id @default(uuid()) @db.Uuid
+  tenantId      String                 @db.Uuid
+  lineId        String                 @db.Uuid
+  employeeId    String                 @db.Uuid
+  type          PayrollComponentType   // EARNING or DEDUCTION
+  code          String                 @db.VarChar(30)
+  name          String                 @db.VarChar(100)
+  amount        Int                    // Integer minor units
+  reason        String                 @db.VarChar(500)
+  status        PayrollAdjustmentStatus @default(PENDING)
+  approvedBy    String?                @db.Uuid
+  approvedAt    DateTime?
+  rejectionReason String?              @db.VarChar(500)
+  createdBy     String?                @db.Uuid
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  line     PayrollLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  employee Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([lineId])
+  @@index([employeeId])
+  @@index([tenantId, status])
+  @@map("payroll_adjustments")
+}
+
+/// Payslip is the final snapshot generated after payroll finalization.
+model Payslip {
+  id            String         @id @default(uuid()) @db.Uuid
+  tenantId      String         @db.Uuid
+  lineId        String         @unique @db.Uuid
+  employeeId    String         @db.Uuid
+  periodId      String         @db.Uuid
+  runId         String         @db.Uuid
+  currency      String         @default("USD") @db.VarChar(3)
+  grossPay      Int            @default(0) // Integer minor units
+  totalEarnings Int            @default(0)
+  totalDeductions Int          @default(0)
+  netPay        Int            @default(0)
+  paymentDate   DateTime       @db.Date
+  status        PayslipStatus  @default(GENERATED)
+  generatedAt   DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  line     PayrollLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  employee Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, employeeId, periodId])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([periodId])
+  @@index([runId])
+  @@map("payslips")
 }
 
 // =============================================================================

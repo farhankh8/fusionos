@@ -255,9 +255,10 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                         </Link>
                       </li>
                       <li>
-                        <Link href="/people/payroll" className="block px-3 py-1.5 text-sm text-gray-500 cursor-not-allowed">
+                        <Link href="/people/payroll" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
+                          pathname.startsWith('/people/payroll') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
+                        }`}>
                           Payroll
-                          <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded">Soon</span>
                         </Link>
                       </li>
                     </ul>
