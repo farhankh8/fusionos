@@ -62,8 +62,9 @@ beforeAll(async () => {
       await prisma.employee.delete({ where: { id: emp.id } });
     }
   }
-  // Clean up only our own test periods (not other test files' periods)
+  // Clean up only our own test data (not other test files' data)
   await prisma.payrollPeriod.deleteMany({ where: { name: 'August 2026', tenantId: { in: [TENANT_A, TENANT_B] } } });
+  await prisma.payrollPolicy.deleteMany({ where: { name: 'Standard Policy', tenantId: { in: [TENANT_A, TENANT_B] } } });
 
   // Create test employees
   employeeA = await prisma.employee.upsert({
@@ -222,20 +223,41 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // Clean up
-  await prisma.payslip.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollAdjustment.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollLineItem.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollLine.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollRun.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollPeriod.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.salaryStructureComponent.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.salaryStructure.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollComponent.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.payrollPolicy.deleteMany({ where: { tenantId: { in: [TENANT_A, TENANT_B] } } });
-  await prisma.leaveRequest.deleteMany({ where: { employeeId: employeeA.id } });
+  // Find test employees by code to scope cleanup (do NOT delete by broad tenant filter)
+  const testEmployees = await prisma.employee.findMany({
+    where: { employeeCode: { in: ['PAY-TEST-001', 'PAY-TEST-B01'] } },
+    select: { id: true },
+  });
+  const testEmpIds = testEmployees.map((e) => e.id);
+
+  // Delete dependent records by specific employee IDs
+  if (testEmpIds.length > 0) {
+    await prisma.payslip.deleteMany({ where: { employeeId: { in: testEmpIds } } });
+    await prisma.payrollAdjustment.deleteMany({ where: { employeeId: { in: testEmpIds } } });
+    await prisma.payrollLineItem.deleteMany({ where: { line: { employeeId: { in: testEmpIds } } } });
+    await prisma.payrollLine.deleteMany({ where: { employeeId: { in: testEmpIds } } });
+    await prisma.leaveRequest.deleteMany({ where: { employeeId: { in: testEmpIds } } });
+    await prisma.attendance.deleteMany({ where: { employeeId: { in: testEmpIds } } });
+  }
+
+  // Delete periods/runs only with this test's specific name
+  await prisma.payrollRun.deleteMany({ where: { period: { name: 'August 2026', tenantId: { in: [TENANT_A, TENANT_B] } } } });
+  await prisma.payrollPeriod.deleteMany({ where: { name: 'August 2026', tenantId: { in: [TENANT_A, TENANT_B] } } });
+
+  // Delete salary structures by known IDs only
+  await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructureId: { in: ['f0a00000-0000-0000-0000-000000000001', 'f0b00000-0000-0000-0000-000000000001', 'f0c00000-0000-0000-0000-000000000001'] } } });
+  await prisma.salaryStructure.deleteMany({ where: { id: { in: ['f0a00000-0000-0000-0000-000000000001', 'f0b00000-0000-0000-0000-000000000001', 'f0c00000-0000-0000-0000-000000000001'] } } });
+
+  // Delete components by code (these are unique per tenant — only this test creates them)
+  await prisma.payrollComponent.deleteMany({ where: { code: { in: ['BASIC', 'HOUSING', 'ABSENCE', 'OVERTIME'] }, tenantId: TENANT_A } });
+
+  // Delete policy by name (both tenants — this test creates it in both)
+  await prisma.payrollPolicy.deleteMany({ where: { name: 'Standard Policy', tenantId: { in: [TENANT_A, TENANT_B] } } });
+
+  // Delete leave type by code
   await prisma.leaveType.deleteMany({ where: { code: 'PAY-ANNUAL' } });
-  await prisma.attendance.deleteMany({ where: { employeeId: employeeA.id } });
+
+  // Delete employees by email
   await prisma.employee.deleteMany({ where: { email: { in: ['pay.testa@test.com', 'pay.testb@test.com'] } } });
 });
 
