@@ -25,16 +25,16 @@ export const navigation: NavigationGroup[] = [
   {
     items: [
       {
-        label: 'Command Center',
-        href: '/command-center',
-        icon: 'command-center',
-        isImplemented: false,
+        label: 'Home',
+        href: '/',
+        icon: 'home',
+        isImplemented: true,
       },
       {
         label: 'Dashboard',
         href: '/dashboard',
         icon: 'dashboard',
-        isImplemented: false,
+        isImplemented: true,
       },
     ],
   },
@@ -162,7 +162,7 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Documents',
         href: '/documents',
-        isImplemented: false,
+        isImplemented: true,
       },
     ],
   },
@@ -200,13 +200,13 @@ export const navigation: NavigationGroup[] = [
     items: [
       {
         label: 'Users',
-        href: '/admin/users',
-        isImplemented: false,
+        href: '/settings/users',
+        isImplemented: true,
       },
       {
         label: 'Roles',
-        href: '/admin/roles',
-        isImplemented: false,
+        href: '/settings/roles',
+        isImplemented: true,
       },
       {
         label: 'Permissions',
@@ -214,9 +214,9 @@ export const navigation: NavigationGroup[] = [
         isImplemented: false,
       },
       {
-        label: 'Company Settings',
-        href: '/admin/settings',
-        isImplemented: false,
+        label: 'Settings',
+        href: '/settings',
+        isImplemented: true,
       },
       {
         label: 'Audit',

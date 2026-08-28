@@ -1,572 +1,574 @@
 'use client';
 
-/**
- * FusionOS Employee List Page
- *
- * Production-oriented employee listing with:
- * - Search by name, email, employee code, phone
- * - Filter by department, branch, team, designation, status
- * - Pagination with page controls
- * - Sorting
- * - Employee profile view with tabs
- */
-
 import { useState, useEffect, useCallback } from 'react';
-import {
-  UserPlus,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  X,
-  Users,
-  Mail,
-  Phone,
-  MapPin,
-  Briefcase,
-  Calendar,
-  Clock,
-  FileText,
-  DollarSign,
-  FolderKanban,
-  User,
-  History,
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api-client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface Employee {
   id: string;
   employeeCode: string;
   firstName: string;
-  middleName?: string;
   lastName: string;
-  preferredName?: string;
   email: string;
   phone?: string;
-  gender?: string;
-  employmentStatus: string;
-  employmentType?: string;
-  joiningDate: string;
-  branch?: { id: string; name: string } | null;
-  department?: { id: string; name: string } | null;
-  team?: { id: string; name: string } | null;
-  designation?: { id: string; name: string } | null;
-  manager?: { id: string; firstName: string; lastName: string; employeeCode: string } | null;
+  status: string;
+  employmentType: string;
+  designation?: { name: string };
+  department?: { name: string };
+  branch?: { name: string };
   createdAt: string;
 }
 
-interface EmployeeProfile extends Employee {
-  company?: { id: string; name: string; code: string };
-  preferredName?: string;
-  middleName?: string;
-  dateOfBirth?: string;
-  nationality?: string;
-  address?: Record<string, string>;
-  workLocation?: string;
-  timezone?: string;
-  notes?: string;
-  currency?: string;
-  basicSalary?: number;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-  emergencyContactRelation?: string;
-  probationEndDate?: string;
-  confirmationDate?: string;
-  terminationDate?: string;
-  userId?: string;
-  directReports?: Array<{ id: string; employeeCode: string; firstName: string; lastName: string; designation?: { name: string } }>;
-  employmentHistory?: Array<{
-    id: string;
-    action: string;
-    effectiveDate: string;
-    reason?: string;
-    notes?: string;
-    createdAt: string;
-  }>;
-  user?: { id: string; email: string; firstName: string; lastName: string; status: string };
+interface EmployeeResponse {
+  data: Employee[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-interface PaginationMeta {
-  page: number; limit: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean;
-}
+type TabType = 'active' | 'inactive' | 'all';
 
-type ProfileTab = 'overview' | 'personal' | 'employment' | 'history';
+const TABS: { id: TabType; label: string; count?: number }[] = [
+  { id: 'active', label: 'Employees' },
+  { id: 'inactive', label: 'Contractors' },
+  { id: 'all', label: 'All Staff' },
+];
+
+const STATUS_COLORS: { [key: string]: { bg: string; text: string; dot: string } } = {
+  ACTIVE: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+  INACTIVE: { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400' },
+  DRAFT: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
+  ON_LEAVE: { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500' },
+  SUSPENDED: { bg: 'bg-orange-50', text: 'text-orange-700', dot: 'bg-orange-500' },
+  TERMINATED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
+  RESIGNED: { bg: 'bg-purple-50', text: 'text-purple-700', dot: 'bg-purple-500' },
+};
 
 export default function EmployeesPage() {
+  const router = useRouter();
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('active');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    status: '',
-    departmentId: '',
-    branchId: '',
-    teamId: '',
-    designationId: '',
-  });
-  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeProfile | null>(null);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<ProfileTab>('overview');
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [branchFilter, setBranchFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
-      const params = new URLSearchParams({ page: String(page), limit: '10' });
-      if (search) params.set('search', search);
-      if (filters.status) params.set('status', filters.status);
-      if (filters.departmentId) params.set('departmentId', filters.departmentId);
-      if (filters.branchId) params.set('branchId', filters.branchId);
-      if (filters.teamId) params.set('teamId', filters.teamId);
-      if (filters.designationId) params.set('designationId', filters.designationId);
-      const res = await fetch(`http://localhost:3001/api/v1/employees?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
-      setEmployees(data.data ?? []);
-      setMeta(data.meta ?? null);
-    } catch { setEmployees([]); } finally { setLoading(false); }
-  }, [page, search, filters]);
+      const params: Record<string, string> = {
+        page: page.toString(),
+        limit: '12',
+      };
 
-  useEffect(() => { fetchEmployees(); }, [fetchEmployees]);
+      if (search) params['search'] = search;
+      if (activeTab === 'active') params['status'] = 'ACTIVE';
+      if (activeTab === 'inactive') params['status'] = 'INACTIVE';
+      if (departmentFilter) params['departmentId'] = departmentFilter;
+      if (branchFilter) params['branchId'] = branchFilter;
+      if (typeFilter) params['employmentType'] = typeFilter;
 
-  const fetchProfile = useCallback(async (id: string) => {
-    try {
-      setProfileLoading(true);
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
-      const res = await fetch(`http://localhost:3001/api/v1/employees/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
-      setSelectedEmployee(data);
-      setActiveTab('overview');
-    } catch { /* ignore */ } finally { setProfileLoading(false); }
-  }, []);
+      const responseData = await apiClient.get<EmployeeResponse>('/employees', params);
+      setEmployees(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch (error) {
+      console.error('Failed to fetch employees:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search, activeTab, departmentFilter, branchFilter, typeFilter]);
 
-  const clearFilters = () => {
-    setFilters({ status: '', departmentId: '', branchId: '', teamId: '', designationId: '' });
-    setPage(1);
-  };
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
 
-  const hasActiveFilters = Object.values(filters).some(Boolean);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE': return 'bg-success/10 text-success';
-      case 'PROBATION': return 'bg-warning/10 text-warning';
-      case 'ON_LEAVE': return 'bg-info/10 text-info';
-      case 'SUSPENDED': return 'bg-destructive/10 text-destructive';
-      case 'TERMINATED': case 'RESIGNED': case 'INACTIVE': return 'bg-muted text-muted-foreground';
-      default: return 'bg-muted text-muted-foreground';
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(new Set(employees.map(e => e.id)));
+    } else {
+      setSelectedRows(new Set());
     }
   };
 
-  // ── Employee Profile View ──────────────────────────────────────────────────
-  if (selectedEmployee) {
-    return (
-      <div className="min-h-full bg-background">
-        <div className="p-4 lg:p-6">
-          {/* Back Button */}
-          <button
-            onClick={() => setSelectedEmployee(null)}
-            className="mb-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            Back to employees
-          </button>
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedRows(newSelected);
+  };
 
-          {profileLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-[13px] text-muted-foreground">Loading profile...</div>
-            </div>
-          ) : (
-            <>
-              {/* Profile Header */}
-              <div className="mb-4 rounded-lg border border-border p-4">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-[14px] font-semibold text-primary">
-                    {selectedEmployee.firstName[0]}{selectedEmployee.lastName[0]}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h1 className="text-base font-semibold text-foreground">
-                        {selectedEmployee.preferredName || selectedEmployee.firstName} {selectedEmployee.lastName}
-                      </h1>
-                      <span className={`inline-flex h-5 items-center rounded px-1.5 text-[10px] font-medium ${getStatusColor(selectedEmployee.employmentStatus)}`}>
-                        {selectedEmployee.employmentStatus.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-muted-foreground">{selectedEmployee.employeeCode} · {selectedEmployee.email}</p>
-                    <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-muted-foreground">
-                      {selectedEmployee.designation && (
-                        <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{selectedEmployee.designation.name}</span>
-                      )}
-                      {selectedEmployee.department && (
-                        <span className="flex items-center gap-1"><Layers className="h-3 w-3" />{selectedEmployee.department.name}</span>
-                      )}
-                      {selectedEmployee.branch && (
-                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{selectedEmployee.branch.name}</span>
-                      )}
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />Joined {new Date(selectedEmployee.joiningDate).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+  const getStatusStyle = (status: string) => STATUS_COLORS[status] || STATUS_COLORS['ACTIVE'];
 
-              {/* Tabs */}
-              <div className="mb-4 flex gap-1 border-b border-border">
-                {(['overview', 'personal', 'employment', 'history'] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-2 text-[13px] font-medium capitalize transition-colors ${
-                      activeTab === tab
-                        ? 'border-b-2 border-primary text-primary'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-                {/* Future tabs - clearly marked */}
-                <span className="px-3 py-2 text-[11px] text-muted-foreground/50">Attendance</span>
-                <span className="px-3 py-2 text-[11px] text-muted-foreground/50">Leave</span>
-                <span className="px-3 py-2 text-[11px] text-muted-foreground/50">Payroll</span>
-                <span className="px-3 py-2 text-[11px] text-muted-foreground/50">Documents</span>
-              </div>
-
-              {/* Tab Content */}
-              {activeTab === 'overview' && (
-                <div className="grid gap-3 lg:grid-cols-2">
-                  <div className="rounded-lg border border-border">
-                    <div className="border-b border-border px-4 py-2.5">
-                      <h2 className="text-[13px] font-semibold text-foreground">Contact</h2>
-                    </div>
-                    <div className="divide-y divide-border">
-                      <ProfileInfoRow icon={Mail} label="Email" value={selectedEmployee.email} />
-                      {selectedEmployee.phone && <ProfileInfoRow icon={Phone} label="Phone" value={selectedEmployee.phone} />}
-                      {selectedEmployee.timezone && <ProfileInfoRow icon={Clock} label="Timezone" value={selectedEmployee.timezone} />}
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-border">
-                    <div className="border-b border-border px-4 py-2.5">
-                      <h2 className="text-[13px] font-semibold text-foreground">Employment</h2>
-                    </div>
-                    <div className="divide-y divide-border">
-                      <ProfileInfoRow icon={Briefcase} label="Type" value={selectedEmployee.employmentType?.replace('_', ' ') ?? '—'} />
-                      <ProfileInfoRow icon={Calendar} label="Joined" value={new Date(selectedEmployee.joiningDate).toLocaleDateString()} />
-                      {selectedEmployee.manager && (
-                        <ProfileInfoRow icon={User} label="Reports to" value={`${selectedEmployee.manager.firstName} ${selectedEmployee.manager.lastName}`} />
-                      )}
-                      {selectedEmployee.workLocation && <ProfileInfoRow icon={MapPin} label="Work Location" value={selectedEmployee.workLocation} />}
-                    </div>
-                  </div>
-                  {selectedEmployee.directReports && selectedEmployee.directReports.length > 0 && (
-                    <div className="lg:col-span-2 rounded-lg border border-border">
-                      <div className="border-b border-border px-4 py-2.5">
-                        <h2 className="text-[13px] font-semibold text-foreground">Direct Reports ({selectedEmployee.directReports.length})</h2>
-                      </div>
-                      <div className="divide-y divide-border">
-                        {selectedEmployee.directReports.map((report) => (
-                          <div key={report.id} className="flex items-center gap-3 px-4 py-2.5">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
-                              {report.firstName[0]}{report.lastName[0]}
-                            </div>
-                            <div>
-                              <p className="text-[13px] font-medium text-foreground">{report.firstName} {report.lastName}</p>
-                              <p className="text-[11px] text-muted-foreground">{report.employeeCode} · {report.designation?.name ?? 'No designation'}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'personal' && (
-                <div className="grid gap-3 lg:grid-cols-2">
-                  <div className="rounded-lg border border-border">
-                    <div className="border-b border-border px-4 py-2.5">
-                      <h2 className="text-[13px] font-semibold text-foreground">Personal Information</h2>
-                    </div>
-                    <div className="divide-y divide-border">
-                      <ProfileInfoRow label="Full Name" value={`${selectedEmployee.firstName} ${selectedEmployee.middleName ? selectedEmployee.middleName + ' ' : ''}${selectedEmployee.lastName}`} />
-                      {selectedEmployee.preferredName && <ProfileInfoRow label="Preferred Name" value={selectedEmployee.preferredName} />}
-                      {selectedEmployee.gender && <ProfileInfoRow label="Gender" value={selectedEmployee.gender.replace('_', ' ')} />}
-                      {selectedEmployee.dateOfBirth && <ProfileInfoRow label="Date of Birth" value={new Date(selectedEmployee.dateOfBirth).toLocaleDateString()} />}
-                      {selectedEmployee.nationality && <ProfileInfoRow label="Nationality" value={selectedEmployee.nationality} />}
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-border">
-                    <div className="border-b border-border px-4 py-2.5">
-                      <h2 className="text-[13px] font-semibold text-foreground">Emergency Contact</h2>
-                    </div>
-                    <div className="divide-y divide-border">
-                      {selectedEmployee.emergencyContactName ? (
-                        <>
-                          <ProfileInfoRow label="Name" value={selectedEmployee.emergencyContactName} />
-                          {selectedEmployee.emergencyContactPhone && <ProfileInfoRow icon={Phone} label="Phone" value={selectedEmployee.emergencyContactPhone} />}
-                          {selectedEmployee.emergencyContactRelation && <ProfileInfoRow label="Relationship" value={selectedEmployee.emergencyContactRelation} />}
-                        </>
-                      ) : (
-                        <div className="px-4 py-4 text-[13px] text-muted-foreground">No emergency contact on file</div>
-                      )}
-                    </div>
-                  </div>
-                  {selectedEmployee.address && (
-                    <div className="lg:col-span-2 rounded-lg border border-border">
-                      <div className="border-b border-border px-4 py-2.5">
-                        <h2 className="text-[13px] font-semibold text-foreground">Address</h2>
-                      </div>
-                      <div className="px-4 py-3">
-                        <p className="text-[13px] text-foreground">
-                          {[selectedEmployee.address['line1'] as string, selectedEmployee.address['line2'] as string, selectedEmployee.address['city'] as string, selectedEmployee.address['state'] as string, selectedEmployee.address['postalCode'] as string, selectedEmployee.address['country'] as string].filter(Boolean).join(', ')}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'employment' && (
-                <div className="rounded-lg border border-border">
-                  <div className="border-b border-border px-4 py-2.5">
-                    <h2 className="text-[13px] font-semibold text-foreground">Employment Details</h2>
-                  </div>
-                  <div className="divide-y divide-border">
-                    <ProfileInfoRow label="Employee Code" value={selectedEmployee.employeeCode} />
-                    <ProfileInfoRow label="Status" value={selectedEmployee.employmentStatus.replace('_', ' ')} />
-                    <ProfileInfoRow label="Type" value={selectedEmployee.employmentType?.replace('_', ' ') ?? '—'} />
-                    <ProfileInfoRow label="Company" value={selectedEmployee.company?.name ?? '—'} />
-                    <ProfileInfoRow label="Branch" value={selectedEmployee.branch?.name ?? '—'} />
-                    <ProfileInfoRow label="Department" value={selectedEmployee.department?.name ?? '—'} />
-                    <ProfileInfoRow label="Team" value={selectedEmployee.team?.name ?? '—'} />
-                    <ProfileInfoRow label="Designation" value={selectedEmployee.designation?.name ?? '—'} />
-                    {selectedEmployee.manager && (
-                      <ProfileInfoRow label="Reports To" value={`${selectedEmployee.manager.firstName} ${selectedEmployee.manager.lastName} (${selectedEmployee.manager.employeeCode})`} />
-                    )}
-                    <ProfileInfoRow label="Joining Date" value={new Date(selectedEmployee.joiningDate).toLocaleDateString()} />
-                    {selectedEmployee.probationEndDate && <ProfileInfoRow label="Probation End" value={new Date(selectedEmployee.probationEndDate).toLocaleDateString()} />}
-                    {selectedEmployee.confirmationDate && <ProfileInfoRow label="Confirmation Date" value={new Date(selectedEmployee.confirmationDate).toLocaleDateString()} />}
-                    {selectedEmployee.terminationDate && <ProfileInfoRow label="Termination Date" value={new Date(selectedEmployee.terminationDate).toLocaleDateString()} />}
-                    {selectedEmployee.user && (
-                      <ProfileInfoRow label="User Account" value={`${selectedEmployee.user.email} (${selectedEmployee.user.status})`} />
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'history' && (
-                <div className="rounded-lg border border-border">
-                  <div className="border-b border-border px-4 py-2.5">
-                    <h2 className="text-[13px] font-semibold text-foreground">Employment History</h2>
-                  </div>
-                  {selectedEmployee.employmentHistory && selectedEmployee.employmentHistory.length > 0 ? (
-                    <div className="divide-y divide-border">
-                      {selectedEmployee.employmentHistory.map((entry) => (
-                        <div key={entry.id} className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <History className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span className="text-[13px] font-medium text-foreground capitalize">{entry.action.replace(/_/g, ' ')}</span>
-                            <span className="text-[11px] text-muted-foreground">· {new Date(entry.effectiveDate).toLocaleDateString()}</span>
-                          </div>
-                          {entry.reason && <p className="mt-1 text-[12px] text-muted-foreground">{entry.reason}</p>}
-                          {entry.notes && <p className="mt-0.5 text-[12px] text-muted-foreground italic">{entry.notes}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">No history records</div>
-                  )}
-                </div>
-              )}
-            </>
-          )}
+  const renderEmptyState = () => (
+    <div className="flex flex-col items-center justify-center py-20 px-4">
+      {/* Professional Illustration */}
+      <div className="relative mb-8">
+        <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 flex items-center justify-center">
+          <svg className="w-20 h-20 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
         </div>
       </div>
-    );
-  }
-
-  // ── Employee List View ─────────────────────────────────────────────────────
-  return (
-    <div className="min-h-full bg-background">
-      <div className="p-4 lg:p-6">
-        {/* Header */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-semibold text-foreground">Employees</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">
-              Manage the canonical employee directory
-            </p>
-          </div>
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-[13px] font-medium text-primary-foreground hover:bg-primary/80">
-            <UserPlus className="h-3.5 w-3.5" /> Add Employee
-          </button>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="mb-3 flex items-center gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search by name, code, email, phone..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="h-8 w-full rounded-lg border border-border bg-background pl-8 pr-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] font-medium transition-colors ${
-              showFilters || hasActiveFilters
-                ? 'border-primary bg-primary/5 text-primary'
-                : 'border-border text-muted-foreground hover:bg-muted'
-            }`}
-          >
-            <Filter className="h-3.5 w-3.5" />
-            Filters
-            {hasActiveFilters && (
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
-                {Object.values(filters).filter(Boolean).length}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Filter Panel */}
-        {showFilters && (
-          <div className="mb-3 rounded-lg border border-border p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[12px] font-medium text-foreground">Filter by</span>
-              {hasActiveFilters && (
-                <button onClick={clearFilters} className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground">
-                  <X className="h-3 w-3" /> Clear all
-                </button>
-              )}
+      
+      <h3 className="text-2xl font-semibold text-gray-900 mb-3">Get your employees onboard</h3>
+      <p className="text-gray-500 text-center max-w-lg mb-8 text-base leading-relaxed">
+        Capture all necessary details about your employees and manage their salary, allowances and reimbursement details in this module.
+      </p>
+      
+      <div className="flex gap-4 mb-12">
+        <Button 
+          onClick={() => router.push('/people/employees/new')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Employee
+        </Button>
+        <Button 
+          variant="outline" 
+          className="px-6 py-2.5 rounded-lg font-medium border-gray-300"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          Import Employees
+        </Button>
+      </div>
+      
+      {/* Key Benefits Grid */}
+      <div className="w-full max-w-2xl">
+        <h4 className="text-sm font-semibold text-gray-700 mb-4 text-center uppercase tracking-wider">Key Benefits</h4>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { icon: '👥', text: 'Centralized employee records' },
+            { icon: '⏰', text: 'Track attendance & leaves' },
+            { icon: '💰', text: 'Manage payroll & benefits' },
+            { icon: '🔐', text: 'Role-based access control' },
+          ].map((benefit, i) => (
+            <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
+              <span className="text-xl">{benefit.icon}</span>
+              <span className="text-sm text-gray-600">{benefit.text}</span>
             </div>
-            <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
-              <select
-                value={filters.status}
-                onChange={(e) => { setFilters(f => ({ ...f, status: e.target.value })); setPage(1); }}
-                className="h-7 rounded border border-border bg-background px-2 text-[12px] text-foreground"
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderListView = () => (
+    <div className="overflow-hidden">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50/80">
+          <tr>
+            <th className="w-12 px-4 py-3">
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                checked={selectedRows.size === employees.length && employees.length > 0}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+              />
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Employee ID</span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Department</span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Designation</span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</span>
+            </th>
+            <th className="w-12 px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-100">
+          {employees.map((employee) => {
+            const statusStyle = getStatusStyle(employee.status) || { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400' };
+            return (
+              <tr 
+                key={employee.id} 
+                className="hover:bg-blue-50/50 cursor-pointer transition-colors duration-150"
+                onClick={() => router.push(`/people/employees/${employee.id}`)}
               >
-                <option value="">All Statuses</option>
-                <option value="ACTIVE">Active</option>
-                <option value="PROBATION">Probation</option>
-                <option value="ON_LEAVE">On Leave</option>
-                <option value="SUSPENDED">Suspended</option>
-                <option value="TERMINATED">Terminated</option>
-                <option value="RESIGNED">Resigned</option>
-                <option value="INACTIVE">Inactive</option>
-              </select>
+                <td className="px-4 py-4">
+                  <input 
+                    type="checkbox" 
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    checked={selectedRows.has(employee.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleSelectRow(employee.id, e.target.checked);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+                      {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                        {employee.firstName} {employee.lastName}
+                      </div>
+                      <div className="text-sm text-gray-500">{employee.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <span className="font-mono text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded">
+                    {employee.employeeCode}
+                  </span>
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-600">
+                  {employee.department?.name || <span className="text-gray-400">—</span>}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-600">
+                  {employee.designation?.name || <span className="text-gray-400">—</span>}
+                </td>
+                <td className="px-4 py-4">
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`}></span>
+                    {employee.status}
+                  </span>
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-500">
+                  {employee.employmentType}
+                </td>
+                <td className="px-4 py-4">
+                  <button className="p-1 hover:bg-gray-100 rounded transition-colors" onClick={(e) => e.stopPropagation()}>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderGridView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+      {employees.map((employee) => {
+        const statusStyle = getStatusStyle(employee.status) || { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400' };
+        return (
+          <Card 
+            key={employee.id} 
+            className="hover:shadow-lg hover:border-blue-200 transition-all duration-200 cursor-pointer group"
+            onClick={() => router.push(`/people/employees/${employee.id}`)}
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+                  {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
+                </div>
+                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`}></span>
+                  {employee.status}
+                </span>
+              </div>
+              
+              <div className="mb-4">
+                <h3 className="font-semibold text-gray-900 text-base group-hover:text-blue-600 transition-colors">
+                  {employee.firstName} {employee.lastName}
+                </h3>
+                <p className="text-sm text-gray-500 mt-0.5">{employee.email}</p>
+              </div>
+              
+              <div className="space-y-2 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">ID</span>
+                  <span className="font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded text-xs">{employee.employeeCode}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Department</span>
+                  <span className="text-gray-700">{employee.department?.name || '—'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Designation</span>
+                  <span className="text-gray-700">{employee.designation?.name || '—'}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-[1400px] mx-auto px-6">
+          {/* Tabs */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setPage(1);
+                    setSelectedRows(new Set());
+                  }}
+                  className={`relative px-4 py-3.5 text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? 'text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-t-full" />
+                  )}
+                </button>
+              ))}
             </div>
+            
+            {/* Right Actions */}
+            <div className="flex items-center gap-3 py-3">
+              {/* Search */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search in Employees ( / )"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-72 pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder-gray-400"
+                />
+                <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <kbd className="absolute right-3 top-2.5 text-xs text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">/</kbd>
+              </div>
+              
+              {/* View Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-0.5">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-all ${
+                    viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-all ${
+                    viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Filter */}
+              <button 
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-2 rounded-lg transition-all ${
+                  showFilters ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-100'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+              </button>
+              
+              {/* More Options */}
+              <button className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-all">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+              
+              {/* Add Button */}
+              <Button 
+                onClick={() => router.push('/people/employees/new')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm"
+              >
+                <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Add
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-[1400px] mx-auto px-6 py-4">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-gray-700">Filters:</span>
+              <select 
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+              >
+                <option value="">All Departments</option>
+              </select>
+              <select 
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={branchFilter}
+                onChange={(e) => setBranchFilter(e.target.value)}
+              >
+                <option value="">All Branches</option>
+              </select>
+              <select 
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+              >
+                <option value="">All Types</option>
+                <option value="FULL_TIME">Full Time</option>
+                <option value="PART_TIME">Part Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="INTERN">Intern</option>
+              </select>
+              <button 
+                onClick={() => {
+                  setDepartmentFilter('');
+                  setBranchFilter('');
+                  setTypeFilter('');
+                }}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="max-w-[1400px] mx-auto px-6 py-6">
+        {/* Stats Bar */}
+        {!loading && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {activeTab === 'active' ? 'Active' : activeTab === 'inactive' ? 'Inactive' : 'All'} Employees
+                <span className="text-gray-400 ml-1">▾</span>
+              </h2>
+              <span className="text-sm text-gray-500">{totalCount} records</span>
+            </div>
+            {selectedRows.size > 0 && (
+              <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg">
+                <span className="text-sm text-blue-700 font-medium">{selectedRows.size} selected</span>
+                <button className="text-blue-600 hover:text-blue-700">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Table */}
-        <div className="rounded-lg border border-border">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Employee</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Code</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Department</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Designation</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Status</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Joined</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-[13px] text-muted-foreground">Loading...</td></tr>
-              ) : employees.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center">
-                  <Users className="mx-auto h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
-                  <p className="mt-1 text-[13px] text-muted-foreground">No employees found</p>
-                </td></tr>
-              ) : employees.map((emp) => (
-                <tr
-                  key={emp.id}
-                  className="cursor-pointer transition-colors duration-120 hover:bg-muted/50"
-                  onClick={() => fetchProfile(emp.id)}
-                >
-                  <td className="px-4 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
-                        {emp.firstName[0]}{emp.lastName[0]}
-                      </div>
-                      <div>
-                        <p className="text-[13px] font-medium text-foreground">
-                          {emp.preferredName || emp.firstName} {emp.lastName}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">{emp.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground font-mono">{emp.employeeCode}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{emp.department?.name ?? '—'}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{emp.designation?.name ?? '—'}</td>
-                  <td className="px-4 py-2.5">
-                    <span className={`inline-flex h-5 items-center rounded px-1.5 text-[10px] font-medium ${getStatusColor(emp.employmentStatus)}`}>
-                      {emp.employmentStatus.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">
-                    {new Date(emp.joiningDate).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* Loading */}
+        {loading ? (
+          <Card>
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <p className="text-sm text-gray-500">Loading employees...</p>
+              </div>
+            </div>
+          </Card>
+        ) : employees.length === 0 ? (
+          renderEmptyState()
+        ) : viewMode === 'list' ? (
+          <Card className="overflow-hidden">
+            {renderListView()}
+          </Card>
+        ) : (
+          renderGridView()
+        )}
 
         {/* Pagination */}
-        {meta && meta.totalPages > 1 && (
-          <div className="mt-3 flex items-center justify-between">
-            <p className="text-[12px] text-muted-foreground">
-              Showing {((meta.page - 1) * meta.limit) + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total}
+        {!loading && employees.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6 px-2">
+            <p className="text-sm text-gray-500">
+              Showing {((page - 1) * 12) + 1} to {Math.min(page * 12, totalCount)} of {totalCount}
             </p>
-            <div className="flex items-center gap-1">
-              <button onClick={() => setPage(p => p - 1)} disabled={!meta.hasPrevious}
-                className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50">
-                <ChevronLeft className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
               </button>
-              <span className="px-2 text-[12px] text-muted-foreground">{meta.page} / {meta.totalPages}</span>
-              <button onClick={() => setPage(p => p + 1)} disabled={!meta.hasNext}
-                className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50">
-                <ChevronRight className="h-3.5 w-3.5" />
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = i + 1;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`w-9 h-9 text-sm font-medium rounded-lg transition-colors ${
+                      page === pageNum
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              {totalPages > 5 && <span className="text-gray-400">...</span>}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
               </button>
             </div>
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-function ProfileInfoRow({ icon: Icon, label, value }: { icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-2.5">
-      {Icon && <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.5} />}
-      <div className="min-w-0 flex-1">
-        <span className="text-[11px] text-muted-foreground">{label}</span>
-        <p className="text-[13px] text-foreground capitalize">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function Layers({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
-      <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
-      <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
-    </svg>
   );
 }
