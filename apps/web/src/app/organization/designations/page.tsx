@@ -1,114 +1,188 @@
 'use client';
 
+/**
+ * FusionOS Designations Management Page
+ * Enterprise job designation management with real API data.
+ */
+
 import { useState, useEffect, useCallback } from 'react';
-import { Award, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { PageHeader } from '@/components/ui/page-header';
+import { KpiCard } from '@/components/ui/kpi-card';
+import { DataTable } from '@/components/ui/data-table';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { EmptyState } from '@/components/ui/empty-state';
+import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
+import { BadgeCheck, Plus, Building2, Users, Layers } from 'lucide-react';
 
 interface Designation {
   id: string;
   name: string;
-  code: string;
+  code?: string;
+  level?: string;
   description?: string;
-  level?: number;
+  company?: { id: string; name: string };
+  employeeCount?: number;
   isActive: boolean;
-  _count: { employees: number };
   createdAt: string;
-}
-
-interface PaginationMeta {
-  page: number; limit: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean;
 }
 
 export default function DesignationsPage() {
   const [designations, setDesignations] = useState<Designation[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [activeFilter, setActiveFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [kpiLoading, setKpiLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  const fetchDesignations = useCallback(async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
-      const params = new URLSearchParams({ page: String(page), limit: '10' });
-      if (search) params.set('search', search);
-      const res = await fetch(`http://localhost:3001/api/v1/organization/designations?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
-      setDesignations(data.data ?? []);
-      setMeta(data.meta ?? null);
-    } catch { setDesignations([]); } finally { setLoading(false); }
-  }, [page, search]);
+      const params: Record<string, string> = {
+        page: page.toString(),
+        limit: '12',
+      };
+      if (search) params['search'] = search;
+      if (activeFilter) params['isActive'] = activeFilter;
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+      const responseData = await apiClient.get<{ data: Designation[]; meta?: { total: number; totalPages: number } }>('/organization/designations', params);
+      setDesignations(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch {
+      setDesignations([]);
+    } finally {
+      setLoading(false);
+      setKpiLoading(false);
+    }
+  }, [page, search, activeFilter]);
+
+  useEffect(() => { fetchDesignations(); }, [fetchDesignations]);
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="p-4 lg:p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-semibold text-foreground">Designations</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">Manage job titles and positions</p>
-          </div>
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-[13px] font-medium text-primary-foreground hover:bg-primary/80">
-            <Plus className="h-3.5 w-3.5" /> Add Designation
+    <div className="min-h-full bg-[#F8FAFC]">
+      <PageHeader
+        title="Designations"
+        description="Manage job designations and roles"
+        breadcrumbs={[{ label: 'Organization' }, { label: 'Designations' }]}
+        actions={
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+            <Plus className="h-3.5 w-3.5" />
+            Add Designation
           </button>
+        }
+      />
+
+      <div className="px-5 py-4 lg:px-6">
+        {/* KPI Row */}
+        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
+          {kpiLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
+          ) : (
+            <>
+              <KpiCard label="Total Designations" value={totalCount} icon={BadgeCheck} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Active" value={designations.filter(d => d.isActive).length} icon={BadgeCheck} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+              <KpiCard label="Total Employees" value={designations.reduce((sum, d) => sum + (d.employeeCount || 0), 0)} icon={Users} iconBg="bg-violet-50" iconColor="text-violet-600" />
+            </>
+          )}
         </div>
-        <div className="mb-3">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input type="text" placeholder="Search designations..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="h-8 w-full rounded-lg border border-border bg-background pl-8 pr-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+
+        {/* Filters */}
+        <FilterBar
+          search={search}
+          searchPlaceholder="Search designations..."
+          onSearchChange={(val) => { setSearch(val); setPage(1); }}
+          filters={[
+            {
+              key: 'active',
+              label: 'All Status',
+              value: activeFilter,
+              options: [
+                { value: 'true', label: 'Active' },
+                { value: 'false', label: 'Inactive' },
+              ],
+              onChange: (val) => { setActiveFilter(val); setPage(1); },
+            },
+          ]}
+          activeFilterCount={activeFilter ? 1 : 0}
+          onClearFilters={() => { setActiveFilter(''); setSearch(''); setPage(1); }}
+        />
+
+        {/* Table */}
+        {loading ? (
+          <TableSkeleton rows={6} cols={5} />
+        ) : designations.length === 0 ? (
+          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+            <EmptyState
+              icon={BadgeCheck}
+              title="No designations found"
+              description="Add your first designation to get started."
+              action={
+                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Designation
+                </button>
+              }
+            />
           </div>
-        </div>
-        <div className="rounded-lg border border-border">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Name</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Code</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Level</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Status</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Employees</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {loading ? (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-[13px] text-muted-foreground">Loading...</td></tr>
-              ) : designations.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-8 text-center">
-                  <Award className="mx-auto h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
-                  <p className="mt-1 text-[13px] text-muted-foreground">No designations found</p>
-                </td></tr>
-              ) : designations.map((desig) => (
-                <tr key={desig.id} className="transition-colors duration-120 hover:bg-muted/50">
-                  <td className="px-4 py-2.5">
-                    <p className="text-[13px] font-medium text-foreground">{desig.name}</p>
-                    {desig.description && <p className="text-[11px] text-muted-foreground truncate max-w-xs">{desig.description}</p>}
-                  </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{desig.code}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{desig.level ?? '—'}</td>
-                  <td className="px-4 py-2.5">
-                    <span className={`inline-flex h-5 items-center rounded px-1.5 text-[10px] font-medium ${desig.isActive ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}`}>
-                      {desig.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{desig._count.employees}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {meta && meta.totalPages > 1 && (
-          <div className="mt-3 flex items-center justify-between">
-            <p className="text-[12px] text-muted-foreground">Showing {((meta.page-1)*meta.limit)+1}–{Math.min(meta.page*meta.limit, meta.total)} of {meta.total}</p>
-            <div className="flex items-center gap-1">
-              <button onClick={() => setPage(p=>p-1)} disabled={!meta.hasPrevious} className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"><ChevronLeft className="h-3.5 w-3.5" /></button>
-              <span className="px-2 text-[12px] text-muted-foreground">{meta.page} / {meta.totalPages}</span>
-              <button onClick={() => setPage(p=>p+1)} disabled={!meta.hasNext} className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"><ChevronRight className="h-3.5 w-3.5" /></button>
-            </div>
-          </div>
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'name',
+                label: 'Designation',
+                render: (item: Designation) => (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                      <BadgeCheck className="h-4 w-4 text-[#2563EB]" />
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
+                      {item.code && <p className="text-[11px] text-[#64748B]">{item.code}</p>}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: 'level',
+                label: 'Level',
+                render: (item: Designation) => (
+                  <span className="text-[13px] text-[#475569]">{item.level || '—'}</span>
+                ),
+              },
+              {
+                key: 'company',
+                label: 'Company',
+                render: (item: Designation) => (
+                  <span className="text-[13px] text-[#475569]">{item.company?.name || '—'}</span>
+                ),
+              },
+              {
+                key: 'employeeCount',
+                label: 'Employees',
+                render: (item: Designation) => (
+                  <span className="text-[13px] font-medium text-[#0F172A]">{item.employeeCount || 0}</span>
+                ),
+                align: 'right' as const,
+              },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (item: Designation) => (
+                  <StatusBadge status={item.isActive ? 'ACTIVE' : 'INACTIVE'} />
+                ),
+              },
+            ]}
+            data={designations}
+            page={page}
+            totalPages={totalPages}
+            total={totalCount}
+            limit={12}
+            onPageChange={setPage}
+          />
         )}
       </div>
     </div>

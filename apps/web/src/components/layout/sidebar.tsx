@@ -4,162 +4,93 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
+import { cn } from '@/lib/utils';
+import {
+  LayoutDashboard,
+  Users,
+  Clock,
+  CalendarOff,
+  Wallet,
+  Receipt,
+  Building2,
+  MapPin,
+  GitBranch,
+  UsersRound,
+  BadgeCheck,
+  Briefcase,
+  Handshake,
+  FolderKanban,
+  FileStack,
+  BarChart3,
+  Sparkles,
+  Zap,
+  Settings,
+  ChevronDown,
+  ChevronLeft,
+  CreditCard,
+} from 'lucide-react';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
-  badge?: number;
 }
 
-const mainNavItems: NavItem[] = [
-  {
-    label: 'Home',
-    href: '/dashboard',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'People',
-    href: '/people',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Items',
-    href: '/items',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Inventory',
-    href: '/inventory',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Purchases',
-    href: '/purchases',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Manufacturing',
-    href: '/manufacturing',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Sales',
-    href: '/sales',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Sales Channels',
-    href: '/sales-channels',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-      </svg>
-    ),
-  },
-];
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+  implemented: boolean;
+}
 
-const moreNavItems: NavItem[] = [
+const navigationGroups: NavGroup[] = [
   {
-    label: 'Beat Management',
-    href: '/beat-management',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
+    label: 'WORKSPACE',
+    implemented: true,
+    items: [
+      { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard className="h-[18px] w-[18px]" /> },
+    ],
   },
   {
-    label: 'Quality',
-    href: '/quality',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-      </svg>
-    ),
+    label: 'PEOPLE',
+    implemented: true,
+    items: [
+      { label: 'Employees', href: '/people/employees', icon: <Users className="h-[18px] w-[18px]" /> },
+      { label: 'Attendance', href: '/people/attendance', icon: <Clock className="h-[18px] w-[18px]" /> },
+      { label: 'Leave', href: '/people/leave', icon: <CalendarOff className="h-[18px] w-[18px]" /> },
+      { label: 'Payroll', href: '/people/payroll', icon: <Wallet className="h-[18px] w-[18px]" /> },
+      { label: 'Payslips', href: '/people/payslips', icon: <Receipt className="h-[18px] w-[18px]" /> },
+    ],
   },
   {
-    label: 'Travel & Expense',
-    href: '/travel-expense',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
+    label: 'ORGANIZATION',
+    implemented: true,
+    items: [
+      { label: 'Company', href: '/organization/company', icon: <Building2 className="h-[18px] w-[18px]" /> },
+      { label: 'Branches', href: '/organization/branches', icon: <MapPin className="h-[18px] w-[18px]" /> },
+      { label: 'Departments', href: '/organization/departments', icon: <GitBranch className="h-[18px] w-[18px]" /> },
+      { label: 'Teams', href: '/organization/teams', icon: <UsersRound className="h-[18px] w-[18px]" /> },
+      { label: 'Designations', href: '/organization/designations', icon: <BadgeCheck className="h-[18px] w-[18px]" /> },
+    ],
   },
   {
-    label: 'Payroll',
-    href: '/payroll',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
+    label: 'BUSINESS',
+    implemented: false,
+    items: [
+      { label: 'Finance', href: '/finance', icon: <CreditCard className="h-[18px] w-[18px]" /> },
+      { label: 'CRM', href: '/crm', icon: <Handshake className="h-[18px] w-[18px]" /> },
+      { label: 'Projects', href: '/projects', icon: <FolderKanban className="h-[18px] w-[18px]" /> },
+      { label: 'Assets', href: '/assets', icon: <Briefcase className="h-[18px] w-[18px]" /> },
+      { label: 'Documents', href: '/documents', icon: <FileStack className="h-[18px] w-[18px]" /> },
+    ],
   },
   {
-    label: 'Time Tracking',
-    href: '/time-tracking',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Accounting',
-    href: '/accounting',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Reports',
-    href: '/reports',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
+    label: 'INTELLIGENCE',
+    implemented: false,
+    items: [
+      { label: 'Analytics', href: '/analytics', icon: <BarChart3 className="h-[18px] w-[18px]" /> },
+      { label: 'AI Command Center', href: '/ai', icon: <Sparkles className="h-[18px] w-[18px]" /> },
+      { label: 'Automation', href: '/automation', icon: <Zap className="h-[18px] w-[18px]" /> },
+    ],
   },
 ];
 
@@ -169,230 +100,184 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() || '/';
   const { user } = useAuth();
-  const [showMore, setShowMore] = useState(false);
-  const [expandedDropdown, setExpandedDropdown] = useState<string | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['WORKSPACE', 'PEOPLE']));
+
+  const toggleGroup = (label: string) => {
+    if (collapsed) return;
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
+  };
 
   const isActive = (href: string) => {
     if (href === '/dashboard') return pathname === '/dashboard' || pathname === '/';
     return pathname.startsWith(href);
   };
 
-  const handleNavClick = (href: string) => {
-    if (href === '/people') {
-      setExpandedDropdown(expandedDropdown === 'people' ? null : 'people');
-    }
+  const isGroupActive = (group: NavGroup) => {
+    return group.items.some(item => isActive(item.href));
   };
 
   return (
-    <aside className={`bg-gray-900 text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} flex flex-col h-full`}>
+    <aside
+      className={cn(
+        'flex h-full flex-col bg-[#0B1730] text-white transition-all duration-200',
+        collapsed ? 'w-[72px]' : 'w-[240px]',
+      )}
+      role="navigation"
+      aria-label="Main navigation"
+    >
       {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
+      <div className={cn('flex h-14 items-center border-b border-[#1E3A5F]', collapsed ? 'justify-center px-2' : 'gap-2.5 px-4')}>
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#2563EB]">
+          <svg className="h-4.5 w-4.5 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center font-bold text-white">
-              F
-            </div>
-            <span className="font-bold text-lg">FUSIONOS</span>
+          <div className="flex flex-col">
+            <span className="text-[15px] font-semibold leading-tight text-white">FusionOS</span>
+            <span className="text-[10px] leading-tight text-[#64748B]">by Zorvexa</span>
           </div>
         )}
-        <button
-          onClick={onToggle}
-          className="p-1 rounded hover:bg-gray-700 transition-colors"
-        >
-          <svg className={`w-5 h-5 transition-transform ${collapsed ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-          </svg>
-        </button>
+        {onToggle && (
+          <button
+            onClick={onToggle}
+            className={cn(
+              'ml-auto flex h-6 w-6 items-center justify-center rounded text-[#64748B] hover:text-white hover:bg-[#162B50] transition-colors',
+              collapsed && 'hidden',
+            )}
+            aria-label="Collapse sidebar"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-2">
-          {mainNavItems.map((item) => (
-            <li key={item.label}>
-              {item.label === 'People' ? (
-                <div>
-                  <button
-                    onClick={() => handleNavClick(item.href)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive(item.href) || pathname.startsWith('/people')
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-left">{item.label}</span>
-                        <svg className={`w-4 h-4 transition-transform ${expandedDropdown === 'people' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                  {!collapsed && expandedDropdown === 'people' && (
-                    <ul className="ml-6 mt-1 space-y-1">
-                      <li>
-                        <Link href="/people/employees" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/people/employees') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Employees
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/people/attendance" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/people/attendance') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Attendance
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/people/leave" className="block px-3 py-1.5 text-sm text-gray-500 cursor-not-allowed">
-                          Leave
-                          <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded">Soon</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/people/payroll" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/people/payroll') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Payroll
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              ) : item.label === 'Organization' ? (
-                <div>
-                  <button
-                    onClick={() => handleNavClick(item.href)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive(item.href) || pathname.startsWith('/organization')
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-left">{item.label}</span>
-                        <svg className={`w-4 h-4 transition-transform ${expandedDropdown === 'organization' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                  {!collapsed && expandedDropdown === 'organization' && (
-                    <ul className="ml-6 mt-1 space-y-1">
-                      <li>
-                        <Link href="/organization/company" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/organization/company') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Company
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/organization/branches" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/organization/branches') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Branches
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/organization/departments" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/organization/departments') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Departments
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/organization/teams" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/organization/teams') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Teams
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/organization/designations" className={`block px-3 py-1.5 text-sm rounded transition-colors ${
-                          pathname.startsWith('/organization/designations') ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                        }`}>
-                          Designations
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                    isActive(item.href)
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                  }`}
-                >
-                  {item.icon}
-                  {!collapsed && <span>{item.label}</span>}
-                </Link>
-              )}
-            </li>
-          ))}
+      <nav className="flex-1 overflow-y-auto py-3">
+        {navigationGroups.map((group) => {
+          const isExpanded = expandedGroups.has(group.label);
+          const groupActive = isGroupActive(group);
 
-          {/* More Section */}
-          <li className="pt-4">
-            <button
-              onClick={() => setShowMore(!showMore)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-              </svg>
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-left">More</span>
-                  <svg className={`w-4 h-4 transition-transform ${showMore ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </>
+          return (
+            <div key={group.label} className="mb-1">
+              {/* Group Header */}
+              {!collapsed ? (
+                <button
+                  onClick={() => toggleGroup(group.label)}
+                  className={cn(
+                    'flex w-full items-center gap-2 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors',
+                    groupActive ? 'text-[#CBD5E1]' : 'text-[#475569] hover:text-[#94A3B8]',
+                  )}
+                >
+                  {group.label}
+                  <ChevronDown
+                    className={cn(
+                      'h-3 w-3 transition-transform duration-150',
+                      !isExpanded && '-rotate-90',
+                    )}
+                  />
+                </button>
+              ) : (
+                <div className="mx-auto my-2 h-px w-8 bg-[#1E3A5F]" />
               )}
-            </button>
-            {!collapsed && showMore && (
-              <ul className="ml-6 mt-1 space-y-1">
-                {moreNavItems.map((item) => (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-colors ${
-                        isActive(item.href) ? 'bg-blue-600/30 text-white' : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {item.icon}
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        </ul>
+
+              {/* Items */}
+              {(isExpanded || collapsed) && (
+                <ul className={cn('space-y-0.5', collapsed ? 'px-2' : 'px-2')}>
+                  {group.items.map((item) => {
+                    const active = isActive(item.href);
+
+                    if (!group.implemented) {
+                      return (
+                        <li key={item.href}>
+                          <div
+                            className={cn(
+                              'flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] cursor-not-allowed opacity-40',
+                              collapsed && 'justify-center px-2',
+                            )}
+                          >
+                            {item.icon}
+                            {!collapsed && (
+                              <>
+                                <span className="flex-1 truncate">{item.label}</span>
+                                <span className="rounded bg-[#1E3A5F] px-1.5 py-0.5 text-[9px] font-medium text-[#64748B]">
+                                  Soon
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    }
+
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            'flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] font-medium transition-colors',
+                            collapsed && 'justify-center px-2',
+                            active
+                              ? 'bg-[#2563EB] text-white'
+                              : 'text-[#CBD5E1] hover:bg-[#162B50] hover:text-white',
+                          )}
+                          title={collapsed ? item.label : undefined}
+                        >
+                          {item.icon}
+                          {!collapsed && <span className="truncate">{item.label}</span>}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </nav>
 
-      {/* User Section */}
-      <div className="border-t border-gray-700 p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-medium text-sm">
-            {user?.firstName?.charAt(0) || 'U'}
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{user?.firstName} {user?.lastName}</p>
-              <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
-            </div>
+      {/* Settings */}
+      <div className="border-t border-[#1E3A5F] px-2 py-2">
+        <Link
+          href="/settings"
+          className={cn(
+            'flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] font-medium text-[#CBD5E1] transition-colors hover:bg-[#162B50] hover:text-white',
+            collapsed && 'justify-center px-2',
+            (pathname || '').startsWith('/settings') && 'bg-[#2563EB] text-white',
           )}
-        </div>
+          title={collapsed ? 'Settings' : undefined}
+        >
+          <Settings className="h-[18px] w-[18px]" />
+          {!collapsed && <span>Settings</span>}
+        </Link>
       </div>
+
+      {/* Tenant Info */}
+      {!collapsed && (
+        <div className="border-t border-[#1E3A5F] px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#162B50] text-[11px] font-semibold text-white">
+                {user?.firstName?.charAt(0) || 'U'}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[12px] font-medium text-white truncate">{user?.firstName || 'User'}</p>
+                <p className="text-[10px] text-[#64748B] truncate">{user?.email || ''}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
-import { AuthProvider } from '@/contexts/auth-context';
-import { AppShell } from '@/components/layout/app-shell';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+// Force dynamic rendering for all pages (enterprise ERP requires auth)
+export const dynamic = 'force-dynamic';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'FusionOS — AI-native Business Operating System',
@@ -19,11 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body>
-        <AuthProvider>
-          <AppShell>{children}</AppShell>
-        </AuthProvider>
+    <html lang="en" className={inter.variable}>
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   );

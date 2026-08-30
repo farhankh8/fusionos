@@ -1,142 +1,122 @@
 'use client';
 
+/**
+ * FusionOS Payroll Management Page
+ * Enterprise payroll workspace with dashboard, periods, runs, salary structures, and payslips.
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/ui/page-header';
+import { KpiCard } from '@/components/ui/kpi-card';
+import { DataTable } from '@/components/ui/data-table';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { Tabs } from '@/components/ui/tabs';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SectionCard } from '@/components/ui/section-card';
+import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
+import { Wallet, Users, TrendingUp, TrendingDown, DollarSign, Clock, CheckCircle2, FileText, Settings, BarChart3, Plus } from 'lucide-react';
+
+/* ── Types ───────────────────────────────────────────────────────────────── */
 
 interface PayrollPeriod {
   id: string;
   name: string;
   startDate: string;
   endDate: string;
-  paymentDate: string;
   status: string;
+  employeeCount: number;
+  totalGross: number;
+  totalDeductions: number;
+  totalNet: number;
+  currency: string;
 }
 
 interface PayrollRun {
   id: string;
   periodId: string;
+  period?: { name: string };
   calculationMode: string;
-  status: string;
-  totalEmployees: number;
+  employeeCount: number;
   totalGross: number;
   totalDeductions: number;
   totalNet: number;
   currency: string;
-  period: { id: string; name: string };
-  calculatedAt?: string;
+  status: string;
   createdAt: string;
-}
-
-interface PayrollDashboard {
-  currentPeriod: PayrollPeriod | null;
-  activeEmployees: number;
-  latestRun: PayrollRun | null;
-  pendingRuns: number;
-  finalizedRuns: number;
-  totalGross: number;
-  totalDeductions: number;
-  totalNet: number;
 }
 
 interface SalaryStructure {
   id: string;
-  employeeId: string;
-  employee: { id: string; firstName: string; lastName: string; employeeCode: string };
-  currency: string;
-  payFrequency: string;
-  basicSalary: number;
-  effectiveFrom: string;
-  effectiveTo?: string;
-  isActive: boolean;
-  status: string;
-}
-
-interface PayrollComponent {
-  id: string;
   name: string;
-  code: string;
-  type: string;
-  isStatutory: boolean;
-  isFixed: boolean;
-  defaultValue?: number;
-  isActive: boolean;
-}
-
-interface Payslip {
-  id: string;
-  employeeId: string;
-  employee: { id: string; firstName: string; lastName: string; employeeCode: string };
+  employee?: { firstName: string; lastName: string; employeeCode: string };
   currency: string;
-  grossPay: number;
+  basicSalary: number;
   totalEarnings: number;
   totalDeductions: number;
-  netPay: number;
-  paymentDate: string;
+  effectiveDate: string;
   status: string;
-  line: {
-    items: Array<{ id: string; type: string; code: string; name: string; amount: number; source: string }>;
-  };
 }
 
-type TabType = 'dashboard' | 'periods' | 'runs' | 'salaries' | 'components' | 'payslips';
+interface PayrollDashboard {
+  currentPeriod?: string;
+  employeeCount: number;
+  grossPayroll: number;
+  deductions: number;
+  netPayroll: number;
+  pendingReview: number;
+  finalized: number;
+  currency: string;
+}
 
-const TABS: { id: TabType; label: string }[] = [
-  { id: 'dashboard', label: 'Dashboard' },
+/* ── Tab Configuration ───────────────────────────────────────────────────── */
+
+const PAYROLL_TABS = [
+  { id: 'dashboard', label: 'Overview' },
   { id: 'periods', label: 'Periods' },
-  { id: 'runs', label: 'Payroll Runs' },
-  { id: 'salaries', label: 'Salary Structures' },
-  { id: 'components', label: 'Components' },
+  { id: 'runs', label: 'Runs' },
+  { id: 'structures', label: 'Salary Structures' },
   { id: 'payslips', label: 'Payslips' },
 ];
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  DRAFT: { bg: 'bg-gray-100', text: 'text-gray-700', dot: 'bg-gray-400' },
-  OPEN: { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500' },
-  PROCESSING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
-  CALCULATING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
-  CALCULATED: { bg: 'bg-indigo-50', text: 'text-indigo-700', dot: 'bg-indigo-500' },
-  UNDER_REVIEW: { bg: 'bg-purple-50', text: 'text-purple-700', dot: 'bg-purple-500' },
-  REVIEWING: { bg: 'bg-purple-50', text: 'text-purple-700', dot: 'bg-purple-500' },
-  REVIEWED: { bg: 'bg-violet-50', text: 'text-violet-700', dot: 'bg-violet-500' },
-  APPROVED: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-  FINALIZED: { bg: 'bg-green-50', text: 'text-green-700', dot: 'bg-green-500' },
-  CLOSED: { bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
-  PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
-  FAILED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
-};
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-const formatCurrency = (amount: number, currency: string = 'USD') => {
+const formatMoney = (amount: number, currency: string = 'USD') => {
+  if (!amount && amount !== 0) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount / 100);
 };
 
-const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const PERIOD_STATUS_ORDER: Record<string, number> = {
+  DRAFT: 0, OPEN: 1, PROCESSING: 2, CALCULATED: 3, UNDER_REVIEW: 4, APPROVED: 5, FINALIZED: 6, CLOSED: 7,
+};
 
-const DEFAULT_STYLE = { bg: 'bg-gray-100', text: 'text-gray-700', dot: 'bg-gray-400' } as const;
-const getStatusStyle = (status: string): { bg: string; text: string; dot: string } => STATUS_STYLES[status] ?? DEFAULT_STYLE;
+/* ── Main Component ──────────────────────────────────────────────────────── */
 
 export default function PayrollPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboard, setDashboard] = useState<PayrollDashboard | null>(null);
   const [periods, setPeriods] = useState<PayrollPeriod[]>([]);
   const [runs, setRuns] = useState<PayrollRun[]>([]);
-  const [salaries, setSalaries] = useState<SalaryStructure[]>([]);
-  const [components, setComponents] = useState<PayrollComponent[]>([]);
-  const [payslips, setPayslips] = useState<Payslip[]>([]);
+  const [structures, setStructures] = useState<SalaryStructure[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  /* ── Data Fetching ──────────────────────────────────────────────────────── */
 
   const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
       const data = await apiClient.get<PayrollDashboard>('/payroll/dashboard');
       setDashboard(data);
-    } catch (error) {
-      console.error('Failed to fetch payroll dashboard:', error);
+    } catch {
+      setDashboard(null);
     } finally {
       setLoading(false);
     }
@@ -145,433 +125,327 @@ export default function PayrollPage() {
   const fetchPeriods = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get<{ data: PayrollPeriod[] }>('/payroll/periods');
-      setPeriods(Array.isArray(data) ? data : (data as any)?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch periods:', error);
+      const responseData = await apiClient.get<{ data: PayrollPeriod[]; meta?: { total: number; totalPages: number } }>('/payroll/periods', { page: page.toString(), limit: '15' });
+      setPeriods(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch {
+      setPeriods([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
   const fetchRuns = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get<{ data: PayrollRun[] }>('/payroll/runs');
-      setRuns(Array.isArray(data) ? data : (data as any)?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch runs:', error);
+      const responseData = await apiClient.get<{ data: PayrollRun[]; meta?: { total: number; totalPages: number } }>('/payroll/runs', { page: page.toString(), limit: '15' });
+      setRuns(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch {
+      setRuns([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
-  const fetchSalaries = useCallback(async () => {
+  const fetchStructures = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get<{ data: SalaryStructure[] }>('/payroll/salaries');
-      setSalaries(Array.isArray(data) ? data : (data as any)?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch salaries:', error);
+      const responseData = await apiClient.get<{ data: SalaryStructure[]; meta?: { total: number; totalPages: number } }>('/payroll/salaries', { page: page.toString(), limit: '15' });
+      setStructures(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch {
+      setStructures([]);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const fetchComponents = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await apiClient.get<{ data: PayrollComponent[] }>('/payroll/components');
-      setComponents(Array.isArray(data) ? data : (data as any)?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch components:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchPayslips = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await apiClient.get<{ data: Payslip[] }>('/payroll/payslips');
-      setPayslips(Array.isArray(data) ? data : (data as any)?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch payslips:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
-    switch (activeTab) {
-      case 'dashboard': fetchDashboard(); break;
-      case 'periods': fetchPeriods(); break;
-      case 'runs': fetchRuns(); break;
-      case 'salaries': fetchSalaries(); break;
-      case 'components': fetchComponents(); break;
-      case 'payslips': fetchPayslips(); break;
+    setPage(1);
+    if (activeTab === 'dashboard') fetchDashboard();
+    else if (activeTab === 'periods') fetchPeriods();
+    else if (activeTab === 'runs') fetchRuns();
+    else if (activeTab === 'structures') fetchStructures();
+  }, [activeTab, fetchDashboard, fetchPeriods, fetchRuns, fetchStructures]);
+
+  useEffect(() => {
+    if (activeTab !== 'dashboard') {
+      if (activeTab === 'periods') fetchPeriods();
+      else if (activeTab === 'runs') fetchRuns();
+      else if (activeTab === 'structures') fetchStructures();
     }
-  }, [activeTab, fetchDashboard, fetchPeriods, fetchRuns, fetchSalaries, fetchComponents, fetchPayslips]);
+  }, [page, activeTab, fetchPeriods, fetchRuns, fetchStructures]);
 
-  const renderDashboard = () => {
-    if (!dashboard) return <Card><div className="p-8 text-center text-gray-500">No payroll data available</div></Card>;
+  /* ── Render Helpers ─────────────────────────────────────────────────────── */
 
-    return (
-      <div className="space-y-6">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-5">
-            <div className="text-sm text-gray-500 mb-1">Active Employees</div>
-            <div className="text-2xl font-bold text-gray-900">{dashboard.activeEmployees}</div>
-          </Card>
-          <Card className="p-5">
-            <div className="text-sm text-gray-500 mb-1">Total Gross Pay</div>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(dashboard.totalGross)}</div>
-          </Card>
-          <Card className="p-5">
-            <div className="text-sm text-gray-500 mb-1">Total Deductions</div>
-            <div className="text-2xl font-bold text-red-600">{formatCurrency(dashboard.totalDeductions)}</div>
-          </Card>
-          <Card className="p-5">
-            <div className="text-sm text-gray-500 mb-1">Net Pay</div>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(dashboard.totalNet)}</div>
-          </Card>
-        </div>
-
-        {/* Current Period & Run Status */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Current Period</h3>
-            {dashboard.currentPeriod ? (
-              <div>
-                <div className="text-lg font-bold text-gray-900">{dashboard.currentPeriod.name}</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {formatDate(dashboard.currentPeriod.startDate)} – {formatDate(dashboard.currentPeriod.endDate)}
-                </div>
-                <div className="mt-2">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(dashboard.currentPeriod.status).bg} ${getStatusStyle(dashboard.currentPeriod.status).text}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${getStatusStyle(dashboard.currentPeriod.status).dot}`}></span>
-                    {dashboard.currentPeriod.status}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-gray-400 text-sm">No active payroll period</div>
-            )}
-          </Card>
-          <Card className="p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Run Summary</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Pending Runs</span>
-                <span className="font-medium text-amber-600">{dashboard.pendingRuns}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Finalized Runs</span>
-                <span className="font-medium text-emerald-600">{dashboard.finalizedRuns}</span>
-              </div>
-              {dashboard.latestRun && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Latest Run</span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyle(dashboard.latestRun.status).bg} ${getStatusStyle(dashboard.latestRun.status).text}`}>
-                    {dashboard.latestRun.calculationMode} – {dashboard.latestRun.status}
-                  </span>
-                </div>
-              )}
-            </div>
-          </Card>
-        </div>
+  const renderDashboard = () => (
+    loading ? (
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => <KpiSkeleton key={i} />)}
       </div>
-    );
-  };
+    ) : !dashboard ? (
+      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+        <EmptyState icon={Wallet} title="No payroll data available" description="Payroll dashboard will appear once periods and runs are created." />
+      </div>
+    ) : (
+      <>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
+          <KpiCard label="Current Period" value={dashboard.currentPeriod || 'N/A'} icon={Clock} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+          <KpiCard label="Employees" value={dashboard.employeeCount} icon={Users} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+          <KpiCard label="Gross Payroll" value={formatMoney(dashboard.grossPayroll, dashboard.currency)} icon={TrendingUp} iconBg="bg-blue-50" iconColor="text-blue-600" />
+          <KpiCard label="Deductions" value={formatMoney(dashboard.deductions, dashboard.currency)} icon={TrendingDown} iconBg="bg-red-50" iconColor="text-red-600" />
+          <KpiCard label="Net Payroll" value={formatMoney(dashboard.netPayroll, dashboard.currency)} icon={DollarSign} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+          <KpiCard label="Pending Review" value={dashboard.pendingReview} icon={Clock} iconBg="bg-amber-50" iconColor="text-amber-600" />
+          <KpiCard label="Finalized" value={dashboard.finalized} icon={CheckCircle2} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+          <KpiCard label="Currency" value={dashboard.currency} icon={DollarSign} iconBg="bg-purple-50" iconColor="text-purple-600" />
+        </div>
+      </>
+    )
+  );
 
   const renderPeriods = () => (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Start Date</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">End Date</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Payment Date</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {periods.length === 0 ? (
-              <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500">No payroll periods found</td></tr>
-            ) : periods.map((period) => {
-              const s = getStatusStyle(period.status);
-              return (
-                <tr key={period.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{period.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(period.startDate)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(period.endDate)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(period.paymentDate)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>
-                      {period.status}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    loading ? (
+      <TableSkeleton rows={8} cols={7} />
+    ) : periods.length === 0 ? (
+      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+        <EmptyState icon={Clock} title="No payroll periods found" description="Create your first payroll period to get started." />
       </div>
-    </Card>
+    ) : (
+      <DataTable
+        columns={[
+          {
+            key: 'name',
+            label: 'Period',
+            render: (item: PayrollPeriod) => (
+              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+            ),
+          },
+          {
+            key: 'startDate',
+            label: 'Start Date',
+            render: (item: PayrollPeriod) => (
+              <span className="text-[13px] text-[#475569]">{new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            ),
+          },
+          {
+            key: 'endDate',
+            label: 'End Date',
+            render: (item: PayrollPeriod) => (
+              <span className="text-[13px] text-[#475569]">{new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            ),
+          },
+          {
+            key: 'status',
+            label: 'Status',
+            render: (item: PayrollPeriod) => <StatusBadge status={item.status} />,
+          },
+          {
+            key: 'employeeCount',
+            label: 'Employees',
+            render: (item: PayrollPeriod) => (
+              <span className="text-[13px] text-[#475569]">{item.employeeCount || 0}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'totalNet',
+            label: 'Net',
+            render: (item: PayrollPeriod) => (
+              <span className="text-[13px] font-medium text-[#0F172A]">{formatMoney(item.totalNet, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+        ]}
+        data={periods}
+        page={page}
+        totalPages={totalPages}
+        total={totalCount}
+        limit={15}
+        onPageChange={setPage}
+      />
+    )
   );
 
   const renderRuns = () => (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Period</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Mode</th>
-              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Employees</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Gross</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Deductions</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Net</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {runs.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500">No payroll runs found</td></tr>
-            ) : runs.map((run) => {
-              const s = getStatusStyle(run.status);
-              return (
-                <tr key={run.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{run.period?.name}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      run.calculationMode === 'ATTENDANCE' ? 'bg-blue-50 text-blue-700' :
-                      run.calculationMode === 'MANUAL' ? 'bg-purple-50 text-purple-700' :
-                      'bg-indigo-50 text-indigo-700'
-                    }`}>{run.calculationMode}</span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-center text-gray-700">{run.totalEmployees}</td>
-                  <td className="px-6 py-4 text-sm text-right text-gray-700">{formatCurrency(run.totalGross, run.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-right text-red-600">{formatCurrency(run.totalDeductions, run.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-right font-medium text-emerald-600">{formatCurrency(run.totalNet, run.currency)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>
-                      {run.status}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    loading ? (
+      <TableSkeleton rows={8} cols={7} />
+    ) : runs.length === 0 ? (
+      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+        <EmptyState icon={BarChart3} title="No payroll runs found" description="Create a payroll run to calculate employee salaries." />
       </div>
-    </Card>
+    ) : (
+      <DataTable
+        columns={[
+          {
+            key: 'period',
+            label: 'Period',
+            render: (item: PayrollRun) => (
+              <span className="text-[13px] font-medium text-[#0F172A]">{item.period?.name || '—'}</span>
+            ),
+          },
+          {
+            key: 'calculationMode',
+            label: 'Mode',
+            render: (item: PayrollRun) => (
+              <span className="rounded bg-[#F1F5F9] px-1.5 py-0.5 text-[11px] font-medium text-[#475569]">{item.calculationMode}</span>
+            ),
+          },
+          {
+            key: 'employeeCount',
+            label: 'Employees',
+            render: (item: PayrollRun) => (
+              <span className="text-[13px] text-[#475569]">{item.employeeCount}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'totalGross',
+            label: 'Gross',
+            render: (item: PayrollRun) => (
+              <span className="text-[13px] text-[#475569]">{formatMoney(item.totalGross, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'totalDeductions',
+            label: 'Deductions',
+            render: (item: PayrollRun) => (
+              <span className="text-[13px] text-red-600">{formatMoney(item.totalDeductions, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'totalNet',
+            label: 'Net',
+            render: (item: PayrollRun) => (
+              <span className="text-[13px] font-semibold text-[#0F172A]">{formatMoney(item.totalNet, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'status',
+            label: 'Status',
+            render: (item: PayrollRun) => <StatusBadge status={item.status} />,
+          },
+        ]}
+        data={runs}
+        page={page}
+        totalPages={totalPages}
+        total={totalCount}
+        limit={15}
+        onPageChange={setPage}
+      />
+    )
   );
 
-  const renderSalaries = () => (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Frequency</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Basic Salary</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Effective From</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {salaries.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-500">No salary structures found</td></tr>
-            ) : salaries.map((sal) => (
-              <tr key={sal.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-medium">
-                      {sal.employee.firstName.charAt(0)}{sal.employee.lastName.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900 text-sm">{sal.employee.firstName} {sal.employee.lastName}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 font-mono text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded inline-block">{sal.employee.employeeCode}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{sal.payFrequency}</td>
-                <td className="px-6 py-4 text-sm text-right font-medium text-gray-900">{formatCurrency(sal.basicSalary, sal.currency)}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{formatDate(sal.effectiveFrom)}</td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                    sal.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {sal.isActive ? 'Active' : sal.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  const renderStructures = () => (
+    loading ? (
+      <TableSkeleton rows={8} cols={6} />
+    ) : structures.length === 0 ? (
+      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+        <EmptyState icon={Settings} title="No salary structures found" description="Configure salary structures to define employee compensation." />
       </div>
-    </Card>
+    ) : (
+      <DataTable
+        columns={[
+          {
+            key: 'name',
+            label: 'Structure',
+            render: (item: SalaryStructure) => (
+              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+            ),
+          },
+          {
+            key: 'employee',
+            label: 'Employee',
+            render: (item: SalaryStructure) => (
+              <span className="text-[13px] text-[#475569]">{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : '—'}</span>
+            ),
+          },
+          {
+            key: 'basicSalary',
+            label: 'Basic Salary',
+            render: (item: SalaryStructure) => (
+              <span className="text-[13px] font-medium text-[#0F172A]">{formatMoney(item.basicSalary, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'totalEarnings',
+            label: 'Total Earnings',
+            render: (item: SalaryStructure) => (
+              <span className="text-[13px] text-emerald-600">{formatMoney(item.totalEarnings, item.currency)}</span>
+            ),
+            align: 'right' as const,
+          },
+          {
+            key: 'effectiveDate',
+            label: 'Effective Date',
+            render: (item: SalaryStructure) => (
+              <span className="text-[13px] text-[#475569]">{new Date(item.effectiveDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            ),
+          },
+          {
+            key: 'status',
+            label: 'Status',
+            render: (item: SalaryStructure) => <StatusBadge status={item.status} />,
+          },
+        ]}
+        data={structures}
+        page={page}
+        totalPages={totalPages}
+        total={totalCount}
+        limit={15}
+        onPageChange={setPage}
+      />
+    )
   );
 
-  const renderComponents = () => (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Statutory</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Default</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {components.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-500">No payroll components found</td></tr>
-            ) : components.map((comp) => (
-              <tr key={comp.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{comp.name}</td>
-                <td className="px-6 py-4 font-mono text-sm text-gray-700">{comp.code}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    comp.type === 'EARNING' ? 'bg-emerald-50 text-emerald-700' :
-                    comp.type === 'DEDUCTION' ? 'bg-red-50 text-red-700' :
-                    comp.type === 'EMPLOYER_CONTRIBUTION' ? 'bg-blue-50 text-blue-700' :
-                    'bg-purple-50 text-purple-700'
-                  }`}>{comp.type}</span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">{comp.isStatutory ? 'Yes' : 'No'}</td>
-                <td className="px-6 py-4 text-sm text-right text-gray-700">
-                  {comp.defaultValue != null ? formatCurrency(comp.defaultValue) : '—'}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                    comp.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {comp.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-
-  const renderPayslips = () => (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Gross</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Earnings</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Deductions</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Net Pay</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Payment Date</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {payslips.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500">No payslips found</td></tr>
-            ) : payslips.map((ps) => {
-              const s = getStatusStyle(ps.status);
-              return (
-                <tr key={ps.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-medium">
-                        {ps.employee.firstName.charAt(0)}{ps.employee.lastName.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">{ps.employee.firstName} {ps.employee.lastName}</div>
-                        <div className="text-xs text-gray-500">{ps.employee.employeeCode}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-right text-gray-700">{formatCurrency(ps.grossPay, ps.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-right text-emerald-600">{formatCurrency(ps.totalEarnings, ps.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-right text-red-600">{formatCurrency(ps.totalDeductions, ps.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-right font-semibold text-gray-900">{formatCurrency(ps.netPay, ps.currency)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(ps.paymentDate)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>
-                      {ps.status}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
+  /* ── Main Render ────────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header Tabs */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-4 py-3.5 text-sm font-medium transition-colors ${
-                    activeTab === tab.id ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-t-full" />
-                  )}
-                </button>
-              ))}
-            </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              New Period
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-6 py-6">
-        {loading ? (
-          <Card>
-            <div className="flex items-center justify-center py-20">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                <p className="text-sm text-gray-500">Loading...</p>
-              </div>
-            </div>
-          </Card>
-        ) : activeTab === 'dashboard' ? renderDashboard()
-        : activeTab === 'periods' ? renderPeriods()
-        : activeTab === 'runs' ? renderRuns()
-        : activeTab === 'salaries' ? renderSalaries()
-        : activeTab === 'components' ? renderComponents()
-        : renderPayslips()
+    <div className="min-h-full bg-[#F8FAFC]">
+      <PageHeader
+        title="Payroll"
+        description="Manage payroll runs, salary structures and employee compensation"
+        breadcrumbs={[{ label: 'People' }, { label: 'Payroll' }]}
+        actions={
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+            <Plus className="h-3.5 w-3.5" />
+            New Period
+          </button>
         }
+      />
+
+      <div className="px-5 py-4 lg:px-6">
+        {/* Tabs */}
+        <Tabs tabs={PAYROLL_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Tab Content */}
+        <div className="pt-4">
+          {activeTab === 'dashboard' && renderDashboard()}
+          {activeTab === 'periods' && renderPeriods()}
+          {activeTab === 'runs' && renderRuns()}
+          {activeTab === 'structures' && renderStructures()}
+          {activeTab === 'payslips' && (
+            <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+              <EmptyState
+                icon={FileText}
+                title="Payslips"
+                description="View payslips from the dedicated Payslips page."
+                action={
+                  <a href="/people/payslips" className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                    View Payslips
+                  </a>
+                }
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

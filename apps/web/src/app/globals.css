@@ -6,7 +6,8 @@
 
 /*
  * FusionOS Design System — Enterprise-Grade Tokens
- * Professional, restrained, functional. No glassmorphism, no gradients.
+ * Professional, restrained, functional.
+ * Dark navy sidebar + light workspace.
  */
 
 @theme {
@@ -25,7 +26,7 @@
   --color-on-accent: #FFFFFF;
 
   /* ── Surfaces ────────────────────────────────────────────────────────── */
-  --color-background: #FFFFFF;
+  --color-background: #F8FAFC;
   --color-foreground: #0F172A;
   --color-card: #FFFFFF;
   --color-card-foreground: #0F172A;
@@ -41,26 +42,28 @@
   /* ── Semantic ────────────────────────────────────────────────────────── */
   --color-destructive: #DC2626;
   --color-destructive-foreground: #FFFFFF;
-  --color-success: #059669;
-  --color-success-light: #ECFDF5;
+  --color-success: #16A34A;
+  --color-success-light: #F0FDF4;
   --color-warning: #D97706;
   --color-warning-light: #FFFBEB;
   --color-info: #2563EB;
   --color-info-light: #EFF6FF;
 
-  /* ── Sidebar ─────────────────────────────────────────────────────────── */
-  --color-sidebar: #F8FAFC;
-  --color-sidebar-foreground: #334155;
-  --color-sidebar-primary: #2563EB;
+  /* ── Sidebar (Dark Navy) ────────────────────────────────────────────── */
+  --color-sidebar: #0B1730;
+  --color-sidebar-secondary: #10213F;
+  --color-sidebar-hover: #162B50;
+  --color-sidebar-active: #2563EB;
+  --color-sidebar-foreground: #CBD5E1;
   --color-sidebar-primary-foreground: #FFFFFF;
-  --color-sidebar-accent: #EFF6FF;
-  --color-sidebar-accent-foreground: #1E40AF;
-  --color-sidebar-border: #E2E8F0;
+  --color-sidebar-accent: #162B50;
+  --color-sidebar-accent-foreground: #FFFFFF;
+  --color-sidebar-border: #1E3A5F;
   --color-sidebar-ring: #2563EB;
 
   /* ── Chart Colors ────────────────────────────────────────────────────── */
   --color-chart-1: #2563EB;
-  --color-chart-2: #059669;
+  --color-chart-2: #16A34A;
   --color-chart-3: #D97706;
   --color-chart-4: #7C3AED;
   --color-chart-5: #DC2626;
@@ -97,7 +100,7 @@
 }
 
 :root {
-  --background: #FFFFFF;
+  --background: #F8FAFC;
   --foreground: #0F172A;
   --card: #FFFFFF;
   --card-foreground: #0F172A;
@@ -116,18 +119,18 @@
   --input: #E2E8F0;
   --ring: #2563EB;
   --chart-1: #2563EB;
-  --chart-2: #059669;
+  --chart-2: #16A34A;
   --chart-3: #D97706;
   --chart-4: #7C3AED;
   --chart-5: #DC2626;
   --radius: 0.375rem;
-  --sidebar: #F8FAFC;
-  --sidebar-foreground: #334155;
+  --sidebar: #0B1730;
+  --sidebar-foreground: #CBD5E1;
   --sidebar-primary: #2563EB;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EFF6FF;
-  --sidebar-accent-foreground: #1E40AF;
-  --sidebar-border: #E2E8F0;
+  --sidebar-accent: #162B50;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1E3A5F;
   --sidebar-ring: #2563EB;
 }
 

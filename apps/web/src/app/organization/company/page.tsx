@@ -2,184 +2,314 @@
 
 /**
  * FusionOS Company Management Page
- *
- * Displays company information with edit capabilities.
- * This is the root of the organization hierarchy.
+ * Enterprise company workspace with real API data.
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, Globe, Phone, Mail, MapPin, Clock, CreditCard } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { PageHeader } from '@/components/ui/page-header';
+import { KpiCard } from '@/components/ui/kpi-card';
+import { DataTable } from '@/components/ui/data-table';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { EmptyState } from '@/components/ui/empty-state';
+import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
+import { Building2, MapPin, Users, Plus, Globe, Phone, Mail } from 'lucide-react';
 
 interface Company {
   id: string;
   name: string;
   legalName?: string;
-  code: string;
-  status: string;
   registrationNumber?: string;
   taxId?: string;
   email?: string;
   phone?: string;
   website?: string;
-  timezone?: string;
-  currency?: string;
-  address?: Record<string, string>;
-  _count: { branches: number; departments: number; employees: number };
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  status: string;
   createdAt: string;
 }
 
 export default function CompanyPage() {
-  const [company, setCompany] = useState<Company | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [kpiLoading, setKpiLoading] = useState(true);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
-  const fetchCompany = useCallback(async () => {
+  const fetchCompanies = useCallback(async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
-      const res = await fetch('http://localhost:3001/api/v1/organization/companies?limit=1', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!res.ok) throw new Error('Failed to fetch companies');
-      const data = await res.json();
-      if (data.data && data.data.length > 0) {
-        setCompany(data.data[0]!);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load company');
+      const params: Record<string, string> = {
+        page: page.toString(),
+        limit: '10',
+      };
+      if (search) params['search'] = search;
+      if (statusFilter) params['status'] = statusFilter;
+
+      const responseData = await apiClient.get<{ data: Company[]; meta?: { total: number; totalPages: number } }>('/organization/companies', params);
+      setCompanies(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
+    } catch {
+      setCompanies([]);
     } finally {
       setLoading(false);
+      setKpiLoading(false);
     }
-  }, []);
+  }, [page, search, statusFilter]);
 
-  useEffect(() => { fetchCompany(); }, [fetchCompany]);
+  useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
-  if (loading) {
+  /* ── Detail View ────────────────────────────────────────────────────────── */
+
+  if (selectedCompany) {
     return (
-      <div className="min-h-full bg-background">
-        <div className="p-4 lg:p-6">
-          <div className="flex items-center justify-center py-12">
-            <div className="text-[13px] text-muted-foreground">Loading company information...</div>
+      <div className="min-h-full bg-[#F8FAFC]">
+        <PageHeader
+          title="Company Details"
+          description={selectedCompany.name}
+          breadcrumbs={[
+            { label: 'Organization' },
+            { label: 'Companies', onClick: () => setSelectedCompany(null) },
+            { label: 'Details' },
+          ]}
+          actions={
+            <button
+              onClick={() => setSelectedCompany(null)}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+            >
+              Back to List
+            </button>
+          }
+        />
+        <div className="p-5 lg:p-6">
+          <div className="grid gap-4 lg:grid-cols-3">
+            {/* Company Info */}
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Company Information</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                    <Building2 className="h-5 w-5 text-[#2563EB]" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-medium text-[#0F172A]">{selectedCompany.name}</p>
+                    {selectedCompany.legalName && <p className="text-[12px] text-[#64748B]">{selectedCompany.legalName}</p>}
+                  </div>
+                </div>
+                <div className="border-t border-[#E2E8F0] pt-3 space-y-2">
+                  {selectedCompany.registrationNumber && (
+                    <div className="flex justify-between">
+                      <span className="text-[12px] text-[#64748B]">Registration No.</span>
+                      <span className="text-[12px] font-medium text-[#0F172A]">{selectedCompany.registrationNumber}</span>
+                    </div>
+                  )}
+                  {selectedCompany.taxId && (
+                    <div className="flex justify-between">
+                      <span className="text-[12px] text-[#64748B]">Tax ID</span>
+                      <span className="text-[12px] font-medium text-[#0F172A]">{selectedCompany.taxId}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-[12px] text-[#64748B]">Status</span>
+                    <StatusBadge status={selectedCompany.status} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Contact Information</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                {selectedCompany.email && (
+                  <div className="flex items-center gap-2.5">
+                    <Mail className="h-4 w-4 text-[#64748B]" />
+                    <span className="text-[13px] text-[#475569]">{selectedCompany.email}</span>
+                  </div>
+                )}
+                {selectedCompany.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="h-4 w-4 text-[#64748B]" />
+                    <span className="text-[13px] text-[#475569]">{selectedCompany.phone}</span>
+                  </div>
+                )}
+                {selectedCompany.website && (
+                  <div className="flex items-center gap-2.5">
+                    <Globe className="h-4 w-4 text-[#64748B]" />
+                    <span className="text-[13px] text-[#475569]">{selectedCompany.website}</span>
+                  </div>
+                )}
+                {selectedCompany.address && (
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="h-4 w-4 text-[#64748B] mt-0.5" />
+                    <div className="text-[13px] text-[#475569]">
+                      <p>{selectedCompany.address}</p>
+                      {selectedCompany.city && <p>{selectedCompany.city}{selectedCompany.state ? `, ${selectedCompany.state}` : ''}</p>}
+                      {selectedCompany.country && <p>{selectedCompany.postalCode ? `${selectedCompany.postalCode} ` : ''}{selectedCompany.country}</p>}
+                    </div>
+                  </div>
+                )}
+                {!selectedCompany.email && !selectedCompany.phone && !selectedCompany.website && !selectedCompany.address && (
+                  <p className="text-[12px] text-[#94A3B8]">No contact information available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Metadata */}
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Additional Details</h2>
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-[12px] text-[#64748B]">Created</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{new Date(selectedCompany.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-full bg-background">
-        <div className="p-4 lg:p-6">
-          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
-            <p className="text-[13px] text-destructive">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!company) {
-    return (
-      <div className="min-h-full bg-background">
-        <div className="p-4 lg:p-6">
-          <div className="rounded-lg border border-border p-8 text-center">
-            <Building2 className="mx-auto h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
-            <p className="mt-2 text-[13px] text-muted-foreground">No company found. Create one to get started.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  /* ── List View ──────────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="p-4 lg:p-6">
-        {/* Page Header */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-semibold text-foreground">Company</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">
-              Company profile and configuration
-            </p>
-          </div>
-          <span className={`inline-flex h-5 items-center rounded px-2 text-[10px] font-medium ${
-            company.status === 'ACTIVE'
-              ? 'bg-success/10 text-success'
-              : 'bg-muted text-muted-foreground'
-          }`}>
-            {company.status}
-          </span>
+    <div className="min-h-full bg-[#F8FAFC]">
+      <PageHeader
+        title="Companies"
+        description="Manage company information and settings"
+        breadcrumbs={[{ label: 'Organization' }, { label: 'Companies' }]}
+        actions={
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+            <Plus className="h-3.5 w-3.5" />
+            Add Company
+          </button>
+        }
+      />
+
+      <div className="px-5 py-4 lg:px-6">
+        {/* KPI Row */}
+        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
+          {kpiLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
+          ) : (
+            <>
+              <KpiCard label="Total Companies" value={totalCount} icon={Building2} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Active" value={companies.filter(c => c.status === 'ACTIVE').length} icon={Globe} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+              <KpiCard label="Inactive" value={companies.filter(c => c.status === 'INACTIVE').length} icon={Building2} iconBg="bg-gray-50" iconColor="text-gray-600" />
+            </>
+          )}
         </div>
 
-        {/* Company Info */}
-        <div className="grid gap-3 lg:grid-cols-2">
-          {/* Basic Info */}
-          <div className="rounded-lg border border-border">
-            <div className="border-b border-border px-4 py-2.5">
-              <h2 className="text-[13px] font-semibold text-foreground">Basic Information</h2>
-            </div>
-            <div className="divide-y divide-border">
-              <InfoRow icon={Building2} label="Company Name" value={company.name} />
-              {company.legalName && <InfoRow icon={Building2} label="Legal Name" value={company.legalName} />}
-              <InfoRow icon={Building2} label="Code" value={company.code} />
-              {company.registrationNumber && <InfoRow icon={Building2} label="Registration #" value={company.registrationNumber} />}
-              {company.taxId && <InfoRow icon={Building2} label="Tax ID" value={company.taxId} />}
-            </div>
-          </div>
+        {/* Filters */}
+        <FilterBar
+          search={search}
+          searchPlaceholder="Search companies..."
+          onSearchChange={(val) => { setSearch(val); setPage(1); }}
+          filters={[
+            {
+              key: 'status',
+              label: 'All Status',
+              value: statusFilter,
+              options: [
+                { value: 'ACTIVE', label: 'Active' },
+                { value: 'INACTIVE', label: 'Inactive' },
+              ],
+              onChange: (val) => { setStatusFilter(val); setPage(1); },
+            },
+          ]}
+          activeFilterCount={statusFilter ? 1 : 0}
+          onClearFilters={() => { setStatusFilter(''); setSearch(''); setPage(1); }}
+        />
 
-          {/* Contact */}
-          <div className="rounded-lg border border-border">
-            <div className="border-b border-border px-4 py-2.5">
-              <h2 className="text-[13px] font-semibold text-foreground">Contact & Settings</h2>
-            </div>
-            <div className="divide-y divide-border">
-              {company.email && <InfoRow icon={Mail} label="Email" value={company.email} />}
-              {company.phone && <InfoRow icon={Phone} label="Phone" value={company.phone} />}
-              {company.website && <InfoRow icon={Globe} label="Website" value={company.website} />}
-              {company.timezone && <InfoRow icon={Clock} label="Timezone" value={company.timezone} />}
-              {company.currency && <InfoRow icon={CreditCard} label="Currency" value={company.currency} />}
-              {company.address && (
-                <InfoRow
-                  icon={MapPin}
-                  label="Address"
-                  value={[company.address['line1'] as string, company.address['city'] as string, company.address['country'] as string].filter(Boolean).join(', ')}
-                />
-              )}
-            </div>
+        {/* Table */}
+        {loading ? (
+          <TableSkeleton rows={5} cols={5} />
+        ) : companies.length === 0 ? (
+          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+            <EmptyState
+              icon={Building2}
+              title="No companies found"
+              description="Add your first company to get started."
+              action={
+                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Company
+                </button>
+              }
+            />
           </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          <StatCard label="Branches" value={company._count.branches} />
-          <StatCard label="Departments" value={company._count.departments} />
-          <StatCard label="Employees" value={company._count.employees} />
-        </div>
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'name',
+                label: 'Company',
+                render: (item: Company) => (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                      <Building2 className="h-4 w-4 text-[#2563EB]" />
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
+                      {item.legalName && <p className="text-[11px] text-[#64748B]">{item.legalName}</p>}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: 'email',
+                label: 'Email',
+                render: (item: Company) => (
+                  <span className="text-[13px] text-[#475569]">{item.email || '—'}</span>
+                ),
+              },
+              {
+                key: 'phone',
+                label: 'Phone',
+                render: (item: Company) => (
+                  <span className="text-[13px] text-[#475569]">{item.phone || '—'}</span>
+                ),
+              },
+              {
+                key: 'country',
+                label: 'Location',
+                render: (item: Company) => (
+                  <span className="text-[13px] text-[#475569]">{item.city ? `${item.city}, ${item.country || ''}` : item.country || '—'}</span>
+                ),
+              },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (item: Company) => <StatusBadge status={item.status} />,
+              },
+            ]}
+            data={companies}
+            page={page}
+            totalPages={totalPages}
+            total={totalCount}
+            limit={10}
+            onPageChange={setPage}
+            onRowClick={(item) => setSelectedCompany(item)}
+          />
+        )}
       </div>
-    </div>
-  );
-}
-
-function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-2.5">
-      <Icon className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
-      <div className="min-w-0 flex-1">
-        <span className="text-[11px] text-muted-foreground">{label}</span>
-        <p className="text-[13px] text-foreground truncate">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-lg border border-border p-3 text-center">
-      <p className="text-[16px] font-semibold text-foreground">{value}</p>
-      <p className="text-[12px] text-muted-foreground">{label}</p>
     </div>
   );
 }

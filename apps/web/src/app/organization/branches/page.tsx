@@ -1,171 +1,302 @@
 'use client';
 
 /**
- * FusionOS Branches Page
- *
- * Lists all branches with search, filtering, and pagination.
+ * FusionOS Branches Management Page
+ * Enterprise branch/workspace management with real API data.
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { MapPin, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { PageHeader } from '@/components/ui/page-header';
+import { KpiCard } from '@/components/ui/kpi-card';
+import { DataTable } from '@/components/ui/data-table';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { EmptyState } from '@/components/ui/empty-state';
+import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
+import { MapPin, Building2, Plus, Globe, Phone } from 'lucide-react';
 
 interface Branch {
   id: string;
   name: string;
-  code: string;
-  status: string;
+  code?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
   phone?: string;
   email?: string;
-  timezone?: string;
-  company: { id: string; name: string };
-  _count: { departments: number; employees: number };
+  company?: { id: string; name: string };
+  status: string;
   createdAt: string;
-}
-
-interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
 }
 
 export default function BranchesPage() {
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [kpiLoading, setKpiLoading] = useState(true);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const fetchBranches = useCallback(async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
-      const params = new URLSearchParams({ page: String(page), limit: '10' });
-      if (search) params.set('search', search);
-      const res = await fetch(`http://localhost:3001/api/v1/organization/branches?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!res.ok) throw new Error('Failed to fetch branches');
-      const data = await res.json();
-      setBranches(data.data ?? []);
-      setMeta(data.meta ?? null);
+      const params: Record<string, string> = {
+        page: page.toString(),
+        limit: '12',
+      };
+      if (search) params['search'] = search;
+      if (statusFilter) params['status'] = statusFilter;
+
+      const responseData = await apiClient.get<{ data: Branch[]; meta?: { total: number; totalPages: number } }>('/organization/branches', params);
+      setBranches(responseData.data || []);
+      setTotalPages(responseData.meta?.totalPages || 1);
+      setTotalCount(responseData.meta?.total || 0);
     } catch {
       setBranches([]);
     } finally {
       setLoading(false);
+      setKpiLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, statusFilter]);
 
   useEffect(() => { fetchBranches(); }, [fetchBranches]);
 
-  return (
-    <div className="min-h-full bg-background">
-      <div className="p-4 lg:p-6">
-        {/* Header */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-semibold text-foreground">Branches</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">Manage office locations</p>
+  /* ── Detail View ────────────────────────────────────────────────────────── */
+
+  if (selectedBranch) {
+    return (
+      <div className="min-h-full bg-[#F8FAFC]">
+        <PageHeader
+          title="Branch Details"
+          description={selectedBranch.name}
+          breadcrumbs={[
+            { label: 'Organization' },
+            { label: 'Branches', onClick: () => setSelectedBranch(null) },
+            { label: 'Details' },
+          ]}
+          actions={
+            <button
+              onClick={() => setSelectedBranch(null)}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+            >
+              Back to List
+            </button>
+          }
+        />
+        <div className="p-5 lg:p-6">
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Branch Information</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                    <MapPin className="h-5 w-5 text-[#2563EB]" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-medium text-[#0F172A]">{selectedBranch.name}</p>
+                    {selectedBranch.code && <p className="text-[12px] text-[#64748B]">{selectedBranch.code}</p>}
+                  </div>
+                </div>
+                <div className="border-t border-[#E2E8F0] pt-3 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-[12px] text-[#64748B]">Company</span>
+                    <span className="text-[12px] font-medium text-[#0F172A]">{selectedBranch.company?.name || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[12px] text-[#64748B]">Status</span>
+                    <StatusBadge status={selectedBranch.status} />
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[12px] text-[#64748B]">Created</span>
+                    <span className="text-[12px] font-medium text-[#0F172A]">{new Date(selectedBranch.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Location & Contact</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                {selectedBranch.email && (
+                  <div className="flex items-center gap-2.5">
+                    <Globe className="h-4 w-4 text-[#64748B]" />
+                    <span className="text-[13px] text-[#475569]">{selectedBranch.email}</span>
+                  </div>
+                )}
+                {selectedBranch.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="h-4 w-4 text-[#64748B]" />
+                    <span className="text-[13px] text-[#475569]">{selectedBranch.phone}</span>
+                  </div>
+                )}
+                {selectedBranch.address && (
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="h-4 w-4 text-[#64748B] mt-0.5" />
+                    <div className="text-[13px] text-[#475569]">
+                      <p>{selectedBranch.address}</p>
+                      {selectedBranch.city && <p>{selectedBranch.city}{selectedBranch.state ? `, ${selectedBranch.state}` : ''}</p>}
+                      {selectedBranch.country && <p>{selectedBranch.country}</p>}
+                    </div>
+                  </div>
+                )}
+                {!selectedBranch.email && !selectedBranch.phone && !selectedBranch.address && (
+                  <p className="text-[12px] text-[#94A3B8]">No location information available</p>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-3">
+                <h2 className="text-[13px] font-semibold text-[#0F172A]">Quick Stats</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                    <Building2 className="h-4.5 w-4.5 text-[#2563EB]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-[#64748B]">Company</p>
+                    <p className="text-[13px] font-medium text-[#0F172A]">{selectedBranch.company?.name || '—'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-[13px] font-medium text-primary-foreground hover:bg-primary/80">
+        </div>
+      </div>
+    );
+  }
+
+  /* ── List View ──────────────────────────────────────────────────────────── */
+
+  return (
+    <div className="min-h-full bg-[#F8FAFC]">
+      <PageHeader
+        title="Branches"
+        description="Manage office locations and branches"
+        breadcrumbs={[{ label: 'Organization' }, { label: 'Branches' }]}
+        actions={
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             Add Branch
           </button>
+        }
+      />
+
+      <div className="px-5 py-4 lg:px-6">
+        {/* KPI Row */}
+        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
+          {kpiLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
+          ) : (
+            <>
+              <KpiCard label="Total Branches" value={totalCount} icon={MapPin} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Active" value={branches.filter(b => b.status === 'ACTIVE').length} icon={Globe} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+              <KpiCard label="Inactive" value={branches.filter(b => b.status === 'INACTIVE').length} icon={MapPin} iconBg="bg-gray-50" iconColor="text-gray-600" />
+            </>
+          )}
         </div>
 
-        {/* Search */}
-        <div className="mb-3">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search branches..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="h-8 w-full rounded-lg border border-border bg-background pl-8 pr-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-        </div>
+        {/* Filters */}
+        <FilterBar
+          search={search}
+          searchPlaceholder="Search branches..."
+          onSearchChange={(val) => { setSearch(val); setPage(1); }}
+          filters={[
+            {
+              key: 'status',
+              label: 'All Status',
+              value: statusFilter,
+              options: [
+                { value: 'ACTIVE', label: 'Active' },
+                { value: 'INACTIVE', label: 'Inactive' },
+              ],
+              onChange: (val) => { setStatusFilter(val); setPage(1); },
+            },
+          ]}
+          activeFilterCount={statusFilter ? 1 : 0}
+          onClearFilters={() => { setStatusFilter(''); setSearch(''); setPage(1); }}
+        />
 
         {/* Table */}
-        <div className="rounded-lg border border-border">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Name</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Code</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Status</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Depts</th>
-                <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Employees</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-[13px] text-muted-foreground">
-                    Loading...
-                  </td>
-                </tr>
-              ) : branches.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center">
-                    <MapPin className="mx-auto h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
-                    <p className="mt-1 text-[13px] text-muted-foreground">No branches found</p>
-                  </td>
-                </tr>
-              ) : (
-                branches.map((branch) => (
-                  <tr key={branch.id} className="transition-colors duration-120 hover:bg-muted/50">
-                    <td className="px-4 py-2.5">
-                      <p className="text-[13px] font-medium text-foreground">{branch.name}</p>
-                      {branch.email && <p className="text-[11px] text-muted-foreground">{branch.email}</p>}
-                    </td>
-                    <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{branch.code}</td>
-                    <td className="px-4 py-2.5">
-                      <span className={`inline-flex h-5 items-center rounded px-1.5 text-[10px] font-medium ${
-                        branch.status === 'ACTIVE' ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {branch.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{branch._count.departments}</td>
-                    <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{branch._count.employees}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {meta && meta.totalPages > 1 && (
-          <div className="mt-3 flex items-center justify-between">
-            <p className="text-[12px] text-muted-foreground">
-              Showing {((meta.page - 1) * meta.limit) + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total}
-            </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => p - 1)}
-                disabled={!meta.hasPrevious}
-                className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-              <span className="px-2 text-[12px] text-muted-foreground">{meta.page} / {meta.totalPages}</span>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={!meta.hasNext}
-                className="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
+        {loading ? (
+          <TableSkeleton rows={6} cols={5} />
+        ) : branches.length === 0 ? (
+          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+            <EmptyState
+              icon={MapPin}
+              title="No branches found"
+              description="Add your first branch to get started."
+              action={
+                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Branch
+                </button>
+              }
+            />
           </div>
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'name',
+                label: 'Branch',
+                render: (item: Branch) => (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FF]">
+                      <MapPin className="h-4 w-4 text-[#2563EB]" />
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
+                      {item.code && <p className="text-[11px] text-[#64748B]">{item.code}</p>}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: 'company',
+                label: 'Company',
+                render: (item: Branch) => (
+                  <span className="text-[13px] text-[#475569]">{item.company?.name || '—'}</span>
+                ),
+              },
+              {
+                key: 'location',
+                label: 'Location',
+                render: (item: Branch) => (
+                  <span className="text-[13px] text-[#475569]">{item.city ? `${item.city}, ${item.country || ''}` : item.country || '—'}</span>
+                ),
+              },
+              {
+                key: 'phone',
+                label: 'Phone',
+                render: (item: Branch) => (
+                  <span className="text-[13px] text-[#475569]">{item.phone || '—'}</span>
+                ),
+              },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (item: Branch) => <StatusBadge status={item.status} />,
+              },
+            ]}
+            data={branches}
+            page={page}
+            totalPages={totalPages}
+            total={totalCount}
+            limit={12}
+            onPageChange={setPage}
+            onRowClick={(item) => setSelectedBranch(item)}
+          />
         )}
       </div>
     </div>
