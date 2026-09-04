@@ -127,7 +127,7 @@ export default function DocumentDetailPage() {
   };
 
   if (loading) {
-    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" /></div>;
+    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" /></div>;
   }
 
   if (error || !doc) {
@@ -135,7 +135,7 @@ export default function DocumentDetailPage() {
   }
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title={doc.name}
         description={`${doc.fileExtension?.toUpperCase() || 'FILE'} · ${formatSize(doc.totalSize)} · v${doc.currentVersionNum}`}
@@ -145,10 +145,10 @@ export default function DocumentDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-2">
-            <button onClick={() => handleDownload()} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC]">
+            <button onClick={() => handleDownload()} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
               Download
             </button>
-            <button onClick={handleNewVersion} disabled={uploadingVersion} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50">
+            <button onClick={handleNewVersion} disabled={uploadingVersion} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] disabled:opacity-50">
               {uploadingVersion ? 'Uploading...' : 'New Version'}
             </button>
           </div>
@@ -156,10 +156,10 @@ export default function DocumentDetailPage() {
       />
 
       {/* Tab Navigation */}
-      <div className="border-b border-[#E2E8F0] bg-white px-5 lg:px-6">
+      <div className="border-b border-[#DDD0BB] bg-white px-5 lg:px-6">
         <nav className="flex gap-0.5" aria-label="Document tabs">
           {TABS.map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-4 py-3 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab.id ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#0F172A]'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-4 py-3 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab.id ? 'border-[#064E3B] text-[#064E3B]' : 'border-transparent text-[#57534E] hover:text-[#1C1917]'}`}>
               {tab.label}
             </button>
           ))}
@@ -169,8 +169,8 @@ export default function DocumentDetailPage() {
       <div className="px-5 py-4 lg:px-6">
         {/* Overview Info */}
         <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-            <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">Document Details</h3>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+            <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">Document Details</h3>
             <div className="space-y-2 text-[12px]">
               {[
                 { label: 'Status', value: <StatusBadge status={doc.status} /> },
@@ -182,14 +182,14 @@ export default function DocumentDetailPage() {
                 { label: 'Linked Entities', value: doc.entityLinks.length },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-1">
-                  <span className="text-[#64748B]">{item.label}</span>
-                  <span className="text-[#0F172A]">{item.value}</span>
+                  <span className="text-[#57534E]">{item.label}</span>
+                  <span className="text-[#1C1917]">{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-            <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">File Info</h3>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+            <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">File Info</h3>
             <div className="space-y-2 text-[12px]">
               {[
                 { label: 'Type', value: doc.fileExtension?.toUpperCase() || '—' },
@@ -199,8 +199,8 @@ export default function DocumentDetailPage() {
                 { label: 'Updated', value: new Date(doc.updatedAt).toLocaleDateString() },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-1">
-                  <span className="text-[#64748B]">{item.label}</span>
-                  <span className="text-[#0F172A]">{item.value}</span>
+                  <span className="text-[#57534E]">{item.label}</span>
+                  <span className="text-[#1C1917]">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -208,46 +208,46 @@ export default function DocumentDetailPage() {
         </div>
 
         {doc.description && (
-          <div className="mb-4 rounded-lg border border-[#E2E8F0] bg-white p-4">
-            <h3 className="mb-2 text-[13px] font-semibold text-[#0F172A]">Description</h3>
-            <p className="text-[13px] text-[#475569] whitespace-pre-wrap">{doc.description}</p>
+          <div className="mb-4 rounded-lg border border-[#DDD0BB] bg-white p-4">
+            <h3 className="mb-2 text-[13px] font-semibold text-[#1C1917]">Description</h3>
+            <p className="text-[13px] text-[#57534E] whitespace-pre-wrap">{doc.description}</p>
           </div>
         )}
 
         {/* Versions Tab */}
         {activeTab === 'versions' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {doc.versions.length === 0 ? (
               <EmptyState title="No versions" description="Upload a document to create the first version." />
             ) : (
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Version</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">File Name</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Uploaded By</th>
-                    <th className="text-right px-4 py-2.5 font-medium text-[#64748B]">Size</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Date</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Actions</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Version</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">File Name</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Uploaded By</th>
+                    <th className="text-right px-4 py-2.5 font-medium text-[#57534E]">Size</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Date</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {doc.versions.map((v) => (
-                    <tr key={v.id} className="hover:bg-[#F8FAFC]">
+                    <tr key={v.id} className="hover:bg-[#FBF5EC]">
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium ${v.versionNumber === doc.currentVersionNum ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#F1F5F9] text-[#475569]'}`}>
+                        <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium ${v.versionNumber === doc.currentVersionNum ? 'bg-[#D1FAE5] text-[#064E3B]' : 'bg-[#F5E6CC] text-[#57534E]'}`}>
                           v{v.versionNumber}
                           {v.versionNumber === doc.currentVersionNum && ' (current)'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#0F172A]">{v.fileName}</td>
-                      <td className="px-4 py-3 text-[#475569]">
+                      <td className="px-4 py-3 text-[#1C1917]">{v.fileName}</td>
+                      <td className="px-4 py-3 text-[#57534E]">
                         {v.uploadedBy ? `${v.uploadedBy.firstName} ${v.uploadedBy.lastName}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right text-[#475569]">{formatSize(v.fileSize)}</td>
-                      <td className="px-4 py-3 text-[#64748B]">{new Date(v.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-right text-[#57534E]">{formatSize(v.fileSize)}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{new Date(v.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3 text-center">
-                        <button onClick={() => handleDownload(v.id)} className="text-[12px] text-[#2563EB] hover:underline">Download</button>
+                        <button onClick={() => handleDownload(v.id)} className="text-[12px] text-[#064E3B] hover:underline">Download</button>
                       </td>
                     </tr>
                   ))}
@@ -259,19 +259,19 @@ export default function DocumentDetailPage() {
 
         {/* Activity Tab */}
         {activeTab === 'activity' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {activities.length === 0 ? (
               <EmptyState title="No activity" description="Document activity will appear here." />
             ) : (
-              <div className="divide-y divide-[#E2E8F0]">
+              <div className="divide-y divide-[#DDD0BB]">
                 {activities.map((a: any) => (
-                  <div key={a.id} className="flex gap-4 px-4 py-3 hover:bg-[#F8FAFC]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[11px] font-semibold text-[#2563EB]">
+                  <div key={a.id} className="flex gap-4 px-4 py-3 hover:bg-[#FBF5EC]">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#D1FAE5] text-[11px] font-semibold text-[#064E3B]">
                       {a.employee?.firstName?.charAt(0) || 'S'}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] text-[#0F172A]">{a.description || a.action}</p>
-                      <p className="text-[11px] text-[#64748B]">
+                      <p className="text-[13px] text-[#1C1917]">{a.description || a.action}</p>
+                      <p className="text-[11px] text-[#57534E]">
                         {a.employee ? `${a.employee.firstName} ${a.employee.lastName}` : 'System'} · {new Date(a.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -284,26 +284,26 @@ export default function DocumentDetailPage() {
 
         {/* Links Tab */}
         {activeTab === 'links' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {doc.entityLinks.length === 0 ? (
               <EmptyState title="No linked entities" description="Link this document to employees, projects, invoices, etc." />
             ) : (
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Entity Type</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Entity ID</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Entity Type</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Entity ID</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {doc.entityLinks.map((link) => (
-                    <tr key={link.id} className="hover:bg-[#F8FAFC]">
+                    <tr key={link.id} className="hover:bg-[#FBF5EC]">
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]">
+                        <span className="inline-flex items-center rounded bg-[#D1FAE5] px-1.5 py-0.5 text-[10px] font-medium text-[#064E3B]">
                           {link.entityType}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-[11px] text-[#475569]">{link.entityId}</td>
+                      <td className="px-4 py-3 font-mono text-[11px] text-[#57534E]">{link.entityId}</td>
                     </tr>
                   ))}
                 </tbody>

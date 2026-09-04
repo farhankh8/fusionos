@@ -23,10 +23,10 @@ function formatCurrency(amount: number, currency = 'USD') {
 }
 
 const STAGE_CONFIG: Record<string, { color: string; bg: string; border: string }> = {
-  PROSPECTING: { color: '#64748B', bg: '#F8FAFC', border: '#E2E8F0' },
-  QUALIFICATION: { color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
+  PROSPECTING: { color: '#57534E', bg: '#FBF5EC', border: '#DDD0BB' },
+  QUALIFICATION: { color: '#064E3B', bg: '#D1FAE5', border: '#BFDBFE' },
   PROPOSAL: { color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
-  NEGOTIATION: { color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+  NEGOTIATION: { color: '#7C3AED', bg: '#D1FAE5', border: '#DDD6FE' },
   CLOSED_WON: { color: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
   CLOSED_LOST: { color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
 };
@@ -81,13 +81,13 @@ export default function CrmPipelinePage() {
 
       {/* Summary bar */}
       <div className="flex gap-4 mb-6">
-        <div className="px-4 py-2 bg-white rounded-lg border border-[#E2E8F0]">
-          <span className="text-[12px] text-[#64748B]">Total Pipeline</span>
-          <p className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(totalValue)}</p>
+        <div className="px-4 py-2 bg-white rounded-lg border border-[#DDD0BB]">
+          <span className="text-[12px] text-[#57534E]">Total Pipeline</span>
+          <p className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(totalValue)}</p>
         </div>
-        <div className="px-4 py-2 bg-white rounded-lg border border-[#E2E8F0]">
-          <span className="text-[12px] text-[#64748B]">Weighted Value</span>
-          <p className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(totalWeighted)}</p>
+        <div className="px-4 py-2 bg-white rounded-lg border border-[#DDD0BB]">
+          <span className="text-[12px] text-[#57534E]">Weighted Value</span>
+          <p className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(totalWeighted)}</p>
         </div>
       </div>
 
@@ -95,13 +95,13 @@ export default function CrmPipelinePage() {
       {loading ? (
         <div className="grid grid-cols-6 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-48 bg-[#F8FAFC] rounded-lg animate-pulse" />
+            <div key={i} className="h-48 bg-[#FBF5EC] rounded-lg animate-pulse" />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {Object.entries(pipeline).map(([stage, data]) => {
-            const fallback = { color: '#64748B', bg: '#F8FAFC', border: '#E2E8F0' };
+            const fallback = { color: '#57534E', bg: '#FBF5EC', border: '#DDD0BB' };
             const cfg = STAGE_CONFIG[stage] ?? fallback;
             return (
               <div
@@ -113,16 +113,16 @@ export default function CrmPipelinePage() {
                   <h3 className="text-[12px] font-semibold uppercase tracking-wide" style={{ color: cfg.color }}>
                     {stage.replace('_', ' ')}
                   </h3>
-                  <p className="text-[22px] font-bold text-[#0F172A] mt-1">{data.count}</p>
+                  <p className="text-[22px] font-bold text-[#1C1917] mt-1">{data.count}</p>
                 </div>
                 <div className="space-y-1.5 text-[12px]">
                   <div className="flex justify-between">
-                    <span className="text-[#64748B]">Total</span>
-                    <span className="font-medium text-[#0F172A]">{formatCurrency(data.totalValue)}</span>
+                    <span className="text-[#57534E]">Total</span>
+                    <span className="font-medium text-[#1C1917]">{formatCurrency(data.totalValue)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#64748B]">Weighted</span>
-                    <span className="font-medium text-[#0F172A]">{formatCurrency(data.weightedValue)}</span>
+                    <span className="text-[#57534E]">Weighted</span>
+                    <span className="font-medium text-[#1C1917]">{formatCurrency(data.weightedValue)}</span>
                   </div>
                 </div>
                 {/* Visual bar */}
@@ -132,7 +132,7 @@ export default function CrmPipelinePage() {
                       className="h-full rounded-full"
                       style={{
                         width: `${Math.min(100, (data.totalValue / totalValue) * 100)}%`,
-                        backgroundColor: cfg.color ?? '#64748B',
+                        backgroundColor: cfg.color ?? '#57534E',
                       }}
                     />
                   </div>

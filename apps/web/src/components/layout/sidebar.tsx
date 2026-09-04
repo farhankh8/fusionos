@@ -144,15 +144,15 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'flex h-full flex-col bg-[#0B1730] text-[#CBD5E1] transition-all duration-200 ease-in-out',
+        'flex h-full flex-col bg-[#022C22] text-[#A7F3D0] transition-all duration-200 ease-in-out',
         collapsed ? 'w-[72px]' : 'w-[260px]',
       )}
       role="navigation"
       aria-label="Main navigation"
     >
       {/* Logo */}
-      <div className={cn('flex h-16 items-center border-b border-[#1E3A5F]', collapsed ? 'justify-center px-2' : 'gap-3 px-5')}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#2563EB]">
+      <div className={cn('flex h-16 items-center border-b border-[#064E3B]', collapsed ? 'justify-center px-2' : 'gap-3 px-5')}>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#064E3B]">
           <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
@@ -160,14 +160,14 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
         {!collapsed && (
           <div className="flex flex-col">
             <span className="text-[17px] font-bold leading-tight text-white tracking-tight">FusionOS</span>
-            <span className="text-[11px] leading-tight text-[#64748B]">by Zorvexa</span>
+            <span className="text-[11px] leading-tight text-[#57534E]">by Zorvexa</span>
           </div>
         )}
         {onToggle && (
           <button
             onClick={onToggle}
             className={cn(
-              'ml-auto flex h-7 w-7 items-center justify-center rounded-md text-[#64748B] hover:text-white hover:bg-[#162B50] transition-colors',
+              'ml-auto flex h-7 w-7 items-center justify-center rounded-md text-[#57534E] hover:text-white hover:bg-[#065F46] transition-colors',
               collapsed && 'hidden',
             )}
             aria-label="Collapse sidebar"
@@ -191,7 +191,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                   onClick={() => toggleGroup(group.label)}
                   className={cn(
                     'flex w-full items-center gap-2 px-5 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors',
-                    groupActive ? 'text-[#CBD5E1]' : 'text-[#475569] hover:text-[#94A3B8]',
+                    groupActive ? 'text-[#A7F3D0]' : 'text-[#57534E] hover:text-[#8E7E68]',
                   )}
                 >
                   {group.label}
@@ -203,7 +203,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                   />
                 </button>
               ) : (
-                <div className="mx-auto my-3 h-px w-8 bg-[#1E3A5F]" />
+                <div className="mx-auto my-3 h-px w-8 bg-[#064E3B]" />
               )}
 
               {/* Items */}
@@ -231,7 +231,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             {!collapsed && (
                               <>
                                 <span className="flex-1 truncate">{item.label}</span>
-                                <span className="rounded bg-[#1E3A5F] px-2 py-0.5 text-[10px] font-medium text-[#64748B]">
+                                <span className="rounded bg-[#064E3B] px-2 py-0.5 text-[10px] font-medium text-[#57534E]">
                                   Soon
                                 </span>
                               </>
@@ -249,8 +249,8 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                             'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium transition-all duration-150',
                             collapsed && 'justify-center px-2',
                             active
-                              ? 'bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/30'
-                              : 'text-[#CBD5E1] hover:bg-[#162B50] hover:text-white',
+                              ? 'bg-[#064E3B] text-white shadow-md shadow-[#064E3B]/30'
+                              : 'text-[#A7F3D0] hover:bg-[#065F46] hover:text-white',
                           )}
                           title={collapsed ? item.label : undefined}
                         >
@@ -268,13 +268,13 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
       </nav>
 
       {/* Settings */}
-      <div className="border-t border-[#1E3A5F] px-3 py-3">
+      <div className="border-t border-[#064E3B] px-3 py-3">
         <Link
           href="/settings"
           className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-[#CBD5E1] transition-colors hover:bg-[#162B50] hover:text-white',
+            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium text-[#A7F3D0] transition-colors hover:bg-[#065F46] hover:text-white',
             collapsed && 'justify-center px-2',
-            (pathname || '').startsWith('/settings') && 'bg-[#2563EB] text-white',
+            (pathname || '').startsWith('/settings') && 'bg-[#064E3B] text-white',
           )}
           title={collapsed ? 'Settings' : undefined}
         >
@@ -285,15 +285,15 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
       {/* Tenant Info */}
       {!collapsed && (
-        <div className="border-t border-[#1E3A5F] px-5 py-4">
+        <div className="border-t border-[#064E3B] px-5 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-bold text-white">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#064E3B] text-[13px] font-bold text-white">
                 {user?.firstName?.charAt(0) || 'U'}
               </div>
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold text-white truncate">{user?.firstName || 'User'}</p>
-                <p className="text-[11px] text-[#64748B] truncate">{user?.email || ''}</p>
+                <p className="text-[11px] text-[#57534E] truncate">{user?.email || ''}</p>
               </div>
             </div>
           </div>

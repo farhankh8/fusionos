@@ -144,14 +144,14 @@ export default function AttendancePage() {
       label: 'Employee',
       render: (item: AttendanceRecord) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[11px] font-semibold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#064E3B] text-[11px] font-semibold text-white">
             {item.employee?.firstName?.charAt(0)}{item.employee?.lastName?.charAt(0)}
           </div>
           <div>
-            <p className="text-[13px] font-medium text-[#0F172A]">
+            <p className="text-[13px] font-medium text-[#1C1917]">
               {item.employee?.firstName} {item.employee?.lastName}
             </p>
-            <p className="text-[11px] text-[#64748B]">{item.employee?.employeeCode}</p>
+            <p className="text-[11px] text-[#57534E]">{item.employee?.employeeCode}</p>
           </div>
         </div>
       ),
@@ -160,7 +160,7 @@ export default function AttendancePage() {
       key: 'date',
       label: 'Date',
       render: (item: AttendanceRecord) => (
-        <span className="text-[13px] text-[#475569]">
+        <span className="text-[13px] text-[#57534E]">
           {new Date(item.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
         </span>
       ),
@@ -183,7 +183,7 @@ export default function AttendancePage() {
       key: 'worked',
       label: 'Worked',
       render: (item: AttendanceRecord) => (
-        <span className="text-[13px] font-semibold text-[#0F172A]">{formatDuration(item.totalWorkedMinutes)}</span>
+        <span className="text-[13px] font-semibold text-[#1C1917]">{formatDuration(item.totalWorkedMinutes)}</span>
       ),
       align: 'right' as const,
     },
@@ -204,19 +204,19 @@ export default function AttendancePage() {
       key: 'recordStatus',
       label: 'Record',
       render: (item: AttendanceRecord) => (
-        <span className="text-[11px] text-[#64748B]">{item.recordStatus || '—'}</span>
+        <span className="text-[11px] text-[#57534E]">{item.recordStatus || '—'}</span>
       ),
     },
   ];
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Attendance"
         description="Manage employee attendance, working hours and attendance events"
         breadcrumbs={[{ label: 'People' }, { label: 'Attendance' }]}
         actions={
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             Clock In
           </button>
@@ -235,7 +235,7 @@ export default function AttendancePage() {
               <KpiCard label="On Leave" value={kpis.onLeave} icon={CalendarOff} iconBg="bg-amber-50" iconColor="text-amber-600" />
               <KpiCard label="Half Day" value={kpis.halfDay} icon={Clock} iconBg="bg-orange-50" iconColor="text-orange-600" />
               <KpiCard label="Late / Exceptions" value={kpis.late} icon={AlertTriangle} iconBg="bg-purple-50" iconColor="text-purple-600" />
-              <KpiCard label="Total Employees" value={kpis.total} icon={Users} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Employees" value={kpis.total} icon={Users} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
             </>
           )}
         </div>
@@ -267,7 +267,7 @@ export default function AttendancePage() {
         {loading ? (
           <TableSkeleton rows={8} cols={8} />
         ) : records.length === 0 ? (
-          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
             <EmptyState
               icon={Clock}
               title="No attendance records found"
@@ -275,7 +275,7 @@ export default function AttendancePage() {
               action={
                 <button
                   onClick={() => { setStatusFilter(''); setSearch(''); setPage(1); }}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"
                 >
                   Clear Filters
                 </button>

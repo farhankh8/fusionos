@@ -64,13 +64,13 @@ export default function DepartmentsPage() {
   useEffect(() => { fetchDepartments(); }, [fetchDepartments]);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Departments"
         description="Manage organizational departments"
         breadcrumbs={[{ label: 'Organization' }, { label: 'Departments' }]}
         actions={
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             Add Department
           </button>
@@ -84,7 +84,7 @@ export default function DepartmentsPage() {
             Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
           ) : (
             <>
-              <KpiCard label="Total Departments" value={totalCount} icon={GitBranch} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Departments" value={totalCount} icon={GitBranch} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Active" value={departments.filter(d => d.status === 'ACTIVE').length} icon={GitBranch} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Total Employees" value={departments.reduce((sum, d) => sum + (d.employeeCount || 0), 0)} icon={Users} iconBg="bg-violet-50" iconColor="text-violet-600" />
             </>
@@ -116,13 +116,13 @@ export default function DepartmentsPage() {
         {loading ? (
           <TableSkeleton rows={6} cols={5} />
         ) : departments.length === 0 ? (
-          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
             <EmptyState
               icon={GitBranch}
               title="No departments found"
               description="Add your first department to get started."
               action={
-                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]">
                   <Plus className="h-3.5 w-3.5" />
                   Add Department
                 </button>
@@ -137,12 +137,12 @@ export default function DepartmentsPage() {
                 label: 'Department',
                 render: (item: Department) => (
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FF]">
-                      <GitBranch className="h-4 w-4 text-[#2563EB]" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D1FAE5]">
+                      <GitBranch className="h-4 w-4 text-[#064E3B]" />
                     </div>
                     <div>
-                      <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
-                      {item.code && <p className="text-[11px] text-[#64748B]">{item.code}</p>}
+                      <p className="text-[13px] font-medium text-[#1C1917]">{item.name}</p>
+                      {item.code && <p className="text-[11px] text-[#57534E]">{item.code}</p>}
                     </div>
                   </div>
                 ),
@@ -151,28 +151,28 @@ export default function DepartmentsPage() {
                 key: 'company',
                 label: 'Company',
                 render: (item: Department) => (
-                  <span className="text-[13px] text-[#475569]">{item.company?.name || '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.company?.name || '—'}</span>
                 ),
               },
               {
                 key: 'branch',
                 label: 'Branch',
                 render: (item: Department) => (
-                  <span className="text-[13px] text-[#475569]">{item.branch?.name || '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.branch?.name || '—'}</span>
                 ),
               },
               {
                 key: 'manager',
                 label: 'Manager',
                 render: (item: Department) => (
-                  <span className="text-[13px] text-[#475569]">{item.manager ? `${item.manager.firstName} ${item.manager.lastName}` : '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.manager ? `${item.manager.firstName} ${item.manager.lastName}` : '—'}</span>
                 ),
               },
               {
                 key: 'employeeCount',
                 label: 'Employees',
                 render: (item: Department) => (
-                  <span className="text-[13px] font-medium text-[#0F172A]">{item.employeeCount || 0}</span>
+                  <span className="text-[13px] font-medium text-[#1C1917]">{item.employeeCount || 0}</span>
                 ),
                 align: 'right' as const,
               },

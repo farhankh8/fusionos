@@ -100,12 +100,12 @@ export default function CrmLeadsPage() {
           placeholder="Search leads..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="flex-1 max-w-xs px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+          className="flex-1 max-w-xs px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
         />
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] text-[#475569]"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] text-[#57534E]"
         >
           <option value="">All Statuses</option>
           <option value="NEW">New</option>
@@ -117,11 +117,11 @@ export default function CrmLeadsPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-lg border border-[#E2E8F0]">
+      <div className="bg-white rounded-lg border border-[#DDD0BB]">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-[#F8FAFC] rounded animate-pulse" />
+              <div key={i} className="h-12 bg-[#FBF5EC] rounded animate-pulse" />
             ))}
           </div>
         ) : leads.length === 0 ? (
@@ -130,30 +130,30 @@ export default function CrmLeadsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-[#E2E8F0]">
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Lead</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Company</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Source</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Owner</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Status</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Rating</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Created</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Actions</th>
+                <tr className="border-b border-[#DDD0BB]">
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Lead</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Company</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Source</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Owner</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Status</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Rating</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Created</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {leads.map((l) => (
-                  <tr key={l.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
+                  <tr key={l.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#0F172A]">{l.firstName} {l.lastName || ''}</p>
-                      {l.email && <p className="text-[12px] text-[#64748B]">{l.email}</p>}
+                      <p className="font-medium text-[#1C1917]">{l.firstName} {l.lastName || ''}</p>
+                      {l.email && <p className="text-[12px] text-[#57534E]">{l.email}</p>}
                     </td>
-                    <td className="px-4 py-3 text-[#475569]">{l.companyName || '—'}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{l.companyName || '—'}</td>
                     <td className="px-4 py-3"><StatusBadge status={l.source} /></td>
-                    <td className="px-4 py-3 text-[#475569]">{l.owner ? `${l.owner.firstName} ${l.owner.lastName}` : '—'}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{l.owner ? `${l.owner.firstName} ${l.owner.lastName}` : '—'}</td>
                     <td className="px-4 py-3 text-center"><StatusBadge status={l.status} /></td>
                     <td className="px-4 py-3 text-center">{l.rating ? '⭐'.repeat(l.rating) : '—'}</td>
-                    <td className="px-4 py-3 text-[#64748B]">{new Date(l.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{new Date(l.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         {(l.status === 'NEW' || l.status === 'CONTACTED') && (
@@ -162,11 +162,11 @@ export default function CrmLeadsPage() {
                           </button>
                         )}
                         {l.status === 'QUALIFIED' && (
-                          <button onClick={() => convertLead(l.id)} className="px-2 py-1 text-[11px] bg-[#2563EB] text-white rounded hover:bg-[#1D4ED8]">
+                          <button onClick={() => convertLead(l.id)} className="px-2 py-1 text-[11px] bg-[#064E3B] text-white rounded hover:bg-[#047857]">
                             Convert
                           </button>
                         )}
-                        <button onClick={() => router.push(`/crm/leads?id=${l.id}`)} className="px-2 py-1 text-[11px] border border-[#E2E8F0] rounded hover:bg-[#F8FAFC]">
+                        <button onClick={() => router.push(`/crm/leads?id=${l.id}`)} className="px-2 py-1 text-[11px] border border-[#DDD0BB] rounded hover:bg-[#FBF5EC]">
                           View
                         </button>
                       </div>
@@ -179,7 +179,7 @@ export default function CrmLeadsPage() {
         )}
 
         {total > 20 && (
-          <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+          <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
             <span>Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}</span>
             <div className="flex gap-2">
               <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 border rounded disabled:opacity-40">Prev</button>

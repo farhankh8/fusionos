@@ -14,7 +14,7 @@ const VARIANT_STYLES: Record<string, { bg: string; text: string; dot: string }> 
   warning: { bg: 'bg-warning-light', text: 'text-warning', dot: 'bg-warning' },
   danger: { bg: 'bg-[#FEF2F2] dark:bg-[rgba(239,68,68,0.15)]', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
   info: { bg: 'bg-info-light', text: 'text-primary', dot: 'bg-primary' },
-  purple: { bg: 'bg-[#F5F3FF] dark:bg-[rgba(139,92,246,0.15)]', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
+  purple: { bg: 'bg-[#D1FAE5] dark:bg-[rgba(139,92,246,0.15)]', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-emerald-500' },
 };
 
 const DEFAULT_STYLE = { bg: 'bg-secondary', text: 'text-muted-foreground', dot: 'bg-muted-foreground/60' };

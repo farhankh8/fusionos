@@ -55,17 +55,17 @@ export default function AssetsPage() {
   };
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Asset Management"
         description="Manage company assets, equipment, and inventory"
-        actions={<button onClick={() => router.push('/assets/new')} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"><Plus className="h-3.5 w-3.5" />New Asset</button>}
+        actions={<button onClick={() => router.push('/assets/new')} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"><Plus className="h-3.5 w-3.5" />New Asset</button>}
       />
       <div className="px-5 py-4 lg:px-6">
         <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-5">
           {loading ? Array.from({ length: 5 }).map((_, i) => <KpiSkeleton key={i} />) : dashboard && (
             <>
-              <KpiCard label="Total Assets" value={dashboard.total} icon={Package} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Assets" value={dashboard.total} icon={Package} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Active" value={dashboard.active} icon={CheckCircle2} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Assigned" value={dashboard.assigned} icon={Users} iconBg="bg-violet-50" iconColor="text-violet-600" />
               <KpiCard label="In Maintenance" value={dashboard.inMaintenance} icon={Wrench} iconBg="bg-amber-50" iconColor="text-amber-600" />
@@ -76,44 +76,44 @@ export default function AssetsPage() {
 
         <div className="mb-4 flex items-center gap-2">
           <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#94A3B8]" />
-            <input type="text" placeholder="Search assets..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-md border border-[#E2E8F0] bg-white pl-8 pr-3 py-1.5 text-[12px] text-[#0F172A] outline-none focus:border-[#2563EB]" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#8E7E68]" />
+            <input type="text" placeholder="Search assets..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-md border border-[#DDD0BB] bg-white pl-8 pr-3 py-1.5 text-[12px] text-[#1C1917] outline-none focus:border-[#064E3B]" />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1.5 text-[12px] text-[#64748B] outline-none">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border border-[#DDD0BB] bg-white px-2.5 py-1.5 text-[12px] text-[#57534E] outline-none">
             <option value="">All Status</option>
             {['DRAFT', 'ACTIVE', 'AVAILABLE', 'ASSIGNED', 'IN_MAINTENANCE', 'IN_REPAIR', 'RETIRED', 'DISPOSED', 'LOST'].map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
 
-        <div className="rounded-lg border border-[#E2E8F0] bg-white">
+        <div className="rounded-lg border border-[#DDD0BB] bg-white">
           {loading ? (
-            <div className="p-8 text-center"><div className="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" /></div>
+            <div className="p-8 text-center"><div className="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" /></div>
           ) : assets.length === 0 ? (
-            <EmptyState icon={Package} title="No assets found" description="Create your first asset to get started." action={<button onClick={() => router.push('/assets/new')} className="rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">Create Asset</button>} />
+            <EmptyState icon={Package} title="No assets found" description="Create your first asset to get started." action={<button onClick={() => router.push('/assets/new')} className="rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]">Create Asset</button>} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[13px]">
-                <thead><tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Asset</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Code</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Category</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Status</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Assigned To</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Location</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]">Book Value</th>
-                  <th className="px-4 py-2.5 font-medium text-[#64748B]"></th>
+                <thead><tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Asset</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Code</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Category</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Status</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Assigned To</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Location</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]">Book Value</th>
+                  <th className="px-4 py-2.5 font-medium text-[#57534E]"></th>
                 </tr></thead>
-                <tbody className="divide-y divide-[#E2E8F0]">
+                <tbody className="divide-y divide-[#DDD0BB]">
                   {assets.map(asset => (
-                    <tr key={asset.id} className="hover:bg-[#F8FAFC] cursor-pointer" onClick={() => router.push(`/assets/${asset.id}`)}>
-                      <td className="px-4 py-2.5 font-medium text-[#0F172A]">{asset.name}</td>
-                      <td className="px-4 py-2.5 text-[#64748B] font-mono text-[12px]">{asset.assetCode}</td>
-                      <td className="px-4 py-2.5 text-[#64748B]">{asset.category?.name ?? '—'}</td>
+                    <tr key={asset.id} className="hover:bg-[#FBF5EC] cursor-pointer" onClick={() => router.push(`/assets/${asset.id}`)}>
+                      <td className="px-4 py-2.5 font-medium text-[#1C1917]">{asset.name}</td>
+                      <td className="px-4 py-2.5 text-[#57534E] font-mono text-[12px]">{asset.assetCode}</td>
+                      <td className="px-4 py-2.5 text-[#57534E]">{asset.category?.name ?? '—'}</td>
                       <td className="px-4 py-2.5"><span className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-medium ${getStatusColor(asset.status)}`}>{asset.status.replace(/_/g, ' ')}</span></td>
-                      <td className="px-4 py-2.5 text-[#64748B]">{asset.assignments?.[0]?.employee ? `${asset.assignments[0].employee.firstName} ${asset.assignments[0].employee.lastName}` : '—'}</td>
-                      <td className="px-4 py-2.5 text-[#64748B]">{asset.location?.name ?? '—'}</td>
-                      <td className="px-4 py-2.5 text-[#64748B]">{asset.currency} {(asset.currentBookValue / 100).toLocaleString()}</td>
-                      <td className="px-4 py-2.5"><ArrowRight className="h-3.5 w-3.5 text-[#94A3B8]" /></td>
+                      <td className="px-4 py-2.5 text-[#57534E]">{asset.assignments?.[0]?.employee ? `${asset.assignments[0].employee.firstName} ${asset.assignments[0].employee.lastName}` : '—'}</td>
+                      <td className="px-4 py-2.5 text-[#57534E]">{asset.location?.name ?? '—'}</td>
+                      <td className="px-4 py-2.5 text-[#57534E]">{asset.currency} {(asset.currentBookValue / 100).toLocaleString()}</td>
+                      <td className="px-4 py-2.5"><ArrowRight className="h-3.5 w-3.5 text-[#8E7E68]" /></td>
                     </tr>
                   ))}
                 </tbody>

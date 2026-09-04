@@ -94,7 +94,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Projects"
         description="Manage projects, tasks, milestones and team delivery"
@@ -102,7 +102,7 @@ export default function ProjectsPage() {
         actions={
           <button
             onClick={() => router.push('/projects/new')}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
             New Project
@@ -117,7 +117,7 @@ export default function ProjectsPage() {
             Array.from({ length: 5 }).map((_, i) => <KpiSkeleton key={i} />)
           ) : (
             <>
-              <KpiCard label="Total Projects" value={kpis.totalProjects} icon={FolderKanban} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Projects" value={kpis.totalProjects} icon={FolderKanban} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Active" value={kpis.activeProjects} icon={Clock} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Completed" value={kpis.completedProjects} icon={CheckCircle2} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Open Tasks" value={kpis.openTasks} icon={FolderKanban} iconBg="bg-amber-50" iconColor="text-amber-600" />
@@ -133,12 +133,12 @@ export default function ProjectsPage() {
             placeholder="Search projects..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="h-8 w-[280px] rounded-md border border-[#E2E8F0] bg-white px-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+            className="h-8 w-[280px] rounded-md border border-[#DDD0BB] bg-white px-3 text-[13px] text-[#1C1917] placeholder:text-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
           />
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-8 rounded-md border border-[#E2E8F0] bg-white px-2.5 text-[12px] text-[#0F172A]"
+            className="h-8 rounded-md border border-[#DDD0BB] bg-white px-2.5 text-[12px] text-[#1C1917]"
           >
             <option value="">All Status</option>
             <option value="DRAFT">Draft</option>
@@ -150,7 +150,7 @@ export default function ProjectsPage() {
             <option value="ARCHIVED">Archived</option>
           </select>
           {(search || statusFilter) && (
-            <button onClick={() => { setSearch(''); setStatusFilter(''); setPage(1); }} className="text-[12px] text-[#2563EB] hover:text-[#1D4ED8]">
+            <button onClick={() => { setSearch(''); setStatusFilter(''); setPage(1); }} className="text-[12px] text-[#064E3B] hover:text-[#047857]">
               Clear
             </button>
           )}
@@ -158,13 +158,13 @@ export default function ProjectsPage() {
 
         {/* Table */}
         {loading ? (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-8">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-8">
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-[#F8FAFC] rounded animate-pulse" />)}
+              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-[#FBF5EC] rounded animate-pulse" />)}
             </div>
           </div>
         ) : projects.length === 0 ? (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             <EmptyState
               icon={FolderKanban}
               title="No projects found"
@@ -172,7 +172,7 @@ export default function ProjectsPage() {
               action={
                 <button
                   onClick={() => router.push('/projects/new')}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Project
@@ -181,53 +181,53 @@ export default function ProjectsPage() {
             />
           </div>
         ) : (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white overflow-hidden">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white overflow-hidden">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                  <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Project</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Code</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Manager</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Customer</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Status</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Progress</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Tasks</th>
-                  <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Team</th>
+                <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                  <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Project</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Code</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Manager</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Customer</th>
+                  <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Status</th>
+                  <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Progress</th>
+                  <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Tasks</th>
+                  <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Team</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F1F5F9]">
+              <tbody className="divide-y divide-[#F5E6CC]">
                 {projects.map((p) => (
                   <tr
                     key={p.id}
-                    className="cursor-pointer hover:bg-[#F8FAFC] transition-colors"
+                    className="cursor-pointer hover:bg-[#FBF5EC] transition-colors"
                     onClick={() => router.push(`/projects/${p.id}`)}
                   >
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#0F172A]">{p.name}</p>
+                      <p className="font-medium text-[#1C1917]">{p.name}</p>
                       {p.plannedEndDate && (
-                        <p className="text-[11px] text-[#64748B]">
+                        <p className="text-[11px] text-[#57534E]">
                           Due {new Date(p.plannedEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded bg-[#F1F5F9] px-1.5 py-0.5 text-[11px] font-mono text-[#475569]">{p.code}</span>
+                      <span className="rounded bg-[#F5E6CC] px-1.5 py-0.5 text-[11px] font-mono text-[#57534E]">{p.code}</span>
                     </td>
-                    <td className="px-4 py-3 text-[#475569]">
+                    <td className="px-4 py-3 text-[#57534E]">
                       {p.projectManager ? `${p.projectManager.firstName} ${p.projectManager.lastName}` : '—'}
                     </td>
-                    <td className="px-4 py-3 text-[#475569]">{p.customer?.name || '—'}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{p.customer?.name || '—'}</td>
                     <td className="px-4 py-3 text-center"><StatusBadge status={p.status} /></td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <div className="h-1.5 w-16 rounded-full bg-[#E2E8F0]">
-                          <div className="h-1.5 rounded-full bg-[#2563EB]" style={{ width: `${p.progress}%` }} />
+                        <div className="h-1.5 w-16 rounded-full bg-[#DDD0BB]">
+                          <div className="h-1.5 rounded-full bg-[#064E3B]" style={{ width: `${p.progress}%` }} />
                         </div>
-                        <span className="text-[11px] text-[#64748B]">{p.progress}%</span>
+                        <span className="text-[11px] text-[#57534E]">{p.progress}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-[#475569]">{p._count.tasks}</td>
-                    <td className="px-4 py-3 text-center text-[#475569]">{p._count.members}</td>
+                    <td className="px-4 py-3 text-center text-[#57534E]">{p._count.tasks}</td>
+                    <td className="px-4 py-3 text-center text-[#57534E]">{p._count.members}</td>
                   </tr>
                 ))}
               </tbody>
@@ -235,12 +235,12 @@ export default function ProjectsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#E2E8F0] px-4 py-3 text-[12px] text-[#64748B]">
+              <div className="flex items-center justify-between border-t border-[#DDD0BB] px-4 py-3 text-[12px] text-[#57534E]">
                 <span>Showing {((page - 1) * 15) + 1}–{Math.min(page * 15, totalCount)} of {totalCount}</span>
                 <div className="flex gap-1">
-                  <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] disabled:opacity-40">←</button>
+                  <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] disabled:opacity-40">←</button>
                   <span className="px-2 text-[12px]">{page} / {totalPages}</span>
-                  <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] disabled:opacity-40">→</button>
+                  <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] disabled:opacity-40">→</button>
                 </div>
               </div>
             )}

@@ -85,10 +85,10 @@ export default function CrmOverviewPage() {
         breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'CRM' }]}
         actions={
           <div className="flex gap-2">
-            <button onClick={() => router.push('/crm/leads')} className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] transition-colors">
+            <button onClick={() => router.push('/crm/leads')} className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] transition-colors">
               New Lead
             </button>
-            <button onClick={() => router.push('/crm/customers')} className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC] transition-colors">
+            <button onClick={() => router.push('/crm/customers')} className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC] transition-colors">
               Customers
             </button>
           </div>
@@ -103,9 +103,9 @@ export default function CrmOverviewPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-lg border border-[#E2E8F0] bg-white p-3.5 animate-pulse">
-                <div className="h-4 w-20 bg-[#F1F5F9] rounded mb-2" />
-                <div className="h-6 w-24 bg-[#F1F5F9] rounded" />
+              <div key={i} className="rounded-lg border border-[#DDD0BB] bg-white p-3.5 animate-pulse">
+                <div className="h-4 w-20 bg-[#F5E6CC] rounded mb-2" />
+                <div className="h-6 w-24 bg-[#F5E6CC] rounded" />
               </div>
             ))
           : k && [
@@ -116,11 +116,11 @@ export default function CrmOverviewPage() {
               { label: 'Pipeline', value: formatCurrency(k.totalPipelineValue), icon: '💰' },
               { label: 'Weighted', value: formatCurrency(k.weightedPipelineValue), icon: '📊' },
             ].map((kpi) => (
-              <div key={kpi.label} className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+              <div key={kpi.label} className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[12px] text-[#64748B]">{kpi.label}</p>
-                    <p className="mt-1 text-[20px] font-semibold text-[#0F172A] leading-tight">{kpi.value}</p>
+                    <p className="text-[12px] text-[#57534E]">{kpi.label}</p>
+                    <p className="mt-1 text-[20px] font-semibold text-[#1C1917] leading-tight">{kpi.value}</p>
                   </div>
                   <span className="text-xl">{kpi.icon}</span>
                 </div>
@@ -134,7 +134,7 @@ export default function CrmOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+                <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
               ))}
             </div>
           ) : !dashboard?.recentActivities.length ? (
@@ -143,22 +143,22 @@ export default function CrmOverviewPage() {
             <div className="overflow-x-auto -mx-4 -mt-4">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0]">
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Type</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Subject</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Customer</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">By</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Date</th>
+                  <tr className="border-b border-[#DDD0BB]">
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Type</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Subject</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Customer</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">By</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dashboard.recentActivities.map((a) => (
-                    <tr key={a.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
+                    <tr key={a.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
                       <td className="px-4 py-3"><StatusBadge status={a.activityType} /></td>
-                      <td className="px-4 py-3 text-[#0F172A] font-medium">{a.subject}</td>
-                      <td className="px-4 py-3 text-[#475569]">{a.customerProfile?.customer?.name || '—'}</td>
-                      <td className="px-4 py-3 text-[#475569]">{a.actor.firstName} {a.actor.lastName}</td>
-                      <td className="px-4 py-3 text-[#64748B]">{new Date(a.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-[#1C1917] font-medium">{a.subject}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{a.customerProfile?.customer?.name || '—'}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{a.actor.firstName} {a.actor.lastName}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{new Date(a.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -172,7 +172,7 @@ export default function CrmOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+                <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
               ))}
             </div>
           ) : k ? (
@@ -211,10 +211,10 @@ export default function CrmOverviewPage() {
             <button
               key={item.href}
               onClick={() => router.push(item.href)}
-              className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg text-left hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-colors"
+              className="flex items-center gap-3 p-3 border border-[#DDD0BB] rounded-lg text-left hover:bg-[#FBF5EC] hover:border-[#A7F3D0] transition-colors"
             >
               <span className="text-xl">{item.icon}</span>
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.label}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.label}</span>
             </button>
           ))}
         </div>

@@ -35,13 +35,13 @@ export default function AssetsAnalyticsPage() {
   const mixed = !!(s?.hasMixedCurrencies && (s.byCurrency?.length || 0) > 1);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader title="Asset Analytics" description="Asset distribution, book value, and maintenance cost" breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Assets' }]}
-        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
+        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
       <div className="px-5 py-4 lg:px-6">
         {loading ? <div className="grid grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)}</div>
           : error ? <EmptyState icon={Package} title="Unable to load asset analytics" description={error}
-              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
+              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
           : s ? (
             <>
               {mixed ? <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800">Multiple currencies detected — figures are shown per currency and never cross-summed.</div> : null}
@@ -49,12 +49,12 @@ export default function AssetsAnalyticsPage() {
                 <KpiCard label="Total Assets" value={s.totalAssets} icon={Package} iconBg="bg-amber-50" iconColor="text-amber-600" />
                 {mixed ? (
                   s.byCurrency!.flatMap(c => [
-                    <KpiCard key={`bv-${c.currency}`} label={`Book Value (${c.currency})`} value={fmt(c.totalBookValue, c.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />,
+                    <KpiCard key={`bv-${c.currency}`} label={`Book Value (${c.currency})`} value={fmt(c.totalBookValue, c.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />,
                     <KpiCard key={`m-${c.currency}`} label={`Maintenance (${c.currency})`} value={fmt(c.totalMaintenanceCost, c.currency)} icon={Wrench} iconBg="bg-amber-50" iconColor="text-amber-600" />,
                   ])
                 ) : (
                   <>
-                    <KpiCard label="Book Value" value={fmt(s.totalBookValue, s.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                    <KpiCard label="Book Value" value={fmt(s.totalBookValue, s.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                     <KpiCard label="Assigned" value={s.assignedAssets} icon={Package} iconBg="bg-violet-50" iconColor="text-violet-600" />
                     <KpiCard label="In Maintenance" value={s.inMaintenanceAssets} icon={Wrench} iconBg="bg-amber-50" iconColor="text-amber-600" />
                   </>
@@ -63,9 +63,9 @@ export default function AssetsAnalyticsPage() {
               <SectionCard title="Assets by Category">
                 {data.categoryDistribution.length === 0 ? <EmptyState icon={Package} title="No category data" /> : (
                   <div className="space-y-2">{data.categoryDistribution.map((c: any) => (
-                    <div key={c.categoryId} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                      <span className="text-[13px] font-medium text-[#0F172A]">{c.name}</span>
-                      <span className="text-[13px] font-bold text-[#2563EB]">{c.count}</span>
+                    <div key={c.categoryId} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                      <span className="text-[13px] font-medium text-[#1C1917]">{c.name}</span>
+                      <span className="text-[13px] font-bold text-[#064E3B]">{c.count}</span>
                     </div>
                   ))}</div>
                 )}

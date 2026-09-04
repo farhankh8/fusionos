@@ -234,7 +234,7 @@ export default function LeavePage() {
       {loading ? (
         <TableSkeleton rows={8} cols={8} />
       ) : requests.length === 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+        <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
           <EmptyState icon={CalendarOff} title="No leave requests found" description="No leave requests match your current filters." />
         </div>
       ) : (
@@ -245,12 +245,12 @@ export default function LeavePage() {
               label: 'Employee',
               render: (item: LeaveRequest) => (
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[11px] font-semibold text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#064E3B] text-[11px] font-semibold text-white">
                     {item.employee?.firstName?.charAt(0)}{item.employee?.lastName?.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-[13px] font-medium text-[#0F172A]">{item.employee?.firstName} {item.employee?.lastName}</p>
-                    <p className="text-[11px] text-[#64748B]">{item.employee?.employeeCode}</p>
+                    <p className="text-[13px] font-medium text-[#1C1917]">{item.employee?.firstName} {item.employee?.lastName}</p>
+                    <p className="text-[11px] text-[#57534E]">{item.employee?.employeeCode}</p>
                   </div>
                 </div>
               ),
@@ -259,28 +259,28 @@ export default function LeavePage() {
               key: 'leaveType',
               label: 'Leave Type',
               render: (item: LeaveRequest) => (
-                <span className="text-[13px] text-[#475569]">{item.leaveType?.name || '—'}</span>
+                <span className="text-[13px] text-[#57534E]">{item.leaveType?.name || '—'}</span>
               ),
             },
             {
               key: 'startDate',
               label: 'Start Date',
               render: (item: LeaveRequest) => (
-                <span className="text-[13px] text-[#475569]">{new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span className="text-[13px] text-[#57534E]">{new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
               ),
             },
             {
               key: 'endDate',
               label: 'End Date',
               render: (item: LeaveRequest) => (
-                <span className="text-[13px] text-[#475569]">{new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span className="text-[13px] text-[#57534E]">{new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
               ),
             },
             {
               key: 'duration',
               label: 'Duration',
               render: (item: LeaveRequest) => (
-                <span className="text-[13px] font-medium text-[#0F172A]">{item.duration} {item.unit === 'DAYS' ? 'days' : 'hours'}</span>
+                <span className="text-[13px] font-medium text-[#1C1917]">{item.duration} {item.unit === 'DAYS' ? 'days' : 'hours'}</span>
               ),
               align: 'right' as const,
             },
@@ -293,7 +293,7 @@ export default function LeavePage() {
               key: 'createdAt',
               label: 'Submitted',
               render: (item: LeaveRequest) => (
-                <span className="text-[12px] text-[#64748B]">{new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                <span className="text-[12px] text-[#57534E]">{new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
               ),
             },
           ]}
@@ -312,7 +312,7 @@ export default function LeavePage() {
     loading ? (
       <TableSkeleton rows={6} cols={8} />
     ) : balances.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={FileText} title="No leave balances found" description="Leave balances will appear here once leave policies are configured." />
       </div>
     ) : (
@@ -322,14 +322,14 @@ export default function LeavePage() {
             key: 'leaveType',
             label: 'Leave Type',
             render: (item: LeaveBalance) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.leaveType?.name || '—'}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.leaveType?.name || '—'}</span>
             ),
           },
           {
             key: 'entitled',
             label: 'Entitled',
             render: (item: LeaveBalance) => (
-              <span className="text-[13px] text-[#475569]">{item.opening + item.accrued}</span>
+              <span className="text-[13px] text-[#57534E]">{item.opening + item.accrued}</span>
             ),
             align: 'right' as const,
           },
@@ -353,7 +353,7 @@ export default function LeavePage() {
             key: 'carryForward',
             label: 'Carry Forward',
             render: (item: LeaveBalance) => (
-              <span className="text-[13px] text-[#475569]">{item.carryForward || 0}</span>
+              <span className="text-[13px] text-[#57534E]">{item.carryForward || 0}</span>
             ),
             align: 'right' as const,
           },
@@ -375,7 +375,7 @@ export default function LeavePage() {
     loading ? (
       <TableSkeleton rows={5} cols={6} />
     ) : leaveTypes.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={Settings} title="No leave types configured" description="Leave types will appear here once configured by an administrator." />
       </div>
     ) : (
@@ -385,14 +385,14 @@ export default function LeavePage() {
             key: 'name',
             label: 'Name',
             render: (item: LeaveType) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.name}</span>
             ),
           },
           {
             key: 'code',
             label: 'Code',
             render: (item: LeaveType) => (
-              <span className="rounded bg-[#F1F5F9] px-1.5 py-0.5 text-[11px] font-mono text-[#475569]">{item.code}</span>
+              <span className="rounded bg-[#F5E6CC] px-1.5 py-0.5 text-[11px] font-mono text-[#57534E]">{item.code}</span>
             ),
           },
           {
@@ -406,14 +406,14 @@ export default function LeavePage() {
             key: 'requiresApproval',
             label: 'Approval Required',
             render: (item: LeaveType) => (
-              <span className="text-[13px] text-[#475569]">{item.requiresApproval ? 'Yes' : 'No'}</span>
+              <span className="text-[13px] text-[#57534E]">{item.requiresApproval ? 'Yes' : 'No'}</span>
             ),
           },
           {
             key: 'defaultDaysPerYear',
             label: 'Days/Year',
             render: (item: LeaveType) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.defaultDaysPerYear || '—'}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.defaultDaysPerYear || '—'}</span>
             ),
             align: 'right' as const,
           },
@@ -475,32 +475,32 @@ export default function LeavePage() {
     const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return (
-      <div className="rounded-lg border border-[#E2E8F0] bg-white">
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
+      <div className="rounded-lg border border-[#DDD0BB] bg-white">
+        <div className="flex items-center justify-between border-b border-[#DDD0BB] px-4 py-3">
           <div className="flex items-center gap-3">
-            <button onClick={prevMonth} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC]">&lt;</button>
-            <h3 className="text-[14px] font-semibold text-[#0F172A] min-w-[160px] text-center">{monthLabel}</h3>
-            <button onClick={nextMonth} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC]">&gt;</button>
-            <button onClick={goToday} className="inline-flex h-7 items-center gap-1 rounded border border-[#E2E8F0] px-2 text-[11px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">Today</button>
+            <button onClick={prevMonth} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] text-[#57534E] hover:bg-[#FBF5EC]">&lt;</button>
+            <h3 className="text-[14px] font-semibold text-[#1C1917] min-w-[160px] text-center">{monthLabel}</h3>
+            <button onClick={nextMonth} className="inline-flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] text-[#57534E] hover:bg-[#FBF5EC]">&gt;</button>
+            <button onClick={goToday} className="inline-flex h-7 items-center gap-1 rounded border border-[#DDD0BB] px-2 text-[11px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">Today</button>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-[#64748B]">
+          <div className="flex items-center gap-3 text-[11px] text-[#57534E]">
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Approved</span>
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-500" /> Pending</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-purple-500" /> Holiday</span>
+            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Holiday</span>
           </div>
         </div>
         {calendarLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" />
-              <p className="text-[12px] text-[#64748B]">Loading calendar...</p>
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" />
+              <p className="text-[12px] text-[#57534E]">Loading calendar...</p>
             </div>
           </div>
         ) : (
           <div className="p-4">
             <div className="grid grid-cols-7 gap-px">
               {dayHeaders.map(d => (
-                <div key={d} className="py-2 text-center text-[11px] font-medium text-[#64748B] uppercase tracking-wider">{d}</div>
+                <div key={d} className="py-2 text-center text-[11px] font-medium text-[#57534E] uppercase tracking-wider">{d}</div>
               ))}
               {Array.from({ length: startDay }).map((_, i) => <div key={`empty-${i}`} className="min-h-[80px] bg-[#FAFBFC]" />)}
               {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -508,8 +508,8 @@ export default function LeavePage() {
                 const isToday = day === today.getDate() && calendarMonth === today.getMonth() && calendarYear === today.getFullYear();
                 const events = getEventsForDay(day);
                 return (
-                  <div key={day} className={`min-h-[80px] border-t border-[#F1F5F9] p-1.5 ${isToday ? 'bg-[#EFF6FF]' : ''}`}>
-                    <p className={`text-[12px] font-medium ${isToday ? 'text-[#2563EB]' : 'text-[#0F172A]'}`}>{day}</p>
+                  <div key={day} className={`min-h-[80px] border-t border-[#F5E6CC] p-1.5 ${isToday ? 'bg-[#D1FAE5]' : ''}`}>
+                    <p className={`text-[12px] font-medium ${isToday ? 'text-[#064E3B]' : 'text-[#1C1917]'}`}>{day}</p>
                     <div className="mt-0.5 space-y-0.5">
                       {events.slice(0, 3).map((ev, j) => (
                         <div key={j} className={`rounded px-1 py-0.5 text-[9px] font-medium truncate ${
@@ -522,7 +522,7 @@ export default function LeavePage() {
                         </div>
                       ))}
                       {events.length > 3 && (
-                        <p className="text-[9px] text-[#94A3B8]">+{events.length - 3} more</p>
+                        <p className="text-[9px] text-[#8E7E68]">+{events.length - 3} more</p>
                       )}
                     </div>
                   </div>
@@ -539,7 +539,7 @@ export default function LeavePage() {
     loading ? (
       <TableSkeleton rows={5} cols={7} />
     ) : policies.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={Shield} title="No leave policies found" description="Leave policies will appear here once configured by an administrator." />
       </div>
     ) : (
@@ -549,21 +549,21 @@ export default function LeavePage() {
             key: 'name',
             label: 'Policy Name',
             render: (item: LeavePolicy) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.name}</span>
             ),
           },
           {
             key: 'leaveType',
             label: 'Leave Type',
             render: (item: LeavePolicy) => (
-              <span className="text-[13px] text-[#475569]">{item.leaveType?.name || '—'}</span>
+              <span className="text-[13px] text-[#57534E]">{item.leaveType?.name || '—'}</span>
             ),
           },
           {
             key: 'entitlementDays',
             label: 'Entitlement',
             render: (item: LeavePolicy) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.entitlementDays} days</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.entitlementDays} days</span>
             ),
             align: 'right' as const,
           },
@@ -571,7 +571,7 @@ export default function LeavePage() {
             key: 'accrualFrequency',
             label: 'Accrual',
             render: (item: LeavePolicy) => (
-              <span className="text-[13px] text-[#475569]">{item.accrualFrequency || '—'}</span>
+              <span className="text-[13px] text-[#57534E]">{item.accrualFrequency || '—'}</span>
             ),
           },
           {
@@ -585,7 +585,7 @@ export default function LeavePage() {
             key: 'noticePeriodDays',
             label: 'Notice Period',
             render: (item: LeavePolicy) => (
-              <span className="text-[13px] text-[#475569]">{item.noticePeriodDays} days</span>
+              <span className="text-[13px] text-[#57534E]">{item.noticePeriodDays} days</span>
             ),
           },
           {
@@ -602,13 +602,13 @@ export default function LeavePage() {
   /* ── Main Render ────────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Leave"
         description="Manage employee leave, balances and approvals"
         breadcrumbs={[{ label: 'People' }, { label: 'Leave' }]}
         actions={
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             Request Leave
           </button>
@@ -622,7 +622,7 @@ export default function LeavePage() {
             Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)
           ) : (
             <>
-              <KpiCard label="Total Requests" value={kpis.total} icon={FileText} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Requests" value={kpis.total} icon={FileText} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Pending" value={kpis.pending} icon={Clock} iconBg="bg-amber-50" iconColor="text-amber-600" />
               <KpiCard label="Approved" value={kpis.approved} icon={CheckCircle2} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Rejected" value={kpis.rejected} icon={XCircle} iconBg="bg-red-50" iconColor="text-red-600" />

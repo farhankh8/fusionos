@@ -35,13 +35,13 @@ export default function WorkforceAnalyticsPage() {
   const s = data?.summary;
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Workforce Analytics"
         description="Employee headcount, department distribution, and hiring trends"
         breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Workforce' }]}
         actions={
-          <button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">
+          <button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
             <ArrowLeft className="h-3.5 w-3.5" />Back
           </button>
         }
@@ -51,11 +51,11 @@ export default function WorkforceAnalyticsPage() {
           <div className="grid grid-cols-3 gap-3">{Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)}</div>
         ) : error ? (
           <EmptyState icon={BarChart3} title="Unable to load workforce analytics" description={error}
-            action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
+            action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
         ) : s ? (
           <>
             <div className="mb-4 grid grid-cols-3 gap-3">
-              <KpiCard label="Total Employees" value={s.totalEmployees} icon={Users} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Employees" value={s.totalEmployees} icon={Users} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Active Employees" value={s.activeEmployees} icon={Users} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="New Hires" value={s.newHires} icon={UserPlus} iconBg="bg-violet-50" iconColor="text-violet-600" />
             </div>
@@ -67,9 +67,9 @@ export default function WorkforceAnalyticsPage() {
                 ) : (
                   <div className="space-y-2">
                     {data.departmentDistribution.map((d) => (
-                      <div key={d.departmentId} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                        <span className="text-[13px] font-medium text-[#0F172A]">{d.name}</span>
-                        <span className="text-[13px] font-bold text-[#2563EB]">{d.count}</span>
+                      <div key={d.departmentId} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                        <span className="text-[13px] font-medium text-[#1C1917]">{d.name}</span>
+                        <span className="text-[13px] font-bold text-[#064E3B]">{d.count}</span>
                       </div>
                     ))}
                   </div>
@@ -82,9 +82,9 @@ export default function WorkforceAnalyticsPage() {
                 ) : (
                   <div className="space-y-2">
                     {data.employmentTypeDistribution.map((t) => (
-                      <div key={t.type} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                        <span className="text-[13px] font-medium text-[#0F172A]">{t.type.replace(/_/g, ' ')}</span>
-                        <span className="text-[13px] font-bold text-[#2563EB]">{t.count}</span>
+                      <div key={t.type} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                        <span className="text-[13px] font-medium text-[#1C1917]">{t.type.replace(/_/g, ' ')}</span>
+                        <span className="text-[13px] font-bold text-[#064E3B]">{t.count}</span>
                       </div>
                     ))}
                   </div>

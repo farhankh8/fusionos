@@ -51,14 +51,14 @@ export default function AutomationDashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="Automation"
         description="Automate repetitive business processes across FusionOS"
         actions={
           <Link
             href="/automation/workflows/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] transition-colors"
           >
             <Zap className="h-4 w-4" />
             Create Workflow
@@ -72,7 +72,7 @@ export default function AutomationDashboardPage() {
           {loading ? (
             <>
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-lg border border-[#E2E8F0] bg-white p-4">
+                <div key={i} className="rounded-lg border border-[#DDD0BB] bg-white p-4">
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="mt-2 h-7 w-16" />
                 </div>
@@ -141,12 +141,12 @@ export default function AutomationDashboardPage() {
         )}
 
         {/* Recent Executions */}
-        <div className="mt-6 rounded-lg border border-[#E2E8F0] bg-white">
-          <div className="flex items-center justify-between border-b border-[#E2E8F0] px-5 py-3">
-            <h2 className="text-[14px] font-semibold text-[#0F172A]">Recent Executions</h2>
+        <div className="mt-6 rounded-lg border border-[#DDD0BB] bg-white">
+          <div className="flex items-center justify-between border-b border-[#DDD0BB] px-5 py-3">
+            <h2 className="text-[14px] font-semibold text-[#1C1917]">Recent Executions</h2>
             <Link
               href="/automation/executions"
-              className="text-[12px] font-medium text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1"
+              className="text-[12px] font-medium text-[#064E3B] hover:text-[#047857] flex items-center gap-1"
             >
               View all <ArrowRight className="h-3 w-3" />
             </Link>
@@ -165,26 +165,26 @@ export default function AutomationDashboardPage() {
               description="Create and publish a workflow to see execution history here."
             />
           ) : (
-            <div className="divide-y divide-[#F1F5F9]">
+            <div className="divide-y divide-[#F5E6CC]">
               {recentExecutions.map((exec) => (
                 <Link
                   key={exec.id}
                   href={`/automation/executions/${exec.id}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-[#F8FAFC] transition-colors"
+                  className="flex items-center justify-between px-5 py-3 hover:bg-[#FBF5EC] transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="min-w-0">
-                      <p className="text-[13px] font-medium text-[#0F172A] truncate">
+                      <p className="text-[13px] font-medium text-[#1C1917] truncate">
                         {exec.workflow?.name ?? 'Unknown Workflow'}
                       </p>
-                      <p className="text-[11px] text-[#94A3B8]">
+                      <p className="text-[11px] text-[#8E7E68]">
                         {exec.triggerEventType}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <StatusBadge status={exec.status} />
-                    <span className="text-[11px] text-[#94A3B8] whitespace-nowrap">
+                    <span className="text-[11px] text-[#8E7E68] whitespace-nowrap">
                       {new Date(exec.createdAt).toLocaleString()}
                     </span>
                   </div>

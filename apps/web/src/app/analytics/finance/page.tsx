@@ -53,13 +53,13 @@ export default function FinanceAnalyticsPage() {
   const mixed = !!(s?.hasMixedCurrencies && (s.byCurrency?.length || 0) > 1);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Finance Analytics"
         description="Financial performance, P&L, and receivables/payables"
         breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Finance' }]}
         actions={
-          <button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">
+          <button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
             <ArrowLeft className="h-3.5 w-3.5" />Back
           </button>
         }
@@ -75,7 +75,7 @@ export default function FinanceAnalyticsPage() {
             action={
               <button
                 onClick={fetchData}
-                className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"
+                className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"
               >
                 <RefreshCw className="h-3.5 w-3.5" />Retry
               </button>
@@ -92,7 +92,7 @@ export default function FinanceAnalyticsPage() {
               {mixed ? (
                 s.byCurrency!.flatMap(c => [
                   <KpiCard key={`rev-${c.currency}`} label={`Revenue (${c.currency})`} value={fmt(c.totalRevenue, c.currency)} icon={TrendingUp} iconBg="bg-emerald-50" iconColor="text-emerald-600" />,
-                  <KpiCard key={`net-${c.currency}`} label={`Net Profit (${c.currency})`} value={fmt(c.netProfit, c.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />,
+                  <KpiCard key={`net-${c.currency}`} label={`Net Profit (${c.currency})`} value={fmt(c.netProfit, c.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />,
                   <KpiCard key={`ar-${c.currency}`} label={`Receivables (${c.currency})`} value={fmt(c.totalAR, c.currency)} icon={DollarSign} iconBg="bg-amber-50" iconColor="text-amber-600" />,
                   <KpiCard key={`ap-${c.currency}`} label={`Payables (${c.currency})`} value={fmt(c.totalAP, c.currency)} icon={DollarSign} iconBg="bg-red-50" iconColor="text-red-600" />,
                 ])
@@ -100,7 +100,7 @@ export default function FinanceAnalyticsPage() {
                 <>
                   <KpiCard label="Revenue" value={fmt(s.totalRevenue, s.currency)} icon={TrendingUp} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
                   <KpiCard label="Expenses" value={fmt(s.totalExpenses, s.currency)} icon={TrendingDown} iconBg="bg-red-50" iconColor="text-red-600" />
-                  <KpiCard label="Net Profit" value={fmt(s.netProfit, s.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                  <KpiCard label="Net Profit" value={fmt(s.netProfit, s.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                   <KpiCard label="Receivables" value={fmt(s.totalAR, s.currency)} icon={DollarSign} iconBg="bg-amber-50" iconColor="text-amber-600" />
                   <KpiCard label="Payables" value={fmt(s.totalAP, s.currency)} icon={DollarSign} iconBg="bg-red-50" iconColor="text-red-600" />
                 </>
@@ -114,8 +114,8 @@ export default function FinanceAnalyticsPage() {
                 ) : (
                   <div className="space-y-2">
                     {data.revenueTrend.map((t) => (
-                      <div key={`${t.month}-${t.currency}`} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                        <span className="text-[13px] font-medium text-[#0F172A]">{t.month} <span className="text-[11px] text-[#94A3B8]">{t.currency}</span></span>
+                      <div key={`${t.month}-${t.currency}`} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                        <span className="text-[13px] font-medium text-[#1C1917]">{t.month} <span className="text-[11px] text-[#8E7E68]">{t.currency}</span></span>
                         <div className="flex gap-4">
                           <span className="text-[12px] text-emerald-600">Rev: {fmt(t.revenue, t.currency)}</span>
                           <span className="text-[12px] text-red-600">Exp: {fmt(t.expenses, t.currency)}</span>
@@ -134,9 +134,9 @@ export default function FinanceAnalyticsPage() {
                     ['Total Bills', data.billCount],
                     ['Unpaid Bills', data.unpaidBillCount],
                   ].map(([label, value]) => (
-                    <div key={label as string} className="flex justify-between py-1 border-b border-[#F1F5F9] last:border-0">
-                      <span className="text-[12px] text-[#64748B]">{label as string}</span>
-                      <span className="text-[12px] font-medium text-[#0F172A]">{value as number}</span>
+                    <div key={label as string} className="flex justify-between py-1 border-b border-[#F5E6CC] last:border-0">
+                      <span className="text-[12px] text-[#57534E]">{label as string}</span>
+                      <span className="text-[12px] font-medium text-[#1C1917]">{value as number}</span>
                     </div>
                   ))}
                 </div>

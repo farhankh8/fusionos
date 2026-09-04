@@ -60,7 +60,7 @@ export default function AssetDetailPage() {
     return m[s] || 'bg-gray-50 text-gray-600';
   };
 
-  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" /></div>;
   if (!asset) return null;
 
   const tabCounts = TAB_LIST.map(t => ({
@@ -69,12 +69,12 @@ export default function AssetDetailPage() {
   }));
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title={asset.name}
         description={`Asset Code: ${asset.assetCode}`}
         breadcrumbs={[{ label: 'Assets', href: '/assets' }, { label: asset.name }]}
-        actions={<div className="flex items-center gap-2"><button onClick={() => router.push(`/assets/${id}/edit`)} className="flex items-center gap-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"><Edit className="h-3.5 w-3.5" />Edit</button></div>}
+        actions={<div className="flex items-center gap-2"><button onClick={() => router.push(`/assets/${id}/edit`)} className="flex items-center gap-1 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"><Edit className="h-3.5 w-3.5" />Edit</button></div>}
       />
       <div className="px-5 py-4 lg:px-6">
         <Tabs tabs={tabCounts} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -89,9 +89,9 @@ export default function AssetDetailPage() {
                   ['Location', asset.location ? [asset.location.name, asset.location.building, asset.location.floor, asset.location.room].filter(Boolean).join(', ') : '—'],
                   ['Serial Number', asset.serialNumber ?? '—'], ['Manufacturer', asset.manufacturer ?? '—'], ['Model', asset.model ?? '—'],
                 ].map(([l, v], i) => (
-                  <div key={i} className="flex justify-between py-1 border-b border-[#F1F5F9] last:border-0">
-                    <span className="text-[12px] text-[#64748B]">{l as string}</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{v as any}</span>
+                  <div key={i} className="flex justify-between py-1 border-b border-[#F5E6CC] last:border-0">
+                    <span className="text-[12px] text-[#57534E]">{l as string}</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{v as any}</span>
                   </div>
                 ))}
               </div>
@@ -106,9 +106,9 @@ export default function AssetDetailPage() {
                   ['Purchase Date', fmtDate(asset.purchaseDate)], ['In Service Date', fmtDate(asset.inServiceDate)],
                   ['Vendor', asset.vendor?.name ?? '—'],
                 ].map(([l, v], i) => (
-                  <div key={i} className="flex justify-between py-1 border-b border-[#F1F5F9] last:border-0">
-                    <span className="text-[12px] text-[#64748B]">{l as string}</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{v as any}</span>
+                  <div key={i} className="flex justify-between py-1 border-b border-[#F5E6CC] last:border-0">
+                    <span className="text-[12px] text-[#57534E]">{l as string}</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{v as any}</span>
                   </div>
                 ))}
               </div>
@@ -120,11 +120,11 @@ export default function AssetDetailPage() {
           <div className="mt-4">
             <SectionCard title="Current & Past Assignments">
               {asset.assignments.length === 0 ? <EmptyState icon={Package} title="No assignments" /> : (
-                <div className="divide-y divide-[#E2E8F0]">
+                <div className="divide-y divide-[#DDD0BB]">
                   {asset.assignments.map(a => (
                     <div key={a.id} className="flex items-center justify-between py-3">
-                      <div><p className="text-[13px] font-medium text-[#0F172A]">{a.employee ? `${a.employee.firstName} ${a.employee.lastName} (${a.employee.employeeCode})` : a.project ? `Project: ${a.project.name}` : '—'}</p>
-                      <p className="text-[11px] text-[#64748B]">Assigned: {fmtDate(a.assignedAt)}{a.returnedAt ? ` · Returned: ${fmtDate(a.returnedAt)}` : ''}</p></div>
+                      <div><p className="text-[13px] font-medium text-[#1C1917]">{a.employee ? `${a.employee.firstName} ${a.employee.lastName} (${a.employee.employeeCode})` : a.project ? `Project: ${a.project.name}` : '—'}</p>
+                      <p className="text-[11px] text-[#57534E]">Assigned: {fmtDate(a.assignedAt)}{a.returnedAt ? ` · Returned: ${fmtDate(a.returnedAt)}` : ''}</p></div>
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${getStatusColor(a.status)}`}>{a.status}</span>
                     </div>
                   ))}
@@ -138,11 +138,11 @@ export default function AssetDetailPage() {
           <div className="mt-4">
             <SectionCard title="Maintenance Records">
               {asset.maintenanceRecords.length === 0 ? <EmptyState icon={Clock} title="No maintenance records" /> : (
-                <div className="divide-y divide-[#E2E8F0]">
+                <div className="divide-y divide-[#DDD0BB]">
                   {asset.maintenanceRecords.map(m => (
                     <div key={m.id} className="flex items-center justify-between py-3">
-                      <div><p className="text-[13px] font-medium text-[#0F172A]">{m.title}</p>
-                      <p className="text-[11px] text-[#64748B]">{m.type.replace(/_/g, ' ')} · {fmtDate(m.scheduledDate)} · {fmt(m.cost, m.currency)}</p></div>
+                      <div><p className="text-[13px] font-medium text-[#1C1917]">{m.title}</p>
+                      <p className="text-[11px] text-[#57534E]">{m.type.replace(/_/g, ' ')} · {fmtDate(m.scheduledDate)} · {fmt(m.cost, m.currency)}</p></div>
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${getStatusColor(m.status)}`}>{m.status.replace(/_/g, ' ')}</span>
                     </div>
                   ))}
@@ -156,11 +156,11 @@ export default function AssetDetailPage() {
           <div className="mt-4">
             <SectionCard title="Inspection Records">
               {asset.inspections.length === 0 ? <EmptyState icon={CheckCircle2} title="No inspections" /> : (
-                <div className="divide-y divide-[#E2E8F0]">
+                <div className="divide-y divide-[#DDD0BB]">
                   {asset.inspections.map(i => (
                     <div key={i.id} className="flex items-center justify-between py-3">
-                      <div><p className="text-[13px] font-medium text-[#0F172A]">{i.inspectionType}</p>
-                      <p className="text-[11px] text-[#64748B]">Scheduled: {fmtDate(i.scheduledDate)}{i.completedDate ? ` · Completed: ${fmtDate(i.completedDate)}` : ''}</p></div>
+                      <div><p className="text-[13px] font-medium text-[#1C1917]">{i.inspectionType}</p>
+                      <p className="text-[11px] text-[#57534E]">Scheduled: {fmtDate(i.scheduledDate)}{i.completedDate ? ` · Completed: ${fmtDate(i.completedDate)}` : ''}</p></div>
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${getStatusColor(i.status)}`}>{i.status.replace(/_/g, ' ')}</span>
                     </div>
                   ))}
@@ -174,16 +174,16 @@ export default function AssetDetailPage() {
           <div className="mt-4">
             <SectionCard title="Warranty Information">
               {asset.warranties.length === 0 ? <EmptyState icon={AlertTriangle} title="No warranty records" /> : (
-                <div className="divide-y divide-[#E2E8F0]">
+                <div className="divide-y divide-[#DDD0BB]">
                   {asset.warranties.map(w => (
                     <div key={w.id} className="py-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-[13px] font-medium text-[#0F172A]">{w.provider}</p>
+                        <p className="text-[13px] font-medium text-[#1C1917]">{w.provider}</p>
                         <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${w.isActive && new Date(w.endDate) > new Date() ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
                           {w.isActive && new Date(w.endDate) > new Date() ? 'Active' : 'Expired'}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#64748B]">{fmtDate(w.startDate)} — {fmtDate(w.endDate)}{w.referenceNumber ? ` · Ref: ${w.referenceNumber}` : ''}</p>
+                      <p className="text-[11px] text-[#57534E]">{fmtDate(w.startDate)} — {fmtDate(w.endDate)}{w.referenceNumber ? ` · Ref: ${w.referenceNumber}` : ''}</p>
                     </div>
                   ))}
                 </div>
@@ -198,8 +198,8 @@ export default function AssetDetailPage() {
               {asset.depreciations.length === 0 ? <EmptyState icon={Package} title="No depreciation records" /> : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-[12px]">
-                    <thead><tr className="border-b border-[#E2E8F0]"><th className="px-3 py-2 font-medium text-[#64748B]">Period</th><th className="px-3 py-2 font-medium text-[#64748B]">Opening</th><th className="px-3 py-2 font-medium text-[#64748B]">Depreciation</th><th className="px-3 py-2 font-medium text-[#64748B]">Closing</th></tr></thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <thead><tr className="border-b border-[#DDD0BB]"><th className="px-3 py-2 font-medium text-[#57534E]">Period</th><th className="px-3 py-2 font-medium text-[#57534E]">Opening</th><th className="px-3 py-2 font-medium text-[#57534E]">Depreciation</th><th className="px-3 py-2 font-medium text-[#57534E]">Closing</th></tr></thead>
+                    <tbody className="divide-y divide-[#F5E6CC]">
                       {asset.depreciations.map(d => (
                         <tr key={d.id}><td className="px-3 py-2">{fmtDate(d.periodStartDate)} — {fmtDate(d.periodEndDate)}</td>
                         <td className="px-3 py-2">{fmt(d.openingBookValue, asset.currency)}</td>
@@ -218,12 +218,12 @@ export default function AssetDetailPage() {
           <div className="mt-4">
             <SectionCard title="Activity History">
               {asset.activities.length === 0 ? <EmptyState icon={Clock} title="No activity" /> : (
-                <div className="divide-y divide-[#E2E8F0]">
+                <div className="divide-y divide-[#DDD0BB]">
                   {asset.activities.map(a => (
                     <div key={a.id} className="flex items-start gap-3 py-3">
-                      <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#2563EB]" />
-                      <div><p className="text-[13px] text-[#0F172A]">{a.description}</p>
-                      <p className="text-[11px] text-[#94A3B8]">{a.actor ? `${a.actor.firstName} ${a.actor.lastName}` : 'System'} · {fmtDate(a.createdAt)}</p></div>
+                      <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#064E3B]" />
+                      <div><p className="text-[13px] text-[#1C1917]">{a.description}</p>
+                      <p className="text-[11px] text-[#8E7E68]">{a.actor ? `${a.actor.firstName} ${a.actor.lastName}` : 'System'} · {fmtDate(a.createdAt)}</p></div>
                     </div>
                   ))}
                 </div>

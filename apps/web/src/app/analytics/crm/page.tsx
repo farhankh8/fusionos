@@ -35,25 +35,25 @@ export default function CRMAnalyticsPage() {
   const mixed = !!(s?.hasMixedCurrencies && (s.byCurrency?.length || 0) > 1);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader title="CRM Analytics" description="Leads, pipeline, conversion, and win rate" breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'CRM' }]}
-        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
+        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
       <div className="px-5 py-4 lg:px-6">
         {loading ? <div className="grid grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)}</div>
           : error ? <EmptyState icon={Handshake} title="Unable to load CRM analytics" description={error}
-              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
+              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
           : s ? (
             <>
               {mixed ? <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800">Multiple currencies detected — pipeline figures are shown per currency and never cross-summed.</div> : null}
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
                 {mixed
                   ? s.byCurrency!.flatMap(c => [
-                      <KpiCard key={`p-${c.currency}`} label={`Pipeline (${c.currency})`} value={fmt(c.pipelineValue, c.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />,
+                      <KpiCard key={`p-${c.currency}`} label={`Pipeline (${c.currency})`} value={fmt(c.pipelineValue, c.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />,
                       <KpiCard key={`w-${c.currency}`} label={`Won (${c.currency})`} value={fmt(c.wonRevenue, c.currency)} icon={TrendingUp} iconBg="bg-emerald-50" iconColor="text-emerald-600" />,
                     ])
                   : <>
                       <KpiCard label="Total Leads" value={s.totalLeads} icon={Handshake} iconBg="bg-violet-50" iconColor="text-violet-600" />
-                      <KpiCard label="Pipeline Value" value={fmt(s.pipelineValue, s.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                      <KpiCard label="Pipeline Value" value={fmt(s.pipelineValue, s.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                       <KpiCard label="Won Revenue" value={fmt(s.wonRevenue, s.currency)} icon={TrendingUp} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
                       <KpiCard label="Win Rate" value={`${s.winRate}%`} icon={TrendingUp} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
                     </>}
@@ -61,9 +61,9 @@ export default function CRMAnalyticsPage() {
               <SectionCard title="Pipeline by Stage">
                 {data.pipelineByStage.length === 0 ? <EmptyState icon={Handshake} title="No pipeline data" /> : (
                   <div className="space-y-2">{data.pipelineByStage.map((st: any) => (
-                    <div key={`${st.stage}-${st.currency || 'USD'}`} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                      <span className="text-[13px] font-medium text-[#0F172A]">{st.stage.replace(/_/g, ' ')} <span className="text-[11px] text-[#94A3B8]">{st.currency || 'USD'}</span></span>
-                      <div className="flex gap-4"><span className="text-[12px] text-[#64748B]">{st.count} opps</span><span className="text-[12px] font-bold text-[#2563EB]">{fmt(st.value, st.currency || 'USD')}</span></div>
+                    <div key={`${st.stage}-${st.currency || 'USD'}`} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                      <span className="text-[13px] font-medium text-[#1C1917]">{st.stage.replace(/_/g, ' ')} <span className="text-[11px] text-[#8E7E68]">{st.currency || 'USD'}</span></span>
+                      <div className="flex gap-4"><span className="text-[12px] text-[#57534E]">{st.count} opps</span><span className="text-[12px] font-bold text-[#064E3B]">{fmt(st.value, st.currency || 'USD')}</span></div>
                     </div>
                   ))}</div>
                 )}

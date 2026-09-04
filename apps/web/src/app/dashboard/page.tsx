@@ -122,7 +122,7 @@ const featureCards = [
     description: 'Leverage AI for intelligent insights, automation, and decision support.',
     href: '/ai',
     color: 'text-purple-500',
-    bgColor: 'bg-purple-50 dark:bg-purple-500/10',
+    bgColor: 'bg-purple-50 dark:bg-emerald-500/10',
   },
   {
     icon: BarChart3,
@@ -452,7 +452,7 @@ export default function DashboardPage() {
                   <KpiCard label="Present Today" value={data.attendance?.present || 0} icon={UserCheck} iconBg="bg-success-light" iconColor="text-success" trend={{ value: 5, direction: 'up', label: 'vs yesterday' }} />
                   <KpiCard label="On Leave" value={data.attendance?.onLeave || 0} icon={CalendarOff} iconBg="bg-warning-light" iconColor="text-warning" trend={{ value: 2, direction: 'down', label: 'vs last week' }} />
                   <KpiCard label="Pending Leave" value={data.leave?.pending || 0} icon={AlertCircle} iconBg="bg-[#FFF7ED] dark:bg-[rgba(249,115,22,0.15)]" iconColor="text-orange-600" trend={{ value: 0, direction: 'neutral', label: 'no change' }} />
-                  <KpiCard label="Payroll Status" value={data.payroll?.status || 'N/A'} icon={Wallet} iconBg="bg-[#F5F3FF] dark:bg-[rgba(139,92,246,0.15)]" iconColor="text-violet-600" />
+                  <KpiCard label="Payroll Status" value={data.payroll?.status || 'N/A'} icon={Wallet} iconBg="bg-[#D1FAE5] dark:bg-[rgba(139,92,246,0.15)]" iconColor="text-violet-600" />
                 </>
               )}
             </div>

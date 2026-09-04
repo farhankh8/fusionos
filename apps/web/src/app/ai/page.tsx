@@ -182,7 +182,7 @@ export default function AICommandCenterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="AI Command Center"
         description="Your intelligent interface to FusionOS"
@@ -190,11 +190,11 @@ export default function AICommandCenterPage() {
 
       <div className="flex h-[calc(100vh-120px)]">
         {/* Left: Conversation History */}
-        <div className="w-64 border-r border-[#E2E8F0] bg-white flex flex-col">
-          <div className="p-3 border-b border-[#E2E8F0]">
+        <div className="w-64 border-r border-[#DDD0BB] bg-white flex flex-col">
+          <div className="p-3 border-b border-[#DDD0BB]">
             <button
               onClick={handleNewConversation}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-3 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#064E3B] px-3 py-2 text-[13px] font-medium text-white hover:bg-[#047857] transition-colors"
             >
               <MessageSquare className="h-4 w-4" />
               New Conversation
@@ -203,20 +203,20 @@ export default function AICommandCenterPage() {
           <div className="flex-1 overflow-y-auto">
             {conversations.length === 0 ? (
               <div className="p-4 text-center">
-                <p className="text-[12px] text-[#94A3B8]">No conversations yet</p>
+                <p className="text-[12px] text-[#8E7E68]">No conversations yet</p>
               </div>
             ) : (
-              <div className="divide-y divide-[#F1F5F9]">
+              <div className="divide-y divide-[#F5E6CC]">
                 {conversations.map((conv) => (
                   <div
                     key={conv.id}
-                    className={`flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-[#F8FAFC] transition-colors ${
-                      activeConversationId === conv.id ? 'bg-[#EFF6FF]' : ''
+                    className={`flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-[#FBF5EC] transition-colors ${
+                      activeConversationId === conv.id ? 'bg-[#D1FAE5]' : ''
                     }`}
                     onClick={() => handleSelectConversation(conv.id)}
                   >
-                    <MessageSquare className="h-4 w-4 text-[#94A3B8] shrink-0" />
-                    <span className="flex-1 text-[12px] text-[#0F172A] truncate">
+                    <MessageSquare className="h-4 w-4 text-[#8E7E68] shrink-0" />
+                    <span className="flex-1 text-[12px] text-[#1C1917] truncate">
                       {conv.title ?? 'New Conversation'}
                     </span>
                     <button
@@ -224,7 +224,7 @@ export default function AICommandCenterPage() {
                         e.stopPropagation();
                         handleDeleteConversation(conv.id);
                       }}
-                      className="rounded p-1 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="rounded p-1 text-[#8E7E68] hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -240,13 +240,13 @@ export default function AICommandCenterPage() {
           {messages.length === 0 && !loading ? (
             /* Welcome State */
             <div className="flex-1 flex flex-col items-center justify-center p-8">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EFF6FF] mb-4">
-                <Sparkles className="h-8 w-8 text-[#2563EB]" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D1FAE5] mb-4">
+                <Sparkles className="h-8 w-8 text-[#064E3B]" />
               </div>
-              <h2 className="text-[20px] font-semibold text-[#0F172A] mb-1">
+              <h2 className="text-[20px] font-semibold text-[#1C1917] mb-1">
                 AI Command Center
               </h2>
-              <p className="text-[13px] text-[#64748B] mb-6 text-center max-w-md">
+              <p className="text-[13px] text-[#57534E] mb-6 text-center max-w-md">
                 Ask questions about your business data. Get insights from workforce,
                 finance, CRM, projects, and automation.
               </p>
@@ -257,9 +257,9 @@ export default function AICommandCenterPage() {
                   <button
                     key={i}
                     onClick={() => handleSend(q)}
-                    className="flex items-center gap-3 rounded-lg border border-[#E2E8F0] bg-white px-4 py-3 text-left text-[13px] text-[#0F172A] hover:border-[#2563EB] hover:bg-[#F8FAFC] transition-colors"
+                    className="flex items-center gap-3 rounded-lg border border-[#DDD0BB] bg-white px-4 py-3 text-left text-[13px] text-[#1C1917] hover:border-[#064E3B] hover:bg-[#FBF5EC] transition-colors"
                   >
-                    <Lightbulb className="h-4 w-4 text-[#2563EB] shrink-0" />
+                    <Lightbulb className="h-4 w-4 text-[#064E3B] shrink-0" />
                     {q}
                   </button>
                 ))}
@@ -276,18 +276,18 @@ export default function AICommandCenterPage() {
                   <div
                     className={`max-w-[70%] rounded-lg px-4 py-3 ${
                       msg.role === 'USER'
-                        ? 'bg-[#2563EB] text-white'
-                        : 'bg-white border border-[#E2E8F0] text-[#0F172A]'
+                        ? 'bg-[#064E3B] text-white'
+                        : 'bg-white border border-[#DDD0BB] text-[#1C1917]'
                     }`}
                   >
                     <p className="text-[13px] whitespace-pre-wrap">{msg.content}</p>
                     {msg.metadata && (
-                      <div className="mt-2 pt-2 border-t border-[#E2E8F0]/30">
+                      <div className="mt-2 pt-2 border-t border-[#DDD0BB]/30">
                         <div className="flex flex-wrap gap-1.5">
                           {(msg.metadata.sources as string[])?.map((source, i) => (
                             <span
                               key={i}
-                              className="inline-flex items-center rounded bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]"
+                              className="inline-flex items-center rounded bg-[#D1FAE5] px-1.5 py-0.5 text-[10px] font-medium text-[#064E3B]"
                             >
                               {source}
                             </span>
@@ -300,8 +300,8 @@ export default function AICommandCenterPage() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 py-3">
-                    <div className="flex items-center gap-2 text-[13px] text-[#64748B]">
+                  <div className="bg-white border border-[#DDD0BB] rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2 text-[13px] text-[#57534E]">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Thinking...
                     </div>
@@ -323,7 +323,7 @@ export default function AICommandCenterPage() {
           )}
 
           {/* Input */}
-          <div className="border-t border-[#E2E8F0] bg-white p-4">
+          <div className="border-t border-[#DDD0BB] bg-white p-4">
             <div className="flex items-center gap-2 max-w-3xl mx-auto">
               <input
                 type="text"
@@ -332,12 +332,12 @@ export default function AICommandCenterPage() {
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask about your business..."
                 disabled={loading}
-                className="flex-1 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-[13px] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB] disabled:opacity-50"
+                className="flex-1 rounded-lg border border-[#DDD0BB] bg-white px-4 py-2.5 text-[13px] text-[#1C1917] placeholder-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B] disabled:opacity-50"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="rounded-lg bg-[#2563EB] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50 transition-colors"
+                className="rounded-lg bg-[#064E3B] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#047857] disabled:opacity-50 transition-colors"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -346,9 +346,9 @@ export default function AICommandCenterPage() {
         </div>
 
         {/* Right: Insights */}
-        <div className="w-72 border-l border-[#E2E8F0] bg-white flex flex-col">
-          <div className="p-3 border-b border-[#E2E8F0]">
-            <h3 className="text-[13px] font-semibold text-[#0F172A]">Insights</h3>
+        <div className="w-72 border-l border-[#DDD0BB] bg-white flex flex-col">
+          <div className="p-3 border-b border-[#DDD0BB]">
+            <h3 className="text-[13px] font-semibold text-[#1C1917]">Insights</h3>
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {loadingInsights ? (
@@ -367,20 +367,20 @@ export default function AICommandCenterPage() {
               insights.map((insight, i) => (
                 <div
                   key={i}
-                  className="rounded-lg border border-[#E2E8F0] p-3"
+                  className="rounded-lg border border-[#DDD0BB] p-3"
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[11px] font-medium text-[#64748B] uppercase">
+                    <span className="text-[11px] font-medium text-[#57534E] uppercase">
                       {insight.category}
                     </span>
                     <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[9px] font-medium ${CONFIDENCE_COLORS[insight.confidence]}`}>
                       {insight.confidence}
                     </span>
                   </div>
-                  <p className="text-[12px] font-medium text-[#0F172A] mb-0.5">
+                  <p className="text-[12px] font-medium text-[#1C1917] mb-0.5">
                     {insight.title}
                   </p>
-                  <p className="text-[11px] text-[#64748B]">
+                  <p className="text-[11px] text-[#57534E]">
                     {insight.description}
                   </p>
                 </div>

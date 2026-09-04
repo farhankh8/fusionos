@@ -188,13 +188,13 @@ export default function PayrollPage() {
         {Array.from({ length: 8 }).map((_, i) => <KpiSkeleton key={i} />)}
       </div>
     ) : !dashboard ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={Wallet} title="No payroll data available" description="Payroll dashboard will appear once periods and runs are created." />
       </div>
     ) : (
       <>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
-          <KpiCard label="Current Period" value={dashboard.currentPeriod || 'N/A'} icon={Clock} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+          <KpiCard label="Current Period" value={dashboard.currentPeriod || 'N/A'} icon={Clock} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
           <KpiCard label="Employees" value={dashboard.employeeCount} icon={Users} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
           <KpiCard label="Gross Payroll" value={formatMoney(dashboard.grossPayroll, dashboard.currency)} icon={TrendingUp} iconBg="bg-blue-50" iconColor="text-blue-600" />
           <KpiCard label="Deductions" value={formatMoney(dashboard.deductions, dashboard.currency)} icon={TrendingDown} iconBg="bg-red-50" iconColor="text-red-600" />
@@ -211,7 +211,7 @@ export default function PayrollPage() {
     loading ? (
       <TableSkeleton rows={8} cols={7} />
     ) : periods.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={Clock} title="No payroll periods found" description="Create your first payroll period to get started." />
       </div>
     ) : (
@@ -221,21 +221,21 @@ export default function PayrollPage() {
             key: 'name',
             label: 'Period',
             render: (item: PayrollPeriod) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.name}</span>
             ),
           },
           {
             key: 'startDate',
             label: 'Start Date',
             render: (item: PayrollPeriod) => (
-              <span className="text-[13px] text-[#475569]">{new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              <span className="text-[13px] text-[#57534E]">{new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             ),
           },
           {
             key: 'endDate',
             label: 'End Date',
             render: (item: PayrollPeriod) => (
-              <span className="text-[13px] text-[#475569]">{new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              <span className="text-[13px] text-[#57534E]">{new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             ),
           },
           {
@@ -247,7 +247,7 @@ export default function PayrollPage() {
             key: 'employeeCount',
             label: 'Employees',
             render: (item: PayrollPeriod) => (
-              <span className="text-[13px] text-[#475569]">{item.employeeCount || 0}</span>
+              <span className="text-[13px] text-[#57534E]">{item.employeeCount || 0}</span>
             ),
             align: 'right' as const,
           },
@@ -255,7 +255,7 @@ export default function PayrollPage() {
             key: 'totalNet',
             label: 'Net',
             render: (item: PayrollPeriod) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{formatMoney(item.totalNet, item.currency)}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{formatMoney(item.totalNet, item.currency)}</span>
             ),
             align: 'right' as const,
           },
@@ -274,7 +274,7 @@ export default function PayrollPage() {
     loading ? (
       <TableSkeleton rows={8} cols={7} />
     ) : runs.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={BarChart3} title="No payroll runs found" description="Create a payroll run to calculate employee salaries." />
       </div>
     ) : (
@@ -284,21 +284,21 @@ export default function PayrollPage() {
             key: 'period',
             label: 'Period',
             render: (item: PayrollRun) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.period?.name || '—'}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.period?.name || '—'}</span>
             ),
           },
           {
             key: 'calculationMode',
             label: 'Mode',
             render: (item: PayrollRun) => (
-              <span className="rounded bg-[#F1F5F9] px-1.5 py-0.5 text-[11px] font-medium text-[#475569]">{item.calculationMode}</span>
+              <span className="rounded bg-[#F5E6CC] px-1.5 py-0.5 text-[11px] font-medium text-[#57534E]">{item.calculationMode}</span>
             ),
           },
           {
             key: 'employeeCount',
             label: 'Employees',
             render: (item: PayrollRun) => (
-              <span className="text-[13px] text-[#475569]">{item.employeeCount}</span>
+              <span className="text-[13px] text-[#57534E]">{item.employeeCount}</span>
             ),
             align: 'right' as const,
           },
@@ -306,7 +306,7 @@ export default function PayrollPage() {
             key: 'totalGross',
             label: 'Gross',
             render: (item: PayrollRun) => (
-              <span className="text-[13px] text-[#475569]">{formatMoney(item.totalGross, item.currency)}</span>
+              <span className="text-[13px] text-[#57534E]">{formatMoney(item.totalGross, item.currency)}</span>
             ),
             align: 'right' as const,
           },
@@ -322,7 +322,7 @@ export default function PayrollPage() {
             key: 'totalNet',
             label: 'Net',
             render: (item: PayrollRun) => (
-              <span className="text-[13px] font-semibold text-[#0F172A]">{formatMoney(item.totalNet, item.currency)}</span>
+              <span className="text-[13px] font-semibold text-[#1C1917]">{formatMoney(item.totalNet, item.currency)}</span>
             ),
             align: 'right' as const,
           },
@@ -346,7 +346,7 @@ export default function PayrollPage() {
     loading ? (
       <TableSkeleton rows={8} cols={6} />
     ) : structures.length === 0 ? (
-      <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
         <EmptyState icon={Settings} title="No salary structures found" description="Configure salary structures to define employee compensation." />
       </div>
     ) : (
@@ -356,21 +356,21 @@ export default function PayrollPage() {
             key: 'name',
             label: 'Structure',
             render: (item: SalaryStructure) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.name}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.name}</span>
             ),
           },
           {
             key: 'employee',
             label: 'Employee',
             render: (item: SalaryStructure) => (
-              <span className="text-[13px] text-[#475569]">{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : '—'}</span>
+              <span className="text-[13px] text-[#57534E]">{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : '—'}</span>
             ),
           },
           {
             key: 'basicSalary',
             label: 'Basic Salary',
             render: (item: SalaryStructure) => (
-              <span className="text-[13px] font-medium text-[#0F172A]">{formatMoney(item.basicSalary, item.currency)}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{formatMoney(item.basicSalary, item.currency)}</span>
             ),
             align: 'right' as const,
           },
@@ -386,7 +386,7 @@ export default function PayrollPage() {
             key: 'effectiveDate',
             label: 'Effective Date',
             render: (item: SalaryStructure) => (
-              <span className="text-[13px] text-[#475569]">{new Date(item.effectiveDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              <span className="text-[13px] text-[#57534E]">{new Date(item.effectiveDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             ),
           },
           {
@@ -408,13 +408,13 @@ export default function PayrollPage() {
   /* ── Main Render ────────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Payroll"
         description="Manage payroll runs, salary structures and employee compensation"
         breadcrumbs={[{ label: 'People' }, { label: 'Payroll' }]}
         actions={
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             New Period
           </button>
@@ -432,13 +432,13 @@ export default function PayrollPage() {
           {activeTab === 'runs' && renderRuns()}
           {activeTab === 'structures' && renderStructures()}
           {activeTab === 'payslips' && (
-            <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+            <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
               <EmptyState
                 icon={FileText}
                 title="Payslips"
                 description="View payslips from the dedicated Payslips page."
                 action={
-                  <a href="/people/payslips" className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                  <a href="/people/payslips" className="inline-flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]">
                     View Payslips
                   </a>
                 }

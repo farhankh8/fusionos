@@ -66,45 +66,45 @@ export default function LedgerPage() {
       <PageHeader title="General Ledger" description="View all posted accounting transactions by account and date." breadcrumbs={[{ label: 'Finance', href: '/finance' }, { label: 'General Ledger' }]} />
       {error && <div className="mb-4 px-4 py-3 bg-[#FEF2F2] border border-[#FECACA] rounded-md text-[13px] text-[#DC2626]">{error}</div>}
       <div className="flex items-center gap-3 mb-4">
-        <input type="text" placeholder="Search reference..." value={search} onChange={(e) => setSearch(e.target.value)} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] w-[200px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
-        <span className="text-[12px] text-[#64748B]">to</span>
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
+        <input type="text" placeholder="Search reference..." value={search} onChange={(e) => setSearch(e.target.value)} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] w-[200px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
+        <span className="text-[12px] text-[#57534E]">to</span>
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
       </div>
       {loading ? (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 space-y-3">{Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-8 bg-[#F8FAFC] rounded animate-pulse" />)}</div>
+        <div className="bg-white border border-[#DDD0BB] rounded-lg p-6 space-y-3">{Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-8 bg-[#FBF5EC] rounded animate-pulse" />)}</div>
       ) : entries.length === 0 ? (
         <EmptyState title="No ledger entries" description="Posted journal entries will appear here." />
       ) : (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
           <table className="w-full text-[12px]">
-            <thead><tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-              <th className="text-left px-4 py-3 font-medium text-[#64748B]">Date</th>
-              <th className="text-left px-4 py-3 font-medium text-[#64748B]">Journal</th>
-              <th className="text-left px-4 py-3 font-medium text-[#64748B]">Account</th>
-              <th className="text-left px-4 py-3 font-medium text-[#64748B]">Description</th>
-              <th className="text-right px-4 py-3 font-medium text-[#64748B]">Debit</th>
-              <th className="text-right px-4 py-3 font-medium text-[#64748B]">Credit</th>
+            <thead><tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+              <th className="text-left px-4 py-3 font-medium text-[#57534E]">Date</th>
+              <th className="text-left px-4 py-3 font-medium text-[#57534E]">Journal</th>
+              <th className="text-left px-4 py-3 font-medium text-[#57534E]">Account</th>
+              <th className="text-left px-4 py-3 font-medium text-[#57534E]">Description</th>
+              <th className="text-right px-4 py-3 font-medium text-[#57534E]">Debit</th>
+              <th className="text-right px-4 py-3 font-medium text-[#57534E]">Credit</th>
             </tr></thead>
             <tbody>
               {entries.filter(e => !search || e.reference?.toLowerCase().includes(search.toLowerCase()) || e.journalEntry.journalNumber.toLowerCase().includes(search.toLowerCase())).map((e) => (
-                <tr key={e.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-                  <td className="px-4 py-2 text-[#475569]">{new Date(e.journalEntry.postingDate).toLocaleDateString()}</td>
-                  <td className="px-4 py-2 font-mono text-[#2563EB]">{e.journalEntry.journalNumber}</td>
-                  <td className="px-4 py-2 font-mono text-[#0F172A]">{e.account.code} — {e.account.name}</td>
-                  <td className="px-4 py-2 text-[#475569] max-w-[250px] truncate">{e.description}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[#0F172A]">{e.debit > 0 ? formatCurrency(e.debit) : '—'}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[#0F172A]">{e.credit > 0 ? formatCurrency(e.credit) : '—'}</td>
+                <tr key={e.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+                  <td className="px-4 py-2 text-[#57534E]">{new Date(e.journalEntry.postingDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 font-mono text-[#064E3B]">{e.journalEntry.journalNumber}</td>
+                  <td className="px-4 py-2 font-mono text-[#1C1917]">{e.account.code} — {e.account.name}</td>
+                  <td className="px-4 py-2 text-[#57534E] max-w-[250px] truncate">{e.description}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[#1C1917]">{e.debit > 0 ? formatCurrency(e.debit) : '—'}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[#1C1917]">{e.credit > 0 ? formatCurrency(e.credit) : '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {meta.totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+            <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
               <span>Page {page} of {meta.totalPages} ({meta.total} entries)</span>
               <div className="flex gap-2">
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Prev</button>
-                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Next</button>
+                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Prev</button>
+                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Next</button>
               </div>
             </div>
           )}

@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * FusionOS Design System — Enterprise-Grade Tokens
- * Professional, restrained, functional.
- * Dark navy sidebar + light workspace.
+ * FusionOS Design System — Emerald Ink + Champagne
+ * Deep forest green primary + warm cream backgrounds.
+ * Elegant, organic, distinctive.
  */
 
 @theme {
@@ -16,57 +16,57 @@
   --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
 
   /* ── Colors ──────────────────────────────────────────────────────────── */
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
+  --color-primary: #064E3B;
+  --color-primary-hover: #047857;
   --color-on-primary: #FFFFFF;
-  --color-secondary: #64748B;
+  --color-secondary: #78716C;
   --color-on-secondary: #FFFFFF;
-  --color-accent: #2563EB;
-  --color-accent-hover: #1D4ED8;
+  --color-accent: #064E3B;
+  --color-accent-hover: #047857;
   --color-on-accent: #FFFFFF;
 
   /* ── Surfaces ────────────────────────────────────────────────────────── */
-  --color-background: #EEF2F6;
-  --color-foreground: #0B1120;
+  --color-background: #FBF5EC;
+  --color-foreground: #1C1917;
   --color-card: #FFFFFF;
-  --color-card-foreground: #0B1120;
-  --color-muted: #EEF2F6;
-  --color-muted-foreground: #334155;
+  --color-card-foreground: #1C1917;
+  --color-muted: #F5E6CC;
+  --color-muted-foreground: #57534E;
 
   /* ── Border / Ring ───────────────────────────────────────────────────── */
-  --color-border: #B0BEC5;
-  --color-border-strong: #78909C;
-  --color-input: #B0BEC5;
-  --color-ring: #2563EB;
+  --color-border: #DDD0BB;
+  --color-border-strong: #B8A88E;
+  --color-input: #DDD0BB;
+  --color-ring: #064E3B;
 
   /* ── Semantic ────────────────────────────────────────────────────────── */
   --color-destructive: #DC2626;
   --color-destructive-foreground: #FFFFFF;
-  --color-success: #16A34A;
-  --color-success-light: #F0FDF4;
+  --color-success: #059669;
+  --color-success-light: #D1FAE5;
   --color-warning: #D97706;
-  --color-warning-light: #FFFBEB;
-  --color-info: #2563EB;
-  --color-info-light: #EFF6FF;
+  --color-warning-light: #FEF3C7;
+  --color-info: #064E3B;
+  --color-info-light: #D1FAE5;
 
-  /* ── Sidebar (Dark Navy) ────────────────────────────────────────────── */
-  --color-sidebar: #0B1730;
-  --color-sidebar-secondary: #10213F;
-  --color-sidebar-hover: #162B50;
-  --color-sidebar-active: #2563EB;
-  --color-sidebar-foreground: #CBD5E1;
+  /* ── Sidebar (Dark Emerald) ─────────────────────────────────────────── */
+  --color-sidebar: #022C22;
+  --color-sidebar-secondary: #064E3B;
+  --color-sidebar-hover: #065F46;
+  --color-sidebar-active: #047857;
+  --color-sidebar-foreground: #A7F3D0;
   --color-sidebar-primary-foreground: #FFFFFF;
-  --color-sidebar-accent: #162B50;
+  --color-sidebar-accent: #065F46;
   --color-sidebar-accent-foreground: #FFFFFF;
-  --color-sidebar-border: #1E3A5F;
-  --color-sidebar-ring: #2563EB;
+  --color-sidebar-border: #064E3B;
+  --color-sidebar-ring: #34D399;
 
   /* ── Chart Colors ────────────────────────────────────────────────────── */
-  --color-chart-1: #2563EB;
-  --color-chart-2: #16A34A;
-  --color-chart-3: #D97706;
-  --color-chart-4: #7C3AED;
-  --color-chart-5: #DC2626;
+  --color-chart-1: #064E3B;
+  --color-chart-2: #D97706;
+  --color-chart-3: #7C3AED;
+  --color-chart-4: #DC2626;
+  --color-chart-5: #0891B2;
 
   /* ── Spacing ─────────────────────────────────────────────────────────── */
   --space-xs: 4px;
@@ -100,91 +100,91 @@
 }
 
 :root {
-  --background: #EEF2F6;
-  --foreground: #0B1120;
+  --background: #FBF5EC;
+  --foreground: #1C1917;
   --card: #FFFFFF;
-  --card-foreground: #0B1120;
+  --card-foreground: #1C1917;
   --popover: #FFFFFF;
-  --popover-foreground: #0B1120;
-  --primary: #2563EB;
+  --popover-foreground: #1C1917;
+  --primary: #064E3B;
   --primary-foreground: #FFFFFF;
-  --secondary: #D6DEE6;
-  --secondary-foreground: #0B1120;
-  --muted: #EEF2F6;
-  --muted-foreground: #334155;
-  --accent: #D6DEE6;
-  --accent-foreground: #0B1120;
+  --secondary: #E7DDD0;
+  --secondary-foreground: #1C1917;
+  --muted: #F5E6CC;
+  --muted-foreground: #57534E;
+  --accent: #E7DDD0;
+  --accent-foreground: #1C1917;
   --destructive: #DC2626;
-  --border: #B0BEC5;
-  --input: #B0BEC5;
-  --ring: #2563EB;
-  --chart-1: #2563EB;
-  --chart-2: #16A34A;
-  --chart-3: #D97706;
-  --chart-4: #7C3AED;
-  --chart-5: #DC2626;
+  --border: #DDD0BB;
+  --input: #DDD0BB;
+  --ring: #064E3B;
+  --chart-1: #064E3B;
+  --chart-2: #D97706;
+  --chart-3: #7C3AED;
+  --chart-4: #DC2626;
+  --chart-5: #0891B2;
   --radius: 0.375rem;
-  --sidebar: #0B1730;
-  --sidebar-foreground: #CBD5E1;
-  --sidebar-primary: #2563EB;
+  --sidebar: #022C22;
+  --sidebar-foreground: #A7F3D0;
+  --sidebar-primary: #047857;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #162B50;
+  --sidebar-accent: #065F46;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #1E3A5F;
-  --sidebar-ring: #2563EB;
+  --sidebar-border: #064E3B;
+  --sidebar-ring: #34D399;
 }
 
 .dark {
-  --background: #0B1120;
-  --foreground: #E2E8F0;
-  --card: #1E293B;
-  --card-foreground: #E2E8F0;
-  --popover: #1E293B;
-  --popover-foreground: #E2E8F0;
-  --primary: #3B82F6;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1E293B;
-  --secondary-foreground: #E2E8F0;
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
-  --accent: #1E293B;
-  --accent-foreground: #E2E8F0;
+  --background: #0C1A14;
+  --foreground: #D1FAE5;
+  --card: #132E24;
+  --card-foreground: #D1FAE5;
+  --popover: #132E24;
+  --popover-foreground: #D1FAE5;
+  --primary: #34D399;
+  --primary-foreground: #022C22;
+  --secondary: #1E3A2F;
+  --secondary-foreground: #D1FAE5;
+  --muted: #1E3A2F;
+  --muted-foreground: #6EE7B7;
+  --accent: #1E3A2F;
+  --accent-foreground: #D1FAE5;
   --destructive: #EF4444;
-  --border: #334155;
-  --input: #334155;
-  --ring: #3B82F6;
-  --chart-1: #3B82F6;
-  --chart-2: #22C55E;
-  --chart-3: #F59E0B;
-  --chart-4: #8B5CF6;
-  --chart-5: #EF4444;
-  --sidebar: #020617;
-  --sidebar-foreground: #94A3B8;
-  --sidebar-primary: #3B82F6;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #1E293B;
-  --sidebar-ring: #3B82F6;
+  --border: #1E4D3A;
+  --input: #1E4D3A;
+  --ring: #34D399;
+  --chart-1: #34D399;
+  --chart-2: #FBBF24;
+  --chart-3: #A78BFA;
+  --chart-4: #F87171;
+  --chart-5: #22D3EE;
+  --sidebar: #041A10;
+  --sidebar-foreground: #6EE7B7;
+  --sidebar-primary: #34D399;
+  --sidebar-primary-foreground: #022C22;
+  --sidebar-accent: #1E3A2F;
+  --sidebar-accent-foreground: #D1FAE5;
+  --sidebar-border: #1E3A2F;
+  --sidebar-ring: #34D399;
 
   /* ── Dark mode semantic overrides ──────────────────────────────────── */
-  --color-background: #0F172A;
-  --color-foreground: #E2E8F0;
-  --color-card: #1E293B;
-  --color-card-foreground: #E2E8F0;
-  --color-muted: #1E293B;
-  --color-muted-foreground: #94A3B8;
-  --color-border: #334155;
-  --color-border-strong: #475569;
-  --color-input: #334155;
-  --color-ring: #3B82F6;
+  --color-background: #0C1A14;
+  --color-foreground: #D1FAE5;
+  --color-card: #132E24;
+  --color-card-foreground: #D1FAE5;
+  --color-muted: #1E3A2F;
+  --color-muted-foreground: #6EE7B7;
+  --color-border: #1E4D3A;
+  --color-border-strong: #2D6A4F;
+  --color-input: #1E4D3A;
+  --color-ring: #34D399;
   --color-destructive: #EF4444;
-  --color-success: #22C55E;
-  --color-success-light: rgba(34, 197, 94, 0.15);
-  --color-warning: #F59E0B;
-  --color-warning-light: rgba(245, 158, 11, 0.15);
-  --color-info: #3B82F6;
-  --color-info-light: rgba(59, 130, 246, 0.15);
+  --color-success: #34D399;
+  --color-success-light: rgba(52, 211, 153, 0.15);
+  --color-warning: #FBBF24;
+  --color-warning-light: rgba(251, 191, 36, 0.15);
+  --color-info: #34D399;
+  --color-info-light: rgba(52, 211, 153, 0.15);
 }
 
 @layer base {
@@ -230,7 +230,7 @@
   }
 
   ::selection {
-    background-color: rgba(37, 99, 235, 0.12);
+    background-color: rgba(6, 78, 59, 0.15);
     color: var(--color-foreground);
   }
 
@@ -242,11 +242,11 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #B8A88E;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
+    background: #8E7E68;
   }
 
   @media (prefers-reduced-motion: reduce) {

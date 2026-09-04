@@ -98,18 +98,18 @@ export default function CrmOpportunitiesPage() {
         <select
           value={stage}
           onChange={(e) => { setStage(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] text-[#475569]"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] text-[#57534E]"
         >
           <option value="">All Stages</option>
           {STAGES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
         </select>
       </div>
 
-      <div className="bg-white rounded-lg border border-[#E2E8F0]">
+      <div className="bg-white rounded-lg border border-[#DDD0BB]">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-[#F8FAFC] rounded animate-pulse" />
+              <div key={i} className="h-12 bg-[#FBF5EC] rounded animate-pulse" />
             ))}
           </div>
         ) : opps.length === 0 ? (
@@ -118,40 +118,40 @@ export default function CrmOpportunitiesPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-[#E2E8F0]">
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Opportunity</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Customer</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Stage</th>
-                  <th className="text-right px-4 py-3 font-medium text-[#64748B]">Amount</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Probability</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Owner</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Close Date</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Actions</th>
+                <tr className="border-b border-[#DDD0BB]">
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Opportunity</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Customer</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Stage</th>
+                  <th className="text-right px-4 py-3 font-medium text-[#57534E]">Amount</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Probability</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Owner</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Close Date</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {opps.map((o) => {
                   const next = getNextStage(o.stage);
                   return (
-                    <tr key={o.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-                      <td className="px-4 py-3 font-medium text-[#0F172A]">{o.name}</td>
-                      <td className="px-4 py-3 text-[#475569]">{o.customerProfile?.customer?.name || '—'}</td>
+                    <tr key={o.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+                      <td className="px-4 py-3 font-medium text-[#1C1917]">{o.name}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{o.customerProfile?.customer?.name || '—'}</td>
                       <td className="px-4 py-3 text-center"><StatusBadge status={o.stage} /></td>
                       <td className="px-4 py-3 text-right font-medium">{formatCurrency(o.amount, o.currency)}</td>
                       <td className="px-4 py-3 text-center">{o.probability}%</td>
-                      <td className="px-4 py-3 text-[#475569]">{o.owner ? `${o.owner.firstName} ${o.owner.lastName}` : '—'}</td>
-                      <td className="px-4 py-3 text-[#64748B]">{o.expectedCloseDate ? new Date(o.expectedCloseDate).toLocaleDateString() : '—'}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{o.owner ? `${o.owner.firstName} ${o.owner.lastName}` : '—'}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{o.expectedCloseDate ? new Date(o.expectedCloseDate).toLocaleDateString() : '—'}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
                           {next && o.status === 'OPEN' && (
                             <button
                               onClick={() => changeStage(o.id, next)}
-                              className="px-2 py-1 text-[11px] bg-[#2563EB] text-white rounded hover:bg-[#1D4ED8]"
+                              className="px-2 py-1 text-[11px] bg-[#064E3B] text-white rounded hover:bg-[#047857]"
                             >
                               → {next.replace('_', ' ')}
                             </button>
                           )}
-                          <button onClick={() => router.push(`/crm/opportunities?id=${o.id}`)} className="px-2 py-1 text-[11px] border border-[#E2E8F0] rounded hover:bg-[#F8FAFC]">
+                          <button onClick={() => router.push(`/crm/opportunities?id=${o.id}`)} className="px-2 py-1 text-[11px] border border-[#DDD0BB] rounded hover:bg-[#FBF5EC]">
                             View
                           </button>
                         </div>
@@ -165,7 +165,7 @@ export default function CrmOpportunitiesPage() {
         )}
 
         {total > 20 && (
-          <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+          <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
             <span>Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}</span>
             <div className="flex gap-2">
               <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 border rounded disabled:opacity-40">Prev</button>

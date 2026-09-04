@@ -41,13 +41,13 @@ export default function PayrollAnalyticsPage() {
   const mixed = !!(s?.hasMixedCurrencies && (s.byCurrency?.length || 0) > 1);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader title="Payroll Analytics" description="Gross vs net, deductions, and department payroll" breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Payroll' }]}
-        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
+        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
       <div className="px-5 py-4 lg:px-6">
         {loading ? <div className="grid grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)}</div>
           : error ? <EmptyState icon={Wallet} title="Unable to load payroll analytics" description={error}
-              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
+              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
           : s ? (
             <>
               {mixed ? <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800">Multiple currencies detected — figures are shown per currency and never cross-summed.</div> : null}
@@ -59,7 +59,7 @@ export default function PayrollAnalyticsPage() {
                     ])
                   : <>
                       <KpiCard label="Gross Payroll" value={fmt(s.totalGross, s.currency)} icon={Wallet} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
-                      <KpiCard label="Net Payroll" value={fmt(s.totalNet, s.currency)} icon={Wallet} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                      <KpiCard label="Net Payroll" value={fmt(s.totalNet, s.currency)} icon={Wallet} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                       <KpiCard label="Deductions" value={fmt(s.totalDeductions, s.currency)} icon={Wallet} iconBg="bg-red-50" iconColor="text-red-600" />
                       <KpiCard label="Avg Cost/Employee" value={fmt(s.averageCostPerEmployee, s.currency)} icon={Wallet} iconBg="bg-violet-50" iconColor="text-violet-600" />
                     </>}
@@ -68,9 +68,9 @@ export default function PayrollAnalyticsPage() {
                 <SectionCard title="Payroll Trend">
                   {data.payrollTrend.length === 0 ? <EmptyState icon={Wallet} title="No payroll data" /> : (
                     <div className="space-y-2">{data.payrollTrend.map((r: any, i: number) => (
-                      <div key={`${r.runId || r.period}-${i}`} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                        <span className="text-[13px] font-medium text-[#0F172A]">{String(r.period).slice(0, 20)}{r.currency ? <span className="ml-1 text-[11px] text-[#94A3B8]">{r.currency}</span> : null}</span>
-                        <div className="flex gap-4"><span className="text-[12px] text-emerald-600">{fmt(r.gross, r.currency)}</span><span className="text-[12px] text-[#2563EB]">{fmt(r.net, r.currency)}</span></div>
+                      <div key={`${r.runId || r.period}-${i}`} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                        <span className="text-[13px] font-medium text-[#1C1917]">{String(r.period).slice(0, 20)}{r.currency ? <span className="ml-1 text-[11px] text-[#8E7E68]">{r.currency}</span> : null}</span>
+                        <div className="flex gap-4"><span className="text-[12px] text-emerald-600">{fmt(r.gross, r.currency)}</span><span className="text-[12px] text-[#064E3B]">{fmt(r.net, r.currency)}</span></div>
                       </div>
                     ))}</div>
                   )}
@@ -78,9 +78,9 @@ export default function PayrollAnalyticsPage() {
                 <SectionCard title="Department Payroll">
                   {data.departmentPayroll.length === 0 ? <EmptyState icon={Wallet} title="No department data" /> : (
                     <div className="space-y-2">{data.departmentPayroll.map((d: any, i: number) => (
-                      <div key={`${d.name}-${d.currency || 'USD'}-${i}`} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                        <span className="text-[13px] font-medium text-[#0F172A]">{d.name}{d.currency ? <span className="ml-1 text-[11px] text-[#94A3B8]">{d.currency}</span> : null}</span>
-                        <div className="flex gap-4"><span className="text-[12px] text-emerald-600">{fmt(d.gross, d.currency)}</span><span className="text-[12px] text-[#64748B]">{d.count} emp</span></div>
+                      <div key={`${d.name}-${d.currency || 'USD'}-${i}`} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                        <span className="text-[13px] font-medium text-[#1C1917]">{d.name}{d.currency ? <span className="ml-1 text-[11px] text-[#8E7E68]">{d.currency}</span> : null}</span>
+                        <div className="flex gap-4"><span className="text-[12px] text-emerald-600">{fmt(d.gross, d.currency)}</span><span className="text-[12px] text-[#57534E]">{d.count} emp</span></div>
                       </div>
                     ))}</div>
                   )}

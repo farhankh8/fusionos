@@ -18,24 +18,24 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#2563EB` | `--color-primary` |
+| Primary | `#064E3B` | `--color-primary` |
 | On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#3B82F6` | `--color-secondary` |
-| On Secondary | `#000000` | `--color-on-secondary` |
-| Accent/CTA | `#EA580C` | `--color-accent` |
-| On Accent/CTA | `#000000` | `--color-on-accent` |
-| Background | `#F8FAFC` | `--color-background` |
-| Foreground | `#1E293B` | `--color-foreground` |
+| Secondary | `#78716C` | `--color-secondary` |
+| On Secondary | `#FFFFFF` | `--color-on-secondary` |
+| Accent/CTA | `#064E3B` | `--color-accent` |
+| On Accent/CTA | `#FFFFFF` | `--color-on-accent` |
+| Background | `#FBF5EC` | `--color-background` |
+| Foreground | `#1C1917` | `--color-foreground` |
 | Card | `#FFFFFF` | `--color-card` |
-| Card Foreground | `#1E293B` | `--color-card-foreground` |
-| Muted | `#E9EFF8` | `--color-muted` |
-| Muted Foreground | `#475569` | `--color-muted-foreground` |
-| Border | `#E2E8F0` | `--color-border` |
+| Card Foreground | `#1C1917` | `--color-card-foreground` |
+| Muted | `#F5E6CC` | `--color-muted` |
+| Muted Foreground | `#57534E` | `--color-muted-foreground` |
+| Border | `#DDD0BB` | `--color-border` |
 | Destructive | `#DC2626` | `--color-destructive` |
 | On Destructive | `#FFFFFF` | `--color-on-destructive` |
-| Ring | `#2563EB` | `--color-ring` |
+| Ring | `#064E3B` | `--color-ring` |
 
-**Color Notes:** Trust blue + orange CTA contrast [Accent adjusted from #F97316]
+**Color Notes:** Emerald Ink (#064E3B) primary + Champagne (#F8E7C9) warm background — organic, elegant, distinctive.
 
 ### Typography
 
@@ -79,7 +79,7 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #EA580C;
+  background: #064E3B;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -89,15 +89,15 @@
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  background: #047857;
   transform: translateY(-1px);
 }
 
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #2563EB;
-  border: 2px solid #2563EB;
+  color: #064E3B;
+  border: 2px solid #064E3B;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -110,7 +110,7 @@
 
 ```css
 .card {
-  background: #F8FAFC;
+  background: #FBF5EC;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -129,16 +129,16 @@
 ```css
 .input {
   padding: 12px 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #DDD0BB;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 200ms ease;
 }
 
 .input:focus {
-  border-color: #2563EB;
+  border-color: #064E3B;
   outline: none;
-  box-shadow: 0 0 0 3px #2563EB20;
+  box-shadow: 0 0 0 3px rgba(6,78,59,0.12);
 }
 ```
 

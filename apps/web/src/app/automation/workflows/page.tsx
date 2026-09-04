@@ -83,7 +83,7 @@ export default function WorkflowsListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="Automation"
         description="Automate repetitive business processes across FusionOS"
@@ -94,7 +94,7 @@ export default function WorkflowsListPage() {
         actions={
           <Link
             href="/automation/workflows/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] transition-colors"
           >
             <Plus className="h-4 w-4" />
             Create Workflow
@@ -106,19 +106,19 @@ export default function WorkflowsListPage() {
         {/* Filters */}
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8E7E68]" />
             <input
               type="text"
               placeholder="Search workflows..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-[#E2E8F0] bg-white py-2 pl-9 pr-4 text-[13px] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+              className="w-full rounded-lg border border-[#DDD0BB] bg-white py-2 pl-9 pr-4 text-[13px] text-[#1C1917] placeholder-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+            className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
           >
             <option value="">All Statuses</option>
             <option value="DRAFT">Draft</option>
@@ -129,7 +129,7 @@ export default function WorkflowsListPage() {
         </div>
 
         {/* Table */}
-        <div className="rounded-lg border border-[#E2E8F0] bg-white overflow-hidden">
+        <div className="rounded-lg border border-[#DDD0BB] bg-white overflow-hidden">
           {loading ? (
             <div className="p-5 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -144,7 +144,7 @@ export default function WorkflowsListPage() {
               action={
                 <Link
                   href="/automation/workflows/new"
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   Create Workflow
@@ -154,24 +154,24 @@ export default function WorkflowsListPage() {
           ) : (
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Workflow</th>
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Status</th>
-                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Trigger</th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Executions</th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Success Rate</th>
-                  <th className="hidden xl:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Updated</th>
-                  <th className="px-5 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Actions</th>
+                <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Workflow</th>
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Status</th>
+                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Trigger</th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Executions</th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Success Rate</th>
+                  <th className="hidden xl:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Updated</th>
+                  <th className="px-5 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F1F5F9]">
+              <tbody className="divide-y divide-[#F5E6CC]">
                 {workflows.map((wf) => (
-                  <tr key={wf.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <tr key={wf.id} className="hover:bg-[#FBF5EC] transition-colors">
                     <td className="px-5 py-3">
                       <Link href={`/automation/workflows/${wf.id}`} className="block">
-                        <p className="text-[13px] font-medium text-[#0F172A] hover:text-[#2563EB]">{wf.name}</p>
+                        <p className="text-[13px] font-medium text-[#1C1917] hover:text-[#064E3B]">{wf.name}</p>
                         {wf.description && (
-                          <p className="text-[11px] text-[#94A3B8] truncate max-w-[300px]">{wf.description}</p>
+                          <p className="text-[11px] text-[#8E7E68] truncate max-w-[300px]">{wf.description}</p>
                         )}
                       </Link>
                     </td>
@@ -179,10 +179,10 @@ export default function WorkflowsListPage() {
                       <StatusBadge status={wf.status} />
                     </td>
                     <td className="hidden md:table-cell px-5 py-3">
-                      <span className="text-[12px] text-[#64748B]">{getTriggerLabel(wf.currentVersion?.triggerConfig as Record<string, unknown> | null)}</span>
+                      <span className="text-[12px] text-[#57534E]">{getTriggerLabel(wf.currentVersion?.triggerConfig as Record<string, unknown> | null)}</span>
                     </td>
                     <td className="hidden lg:table-cell px-5 py-3">
-                      <span className="text-[12px] font-medium text-[#0F172A]">{wf.executionCount}</span>
+                      <span className="text-[12px] font-medium text-[#1C1917]">{wf.executionCount}</span>
                     </td>
                     <td className="hidden lg:table-cell px-5 py-3">
                       {wf.successRate !== null ? (
@@ -190,11 +190,11 @@ export default function WorkflowsListPage() {
                           {wf.successRate}%
                         </span>
                       ) : (
-                        <span className="text-[12px] text-[#94A3B8]">—</span>
+                        <span className="text-[12px] text-[#8E7E68]">—</span>
                       )}
                     </td>
                     <td className="hidden xl:table-cell px-5 py-3">
-                      <span className="text-[12px] text-[#94A3B8]">
+                      <span className="text-[12px] text-[#8E7E68]">
                         {new Date(wf.updatedAt).toLocaleDateString()}
                       </span>
                     </td>
@@ -202,22 +202,22 @@ export default function WorkflowsListPage() {
                       <div className="relative inline-block">
                         <button
                           onClick={() => setOpenMenu(openMenu === wf.id ? null : wf.id)}
-                          className="rounded p-1 text-[#94A3B8] hover:bg-[#F1F5F9] hover:text-[#0F172A] transition-colors"
+                          className="rounded p-1 text-[#8E7E68] hover:bg-[#F5E6CC] hover:text-[#1C1917] transition-colors"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>
                         {openMenu === wf.id && (
-                          <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
+                          <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-[#DDD0BB] bg-white py-1 shadow-lg">
                             <button
                               onClick={() => { setOpenMenu(null); router.push(`/automation/workflows/${wf.id}`); }}
-                              className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#0F172A] hover:bg-[#F1F5F9]"
+                              className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#1C1917] hover:bg-[#F5E6CC]"
                             >
                               <Eye className="h-3.5 w-3.5" /> View Details
                             </button>
                             {wf.status === 'DRAFT' && (
                               <button
                                 onClick={() => handleAction(wf.id, 'publish')}
-                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#0F172A] hover:bg-[#F1F5F9]"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#1C1917] hover:bg-[#F5E6CC]"
                               >
                                 <Play className="h-3.5 w-3.5 text-emerald-600" /> Publish
                               </button>
@@ -225,7 +225,7 @@ export default function WorkflowsListPage() {
                             {wf.status === 'PUBLISHED' && (
                               <button
                                 onClick={() => handleAction(wf.id, 'pause')}
-                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#0F172A] hover:bg-[#F1F5F9]"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#1C1917] hover:bg-[#F5E6CC]"
                               >
                                 <Pause className="h-3.5 w-3.5 text-amber-600" /> Pause
                               </button>
@@ -233,7 +233,7 @@ export default function WorkflowsListPage() {
                             {wf.status === 'PAUSED' && (
                               <button
                                 onClick={() => handleAction(wf.id, 'resume')}
-                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#0F172A] hover:bg-[#F1F5F9]"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#1C1917] hover:bg-[#F5E6CC]"
                               >
                                 <Play className="h-3.5 w-3.5 text-emerald-600" /> Resume
                               </button>
@@ -241,9 +241,9 @@ export default function WorkflowsListPage() {
                             {wf.status !== 'ARCHIVED' && wf.status !== 'DRAFT' && (
                               <button
                                 onClick={() => handleAction(wf.id, 'archive')}
-                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#0F172A] hover:bg-[#F1F5F9]"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-[12px] text-[#1C1917] hover:bg-[#F5E6CC]"
                               >
-                                <Archive className="h-3.5 w-3.5 text-[#64748B]" /> Archive
+                                <Archive className="h-3.5 w-3.5 text-[#57534E]" /> Archive
                               </button>
                             )}
                             {wf.status === 'DRAFT' && wf.executionCount === 0 && (

@@ -148,7 +148,7 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex h-8 w-8 items-center justify-center rounded-md text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] transition-colors"
+        className="relative flex h-8 w-8 items-center justify-center rounded-md text-[#57534E] hover:bg-[#F5E6CC] hover:text-[#1C1917] transition-colors"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <Bell className="h-4.5 w-4.5" />
@@ -160,13 +160,13 @@ export function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-lg border border-[#E2E8F0] bg-white shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-lg border border-[#DDD0BB] bg-white shadow-lg z-50">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-[#DDD0BB] px-4 py-3">
             <div className="flex items-center gap-2">
-              <h3 className="text-[13px] font-semibold text-[#0F172A]">Notifications</h3>
+              <h3 className="text-[13px] font-semibold text-[#1C1917]">Notifications</h3>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]">
+                <span className="rounded-full bg-[#D1FAE5] px-1.5 py-0.5 text-[10px] font-medium text-[#064E3B]">
                   {unreadCount} unread
                 </span>
               )}
@@ -175,7 +175,7 @@ export function NotificationBell() {
               <button
                 onClick={handleMarkAllAsRead}
                 disabled={markingAll}
-                className="flex items-center gap-1 text-[12px] text-[#2563EB] hover:text-[#1D4ED8] disabled:opacity-50"
+                className="flex items-center gap-1 text-[12px] text-[#064E3B] hover:text-[#047857] disabled:opacity-50"
               >
                 {markingAll ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
                 Mark all read
@@ -187,20 +187,20 @@ export function NotificationBell() {
           <div className="max-h-[400px] overflow-y-auto">
             {loading ? (
               <div className="p-4 text-center">
-                <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#94A3B8]" />
+                <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#8E7E68]" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center">
-                <Bell className="mx-auto mb-2 h-8 w-8 text-[#E2E8F0]" />
-                <p className="text-[13px] text-[#64748B]">No notifications yet</p>
+                <Bell className="mx-auto mb-2 h-8 w-8 text-[#DDD0BB]" />
+                <p className="text-[13px] text-[#57534E]">No notifications yet</p>
               </div>
             ) : (
               <div>
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`flex items-start gap-2.5 border-b border-[#E2E8F0] px-4 py-2.5 transition-colors cursor-pointer ${
-                      !notification.readAt ? 'bg-blue-50/40 hover:bg-blue-50' : 'hover:bg-[#F8FAFC]'
+                    className={`flex items-start gap-2.5 border-b border-[#DDD0BB] px-4 py-2.5 transition-colors cursor-pointer ${
+                      !notification.readAt ? 'bg-blue-50/40 hover:bg-blue-50' : 'hover:bg-[#FBF5EC]'
                     }`}
                     onClick={() => handleNotificationClick(notification)}
                   >
@@ -209,21 +209,21 @@ export function NotificationBell() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={`text-[12px] truncate ${
-                        !notification.readAt ? 'font-semibold text-[#0F172A]' : 'text-[#475569]'
+                        !notification.readAt ? 'font-semibold text-[#1C1917]' : 'text-[#57534E]'
                       }`}>
                         {notification.title}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-[#94A3B8] line-clamp-1">
+                      <p className="mt-0.5 text-[11px] text-[#8E7E68] line-clamp-1">
                         {notification.body}
                       </p>
-                      <span className="mt-0.5 inline-block text-[10px] text-[#94A3B8]">
+                      <span className="mt-0.5 inline-block text-[10px] text-[#8E7E68]">
                         {formatTimeAgo(notification.createdAt)}
                       </span>
                     </div>
                     {!notification.readAt && (
                       <button
                         onClick={(e) => handleMarkAsRead(notification.id, e)}
-                        className="mt-0.5 shrink-0 rounded p-0.5 text-[#94A3B8] hover:text-[#2563EB]"
+                        className="mt-0.5 shrink-0 rounded p-0.5 text-[#8E7E68] hover:text-[#064E3B]"
                         title="Mark as read"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />
@@ -237,10 +237,10 @@ export function NotificationBell() {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="border-t border-[#E2E8F0] px-4 py-2.5">
+            <div className="border-t border-[#DDD0BB] px-4 py-2.5">
               <button
                 onClick={handleViewAll}
-                className="w-full text-center text-[12px] font-medium text-[#2563EB] hover:text-[#1D4ED8]"
+                className="w-full text-center text-[12px] font-medium text-[#064E3B] hover:text-[#047857]"
               >
                 View all notifications
               </button>

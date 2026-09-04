@@ -127,13 +127,13 @@ export default function FinanceOverviewPage() {
           <div className="flex gap-2">
             <button
               onClick={() => router.push('/finance/journals')}
-              className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] transition-colors"
+              className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] transition-colors"
             >
               New Journal
             </button>
             <button
               onClick={() => router.push('/finance/expenses')}
-              className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC] transition-colors"
+              className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC] transition-colors"
             >
               New Expense
             </button>
@@ -151,17 +151,17 @@ export default function FinanceOverviewPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-lg border border-[#E2E8F0] bg-white p-3.5 animate-pulse">
-                <div className="h-4 w-20 bg-[#F1F5F9] rounded mb-2" />
-                <div className="h-6 w-24 bg-[#F1F5F9] rounded" />
+              <div key={i} className="rounded-lg border border-[#DDD0BB] bg-white p-3.5 animate-pulse">
+                <div className="h-4 w-20 bg-[#F5E6CC] rounded mb-2" />
+                <div className="h-6 w-24 bg-[#F5E6CC] rounded" />
               </div>
             ))
           : kpis.map((kpi) => (
-              <div key={kpi.label} className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+              <div key={kpi.label} className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] text-[#64748B]">{kpi.label}</p>
-                    <p className="mt-1 text-[20px] font-semibold text-[#0F172A] leading-tight">{kpi.value}</p>
+                    <p className="text-[12px] text-[#57534E]">{kpi.label}</p>
+                    <p className="mt-1 text-[20px] font-semibold text-[#1C1917] leading-tight">{kpi.value}</p>
                   </div>
                   <span className="text-xl">{kpi.icon}</span>
                 </div>
@@ -175,7 +175,7 @@ export default function FinanceOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+                <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
               ))}
             </div>
           ) : journals.length === 0 ? (
@@ -184,25 +184,25 @@ export default function FinanceOverviewPage() {
             <div className="overflow-x-auto -mx-4 -mt-4">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0]">
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Journal</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Date</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Description</th>
-                    <th className="text-right px-4 py-3 font-medium text-[#64748B]">Amount</th>
-                    <th className="text-center px-4 py-3 font-medium text-[#64748B]">Status</th>
+                  <tr className="border-b border-[#DDD0BB]">
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Journal</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Date</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Description</th>
+                    <th className="text-right px-4 py-3 font-medium text-[#57534E]">Amount</th>
+                    <th className="text-center px-4 py-3 font-medium text-[#57534E]">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {journals.map((j) => (
                     <tr
                       key={j.id}
-                      className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC] cursor-pointer"
+                      className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC] cursor-pointer"
                       onClick={() => router.push(`/finance/journals?id=${j.id}`)}
                     >
-                      <td className="px-4 py-3 font-medium text-[#0F172A]">{j.journalNumber}</td>
-                      <td className="px-4 py-3 text-[#475569]">{new Date(j.postingDate).toLocaleDateString()}</td>
-                      <td className="px-4 py-3 text-[#475569] max-w-[200px] truncate">{j.description}</td>
-                      <td className="px-4 py-3 text-right font-medium text-[#0F172A]">{formatCurrency(j.totalDebit, j.currency)}</td>
+                      <td className="px-4 py-3 font-medium text-[#1C1917]">{j.journalNumber}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{new Date(j.postingDate).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-[#57534E] max-w-[200px] truncate">{j.description}</td>
+                      <td className="px-4 py-3 text-right font-medium text-[#1C1917]">{formatCurrency(j.totalDebit, j.currency)}</td>
                       <td className="px-4 py-3 text-center">
                         <StatusBadge status={j.status} />
                       </td>
@@ -219,7 +219,7 @@ export default function FinanceOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+                <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
               ))}
             </div>
           ) : accounts.length === 0 ? (
@@ -234,7 +234,7 @@ export default function FinanceOverviewPage() {
                       loadDashboard();
                     } catch {}
                   }}
-                  className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8]"
+                  className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857]"
                 >
                   Seed Default Accounts
                 </button>
@@ -244,17 +244,17 @@ export default function FinanceOverviewPage() {
             <div className="overflow-x-auto -mx-4 -mt-4">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0]">
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Code</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Account</th>
-                    <th className="text-left px-4 py-3 font-medium text-[#64748B]">Type</th>
+                  <tr className="border-b border-[#DDD0BB]">
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Code</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Account</th>
+                    <th className="text-left px-4 py-3 font-medium text-[#57534E]">Type</th>
                   </tr>
                 </thead>
                 <tbody>
                   {accounts.slice(0, 10).map((a) => (
-                    <tr key={a.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-                      <td className="px-4 py-3 font-mono font-medium text-[#0F172A]">{a.code}</td>
-                      <td className="px-4 py-3 text-[#475569]">{a.name}</td>
+                    <tr key={a.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+                      <td className="px-4 py-3 font-mono font-medium text-[#1C1917]">{a.code}</td>
+                      <td className="px-4 py-3 text-[#57534E]">{a.name}</td>
                       <td className="px-4 py-3">
                         <StatusBadge status={a.accountType} />
                       </td>
@@ -263,11 +263,11 @@ export default function FinanceOverviewPage() {
                 </tbody>
               </table>
               {accounts.length > 10 && (
-                <div className="px-4 py-3 text-[12px] text-[#64748B] border-t border-[#E2E8F0]">
+                <div className="px-4 py-3 text-[12px] text-[#57534E] border-t border-[#DDD0BB]">
                   Showing 10 of {accounts.length} accounts.{' '}
                   <button
                     onClick={() => router.push('/finance/accounts')}
-                    className="text-[#2563EB] hover:underline"
+                    className="text-[#064E3B] hover:underline"
                   >
                     View all
                   </button>
@@ -294,10 +294,10 @@ export default function FinanceOverviewPage() {
             <button
               key={item.href}
               onClick={() => router.push(item.href)}
-              className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg text-left hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-colors"
+              className="flex items-center gap-3 p-3 border border-[#DDD0BB] rounded-lg text-left hover:bg-[#FBF5EC] hover:border-[#A7F3D0] transition-colors"
             >
               <span className="text-xl">{item.icon}</span>
-              <span className="text-[13px] font-medium text-[#0F172A]">{item.label}</span>
+              <span className="text-[13px] font-medium text-[#1C1917]">{item.label}</span>
             </button>
           ))}
         </div>

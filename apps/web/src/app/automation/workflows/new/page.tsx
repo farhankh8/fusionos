@@ -200,7 +200,7 @@ export default function NewWorkflowPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="Create Workflow"
         description="Build a new automation workflow"
@@ -214,14 +214,14 @@ export default function NewWorkflowPage() {
             <button
               onClick={() => handleSave(false)}
               disabled={saving || !name.trim() || !selectedEventType}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[12px] font-medium text-[#0F172A] hover:bg-[#F1F5F9] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#DDD0BB] px-3 py-1.5 text-[12px] font-medium text-[#1C1917] hover:bg-[#F5E6CC] disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" /> Save as Draft
             </button>
             <button
               onClick={() => handleSave(true)}
               disabled={saving || !name.trim() || !selectedEventType}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857] disabled:opacity-50"
             >
               <Play className="h-3.5 w-3.5" /> Publish
             </button>
@@ -232,51 +232,51 @@ export default function NewWorkflowPage() {
       <div className="p-5 lg:p-6">
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Step 1: Workflow Name */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">Workflow Details</h3>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">Workflow Details</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Name *</label>
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Name *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Invoice Overdue Notification"
-                  className="w-full rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] placeholder-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Description</label>
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={2}
                   placeholder="Optional description..."
-                  className="w-full rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB] resize-none"
+                  className="w-full rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] placeholder-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B] resize-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Step 2: Trigger */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">
               <span className="inline-flex items-center gap-2">
-                <Zap className="h-4 w-4 text-[#2563EB]" />
+                <Zap className="h-4 w-4 text-[#064E3B]" />
                 Trigger
               </span>
             </h3>
             {loadingTriggers ? (
               <div className="animate-pulse space-y-2">
-                <div className="h-10 w-full rounded bg-[#F1F5F9]" />
+                <div className="h-10 w-full rounded bg-[#F5E6CC]" />
               </div>
             ) : (
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Event *</label>
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Event *</label>
                 <select
                   value={selectedEventType}
                   onChange={(e) => setSelectedEventType(e.target.value)}
-                  className="w-full rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
                 >
                   <option value="">Select an event...</option>
                   {Object.entries(
@@ -295,7 +295,7 @@ export default function NewWorkflowPage() {
                   ))}
                 </select>
                 {selectedTrigger && (
-                  <p className="mt-2 text-[12px] text-[#64748B]">
+                  <p className="mt-2 text-[12px] text-[#57534E]">
                     When a <strong>{selectedTrigger.entityLabel}</strong> {selectedTrigger.eventLabel.toLowerCase()} event fires
                   </p>
                 )}
@@ -304,13 +304,13 @@ export default function NewWorkflowPage() {
           </div>
 
           {/* Step 3: Conditions */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[14px] font-semibold text-[#0F172A]">Conditions</h3>
+              <h3 className="text-[14px] font-semibold text-[#1C1917]">Conditions</h3>
               <button
                 onClick={addCondition}
                 disabled={!selectedTrigger}
-                className="inline-flex items-center gap-1 text-[12px] font-medium text-[#2563EB] hover:text-[#1D4ED8] disabled:opacity-50"
+                className="inline-flex items-center gap-1 text-[12px] font-medium text-[#064E3B] hover:text-[#047857] disabled:opacity-50"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Condition
               </button>
@@ -321,7 +321,7 @@ export default function NewWorkflowPage() {
                 <select
                   value={conditionLogic}
                   onChange={(e) => setConditionLogic(e.target.value as 'AND' | 'OR')}
-                  className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none"
+                  className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none"
                 >
                   <option value="AND">ALL conditions must match (AND)</option>
                   <option value="OR">ANY condition can match (OR)</option>
@@ -330,13 +330,13 @@ export default function NewWorkflowPage() {
             )}
 
             {conditions.length === 0 ? (
-              <p className="text-[13px] text-[#94A3B8]">No conditions — workflow will always run when triggered.</p>
+              <p className="text-[13px] text-[#8E7E68]">No conditions — workflow will always run when triggered.</p>
             ) : (
               <div className="space-y-2">
                 {conditions.map((cond, i) => (
                   <div key={i} className="flex items-center gap-2">
                     {i > 0 && (
-                      <span className="text-[11px] font-semibold text-[#64748B] w-8">{conditionLogic}</span>
+                      <span className="text-[11px] font-semibold text-[#57534E] w-8">{conditionLogic}</span>
                     )}
                     <select
                       value={cond.field ? `${cond.entity}.${cond.field}` : ''}
@@ -344,7 +344,7 @@ export default function NewWorkflowPage() {
                         const [entity, field] = e.target.value.split('.');
                         updateCondition(i, { entity: entity ?? '', field: field ?? '' });
                       }}
-                      className="flex-1 rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none"
+                      className="flex-1 rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none"
                     >
                       <option value="">Select field...</option>
                       {selectedTrigger?.availableFields.map((f) => (
@@ -356,7 +356,7 @@ export default function NewWorkflowPage() {
                     <select
                       value={cond.operator}
                       onChange={(e) => updateCondition(i, { operator: e.target.value })}
-                      className="w-40 rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none"
+                      className="w-40 rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none"
                     >
                       {(OPERATORS_BY_TYPE[
                         selectedTrigger?.availableFields.find((f) => f.entity === cond.entity && f.field === cond.field)?.type ?? 'STRING'
@@ -370,12 +370,12 @@ export default function NewWorkflowPage() {
                         value={cond.value}
                         onChange={(e) => updateCondition(i, { value: e.target.value })}
                         placeholder="Value"
-                        className="w-40 rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#2563EB] focus:outline-none"
+                        className="w-40 rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] text-[#1C1917] placeholder-[#8E7E68] focus:border-[#064E3B] focus:outline-none"
                       />
                     )}
                     <button
                       onClick={() => removeCondition(i)}
-                      className="rounded p-1.5 text-[#94A3B8] hover:bg-red-50 hover:text-red-600 transition-colors"
+                      className="rounded p-1.5 text-[#8E7E68] hover:bg-red-50 hover:text-red-600 transition-colors"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -386,22 +386,22 @@ export default function NewWorkflowPage() {
           </div>
 
           {/* Step 4: Actions */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">Actions</h3>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">Actions</h3>
 
             {actions.length === 0 ? (
-              <p className="text-[13px] text-[#94A3B8] mb-3">No actions added yet.</p>
+              <p className="text-[13px] text-[#8E7E68] mb-3">No actions added yet.</p>
             ) : (
               <div className="space-y-3 mb-3">
                 {actions.map((action, i) => (
-                  <div key={i} className="rounded-lg border border-[#E2E8F0] p-3">
+                  <div key={i} className="rounded-lg border border-[#DDD0BB] p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[12px] font-semibold text-[#0F172A]">
+                      <span className="text-[12px] font-semibold text-[#1C1917]">
                         {i + 1}. {action.type.replace(/_/g, ' ')}
                       </span>
                       <button
                         onClick={() => removeAction(i)}
-                        className="rounded p-1 text-[#94A3B8] hover:bg-red-50 hover:text-red-600"
+                        className="rounded p-1 text-[#8E7E68] hover:bg-red-50 hover:text-red-600"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -415,19 +415,19 @@ export default function NewWorkflowPage() {
                           value={action.config['title'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'title', e.target.value)}
                           placeholder="Notification title"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <input
                           type="text"
                           value={action.config['message'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'message', e.target.value)}
                           placeholder="Notification message"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <select
                           value={action.config['recipientType'] ?? 'workflow_owner'}
                           onChange={(e) => updateActionConfig(i, 'recipientType', e.target.value)}
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         >
                           <option value="workflow_owner">Workflow Owner</option>
                           <option value="manager">Manager</option>
@@ -442,19 +442,19 @@ export default function NewWorkflowPage() {
                           value={action.config['title'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'title', e.target.value)}
                           placeholder="Task title"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <input
                           type="text"
                           value={action.config['description'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'description', e.target.value)}
                           placeholder="Task description"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <select
                           value={action.config['priority'] ?? 'MEDIUM'}
                           onChange={(e) => updateActionConfig(i, 'priority', e.target.value)}
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         >
                           <option value="LOW">Low Priority</option>
                           <option value="MEDIUM">Medium Priority</option>
@@ -471,14 +471,14 @@ export default function NewWorkflowPage() {
                           value={action.config['approverUserId'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'approverUserId', e.target.value)}
                           placeholder="Approver User ID"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <input
                           type="text"
                           value={action.config['reason'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'reason', e.target.value)}
                           placeholder="Approval reason"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                       </div>
                     )}
@@ -488,7 +488,7 @@ export default function NewWorkflowPage() {
                         <select
                           value={action.config['entityType'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'entityType', e.target.value)}
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         >
                           <option value="">Select entity...</option>
                           <option value="Employee">Employee</option>
@@ -500,14 +500,14 @@ export default function NewWorkflowPage() {
                           value={action.config['field'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'field', e.target.value)}
                           placeholder="Field to update"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <input
                           type="text"
                           value={action.config['value'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'value', e.target.value)}
                           placeholder="New value"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                       </div>
                     )}
@@ -519,14 +519,14 @@ export default function NewWorkflowPage() {
                           value={action.config['action'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'action', e.target.value)}
                           placeholder="Audit action name"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                         <input
                           type="text"
                           value={action.config['entityType'] ?? ''}
                           onChange={(e) => updateActionConfig(i, 'entityType', e.target.value)}
                           placeholder="Entity type"
-                          className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] focus:border-[#2563EB] focus:outline-none"
+                          className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[12px] focus:border-[#064E3B] focus:outline-none"
                         />
                       </div>
                     )}
@@ -540,7 +540,7 @@ export default function NewWorkflowPage() {
                 <button
                   key={type}
                   onClick={() => addAction(type)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[#CBD5E1] px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[#A7F3D0] px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:border-[#064E3B] hover:text-[#064E3B] transition-colors"
                 >
                   <Plus className="h-3 w-3" /> {type.replace(/_/g, ' ')}
                 </button>

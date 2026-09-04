@@ -43,7 +43,7 @@ export default function ExecutionsListPage() {
   }, [statusFilter]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="Executions"
         description="Workflow execution history across all automation workflows"
@@ -58,7 +58,7 @@ export default function ExecutionsListPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+            className="rounded-lg border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
           >
             <option value="">All Statuses</option>
             <option value="PENDING">Pending</option>
@@ -70,7 +70,7 @@ export default function ExecutionsListPage() {
           </select>
         </div>
 
-        <div className="rounded-lg border border-[#E2E8F0] bg-white overflow-hidden">
+        <div className="rounded-lg border border-[#DDD0BB] bg-white overflow-hidden">
           {loading ? (
             <div className="p-5 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -86,39 +86,39 @@ export default function ExecutionsListPage() {
           ) : (
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Execution</th>
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Workflow</th>
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Status</th>
-                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Trigger</th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Duration</th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Attempt</th>
-                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Date</th>
-                  <th className="px-5 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[#64748B]"></th>
+                <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Execution</th>
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Workflow</th>
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Status</th>
+                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Trigger</th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Duration</th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Attempt</th>
+                  <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Date</th>
+                  <th className="px-5 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[#57534E]"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F1F5F9]">
+              <tbody className="divide-y divide-[#F5E6CC]">
                 {executions.map((exec) => (
-                  <tr key={exec.id} className="hover:bg-[#F8FAFC] transition-colors">
-                    <td className="px-5 py-3 text-[12px] text-[#64748B] font-mono">{exec.id.slice(0, 8)}...</td>
+                  <tr key={exec.id} className="hover:bg-[#FBF5EC] transition-colors">
+                    <td className="px-5 py-3 text-[12px] text-[#57534E] font-mono">{exec.id.slice(0, 8)}...</td>
                     <td className="px-5 py-3">
-                      <Link href={`/automation/workflows/${exec.workflow?.id}`} className="text-[13px] font-medium text-[#2563EB] hover:text-[#1D4ED8]">
+                      <Link href={`/automation/workflows/${exec.workflow?.id}`} className="text-[13px] font-medium text-[#064E3B] hover:text-[#047857]">
                         {exec.workflow?.name ?? 'Unknown'}
                       </Link>
                     </td>
                     <td className="px-5 py-3"><StatusBadge status={exec.status} /></td>
-                    <td className="hidden md:table-cell px-5 py-3 text-[12px] text-[#64748B]">{exec.triggerEventType}</td>
-                    <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#64748B]">
+                    <td className="hidden md:table-cell px-5 py-3 text-[12px] text-[#57534E]">{exec.triggerEventType}</td>
+                    <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#57534E]">
                       {exec.duration ? `${exec.duration}ms` : '—'}
                     </td>
-                    <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#64748B]">
+                    <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#57534E]">
                       {exec.attemptCount}
                     </td>
-                    <td className="px-5 py-3 text-[12px] text-[#64748B] whitespace-nowrap">
+                    <td className="px-5 py-3 text-[12px] text-[#57534E] whitespace-nowrap">
                       {new Date(exec.createdAt).toLocaleString()}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <Link href={`/automation/executions/${exec.id}`} className="text-[12px] text-[#2563EB] hover:text-[#1D4ED8]">
+                      <Link href={`/automation/executions/${exec.id}`} className="text-[12px] text-[#064E3B] hover:text-[#047857]">
                         Details →
                       </Link>
                     </td>

@@ -82,12 +82,12 @@ export default function CrmCustomersPage() {
           placeholder="Search customers..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="flex-1 max-w-xs px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+          className="flex-1 max-w-xs px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
         />
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] text-[#475569]"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] text-[#57534E]"
         >
           <option value="">All Stages</option>
           <option value="LEAD">Lead</option>
@@ -99,11 +99,11 @@ export default function CrmCustomersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-[#E2E8F0]">
+      <div className="bg-white rounded-lg border border-[#DDD0BB]">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-[#F8FAFC] rounded animate-pulse" />
+              <div key={i} className="h-12 bg-[#FBF5EC] rounded animate-pulse" />
             ))}
           </div>
         ) : customers.length === 0 ? (
@@ -112,37 +112,37 @@ export default function CrmCustomersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-[#E2E8F0]">
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Customer</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Type</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Industry</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Stage</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Owner</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Opps</th>
-                  <th className="text-center px-4 py-3 font-medium text-[#64748B]">Rating</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#64748B]">Created</th>
+                <tr className="border-b border-[#DDD0BB]">
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Customer</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Type</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Industry</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Stage</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Owner</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Opps</th>
+                  <th className="text-center px-4 py-3 font-medium text-[#57534E]">Rating</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#57534E]">Created</th>
                 </tr>
               </thead>
               <tbody>
                 {customers.map((c) => (
                   <tr
                     key={c.id}
-                    className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC] cursor-pointer"
+                    className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC] cursor-pointer"
                     onClick={() => router.push(`/crm/customers?id=${c.id}`)}
                   >
                     <td className="px-4 py-3">
                       <div>
-                        <p className="font-medium text-[#0F172A]">{c.customer.name}</p>
-                        {c.customer.email && <p className="text-[12px] text-[#64748B]">{c.customer.email}</p>}
+                        <p className="font-medium text-[#1C1917]">{c.customer.name}</p>
+                        {c.customer.email && <p className="text-[12px] text-[#57534E]">{c.customer.email}</p>}
                       </div>
                     </td>
                     <td className="px-4 py-3"><StatusBadge status={c.customerType} /></td>
-                    <td className="px-4 py-3 text-[#475569]">{c.industry || '—'}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{c.industry || '—'}</td>
                     <td className="px-4 py-3"><StatusBadge status={c.lifecycleStage} /></td>
-                    <td className="px-4 py-3 text-[#475569]">{c.owner ? `${c.owner.firstName} ${c.owner.lastName}` : '—'}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{c.owner ? `${c.owner.firstName} ${c.owner.lastName}` : '—'}</td>
                     <td className="px-4 py-3 text-center font-medium">{c._count.opportunities}</td>
                     <td className="px-4 py-3 text-center">{c.rating ? '⭐'.repeat(c.rating) : '—'}</td>
-                    <td className="px-4 py-3 text-[#64748B]">{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-[#57534E]">{new Date(c.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -152,7 +152,7 @@ export default function CrmCustomersPage() {
 
         {/* Pagination */}
         {total > 20 && (
-          <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+          <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
             <span>Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}</span>
             <div className="flex gap-2">
               <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 border rounded disabled:opacity-40">Prev</button>

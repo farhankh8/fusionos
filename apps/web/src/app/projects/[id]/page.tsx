@@ -173,7 +173,7 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" />
       </div>
     );
   }
@@ -189,7 +189,7 @@ export default function ProjectDetailPage() {
   const allowedTransitions = STATUS_TRANSITIONS[project.status] || [];
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title={project.name}
         description={`${project.code} · ${project.customer?.name || 'No customer'}`}
@@ -203,17 +203,17 @@ export default function ProjectDetailPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowTransition(!showTransition)}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] transition-colors"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
                 >
                   Status ▾
                 </button>
                 {showTransition && (
-                  <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
+                  <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg border border-[#DDD0BB] bg-white py-1 shadow-lg">
                     {allowedTransitions.map((s) => (
                       <button
                         key={s}
                         onClick={() => transition(s)}
-                        className="w-full px-3 py-2 text-left text-[12px] text-[#0F172A] hover:bg-[#F8FAFC]"
+                        className="w-full px-3 py-2 text-left text-[12px] text-[#1C1917] hover:bg-[#FBF5EC]"
                       >
                         {s.replace('_', ' ')}
                       </button>
@@ -224,7 +224,7 @@ export default function ProjectDetailPage() {
             )}
             <button
               onClick={() => setShowAddTask(true)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"
             >
               + Task
             </button>
@@ -233,7 +233,7 @@ export default function ProjectDetailPage() {
       />
 
       {/* Tab Navigation */}
-      <div className="border-b border-[#E2E8F0] bg-white px-5 lg:px-6">
+      <div className="border-b border-[#DDD0BB] bg-white px-5 lg:px-6">
         <nav className="flex gap-0.5" aria-label="Project tabs">
           {TABS.map((tab) => (
             <button
@@ -241,8 +241,8 @@ export default function ProjectDetailPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-[13px] font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-[#2563EB] text-[#2563EB]'
-                  : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                  ? 'border-[#064E3B] text-[#064E3B]'
+                  : 'border-transparent text-[#57534E] hover:text-[#1C1917]'
               }`}
             >
               {tab.label}
@@ -257,39 +257,39 @@ export default function ProjectDetailPage() {
           <div className="space-y-4">
             {/* KPI Row */}
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
-                <p className="text-[12px] text-[#64748B]">Tasks</p>
-                <p className="mt-1 text-[20px] font-semibold text-[#0F172A]">{project._count.tasks}</p>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
+                <p className="text-[12px] text-[#57534E]">Tasks</p>
+                <p className="mt-1 text-[20px] font-semibold text-[#1C1917]">{project._count.tasks}</p>
               </div>
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
-                <p className="text-[12px] text-[#64748B]">Team Size</p>
-                <p className="mt-1 text-[20px] font-semibold text-[#0F172A]">{project.members.length}</p>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
+                <p className="text-[12px] text-[#57534E]">Team Size</p>
+                <p className="mt-1 text-[20px] font-semibold text-[#1C1917]">{project.members.length}</p>
               </div>
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
-                <p className="text-[12px] text-[#64748B]">Milestones</p>
-                <p className="mt-1 text-[20px] font-semibold text-[#0F172A]">{project._count.milestones}</p>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
+                <p className="text-[12px] text-[#57534E]">Milestones</p>
+                <p className="mt-1 text-[20px] font-semibold text-[#1C1917]">{project._count.milestones}</p>
               </div>
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
-                <p className="text-[12px] text-[#64748B]">Budget</p>
-                <p className="mt-1 text-[20px] font-semibold text-[#0F172A]">{formatMoney(project.budgetAmount)}</p>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-3.5">
+                <p className="text-[12px] text-[#57534E]">Budget</p>
+                <p className="mt-1 text-[20px] font-semibold text-[#1C1917]">{formatMoney(project.budgetAmount)}</p>
               </div>
             </div>
 
             {/* Progress */}
-            <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
+            <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[13px] font-medium text-[#0F172A]">Progress</span>
-                <span className="text-[13px] font-semibold text-[#2563EB]">{project.progress}%</span>
+                <span className="text-[13px] font-medium text-[#1C1917]">Progress</span>
+                <span className="text-[13px] font-semibold text-[#064E3B]">{project.progress}%</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-[#E2E8F0]">
-                <div className="h-2 rounded-full bg-[#2563EB] transition-all" style={{ width: `${project.progress}%` }} />
+              <div className="h-2 w-full rounded-full bg-[#DDD0BB]">
+                <div className="h-2 rounded-full bg-[#064E3B] transition-all" style={{ width: `${project.progress}%` }} />
               </div>
             </div>
 
             {/* Details Grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-                <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">Project Details</h3>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+                <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">Project Details</h3>
                 <div className="space-y-2 text-[12px]">
                   {[
                     { label: 'Status', value: <StatusBadge status={project.status} /> },
@@ -301,15 +301,15 @@ export default function ProjectDetailPage() {
                     { label: 'Currency', value: project.currency },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center justify-between py-1">
-                      <span className="text-[#64748B]">{item.label}</span>
-                      <span className="text-[#0F172A]">{item.value}</span>
+                      <span className="text-[#57534E]">{item.label}</span>
+                      <span className="text-[#1C1917]">{item.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-                <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">Timeline</h3>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+                <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">Timeline</h3>
                 <div className="space-y-2 text-[12px]">
                   {[
                     { label: 'Planned Start', value: project.plannedStartDate ? new Date(project.plannedStartDate).toLocaleDateString() : '—' },
@@ -320,8 +320,8 @@ export default function ProjectDetailPage() {
                     { label: 'Created', value: new Date(project.createdAt).toLocaleDateString() },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center justify-between py-1">
-                      <span className="text-[#64748B]">{item.label}</span>
-                      <span className="text-[#0F172A]">{item.value}</span>
+                      <span className="text-[#57534E]">{item.label}</span>
+                      <span className="text-[#1C1917]">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -329,9 +329,9 @@ export default function ProjectDetailPage() {
             </div>
 
             {project.description && (
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-                <h3 className="mb-2 text-[13px] font-semibold text-[#0F172A]">Description</h3>
-                <p className="text-[13px] text-[#475569] whitespace-pre-wrap">{project.description}</p>
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+                <h3 className="mb-2 text-[13px] font-semibold text-[#1C1917]">Description</h3>
+                <p className="text-[13px] text-[#57534E] whitespace-pre-wrap">{project.description}</p>
               </div>
             )}
           </div>
@@ -339,26 +339,26 @@ export default function ProjectDetailPage() {
 
         {/* ── TASKS TAB ────────────────────────────────────────────────── */}
         {activeTab === 'tasks' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {tasks.length === 0 ? (
               <EmptyState title="No tasks" description="Create your first task to get started." />
             ) : (
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Task</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Assignee</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Priority</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Status</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Due Date</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Progress</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Task</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Assignee</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Priority</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Status</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Due Date</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Progress</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {tasks.map((t) => (
-                    <tr key={t.id} className="hover:bg-[#F8FAFC]">
-                      <td className="px-4 py-3 font-medium text-[#0F172A]">{t.title}</td>
-                      <td className="px-4 py-3 text-[#475569]">
+                    <tr key={t.id} className="hover:bg-[#FBF5EC]">
+                      <td className="px-4 py-3 font-medium text-[#1C1917]">{t.title}</td>
+                      <td className="px-4 py-3 text-[#57534E]">
                         {t.assignee?.employee ? `${t.assignee.employee.firstName} ${t.assignee.employee.lastName}` : '—'}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -370,15 +370,15 @@ export default function ProjectDetailPage() {
                         }`}>{t.priority}</span>
                       </td>
                       <td className="px-4 py-3 text-center"><StatusBadge status={t.status} /></td>
-                      <td className="px-4 py-3 text-[#475569]">
+                      <td className="px-4 py-3 text-[#57534E]">
                         {t.dueDate ? new Date(t.dueDate).toLocaleDateString() : '—'}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="h-1.5 w-12 rounded-full bg-[#E2E8F0]">
-                            <div className="h-1.5 rounded-full bg-[#2563EB]" style={{ width: `${t.progress}%` }} />
+                          <div className="h-1.5 w-12 rounded-full bg-[#DDD0BB]">
+                            <div className="h-1.5 rounded-full bg-[#064E3B]" style={{ width: `${t.progress}%` }} />
                           </div>
-                          <span className="text-[11px] text-[#64748B]">{t.progress}%</span>
+                          <span className="text-[11px] text-[#57534E]">{t.progress}%</span>
                         </div>
                       </td>
                     </tr>
@@ -395,44 +395,44 @@ export default function ProjectDetailPage() {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowAddMember(true)}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"
               >
                 + Add Member
               </button>
             </div>
             {project.members.length === 0 ? (
-              <div className="rounded-lg border border-[#E2E8F0] bg-white">
+              <div className="rounded-lg border border-[#DDD0BB] bg-white">
                 <EmptyState title="No team members" description="Add members to this project." />
               </div>
             ) : (
-              <div className="rounded-lg border border-[#E2E8F0] bg-white overflow-hidden">
+              <div className="rounded-lg border border-[#DDD0BB] bg-white overflow-hidden">
                 <table className="w-full text-[13px]">
                   <thead>
-                    <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                      <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Employee</th>
-                      <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Code</th>
-                      <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Role</th>
-                      <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Department</th>
+                    <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                      <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Employee</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Code</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Role</th>
+                      <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Department</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
+                  <tbody className="divide-y divide-[#F5E6CC]">
                     {project.members.map((m) => (
-                      <tr key={m.id} className="hover:bg-[#F8FAFC]">
+                      <tr key={m.id} className="hover:bg-[#FBF5EC]">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[11px] font-semibold text-white">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#064E3B] text-[11px] font-semibold text-white">
                               {m.employee.firstName.charAt(0)}{m.employee.lastName.charAt(0)}
                             </div>
-                            <span className="font-medium text-[#0F172A]">{m.employee.firstName} {m.employee.lastName}</span>
+                            <span className="font-medium text-[#1C1917]">{m.employee.firstName} {m.employee.lastName}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[#475569] font-mono text-[11px]">{m.employee.employeeCode}</td>
+                        <td className="px-4 py-3 text-[#57534E] font-mono text-[11px]">{m.employee.employeeCode}</td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center rounded bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB]">
+                          <span className="inline-flex items-center rounded bg-[#D1FAE5] px-1.5 py-0.5 text-[10px] font-medium text-[#064E3B]">
                             {m.role.replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-[#475569]">{m.employee.department?.name || '—'}</td>
+                        <td className="px-4 py-3 text-[#57534E]">{m.employee.department?.name || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -444,33 +444,33 @@ export default function ProjectDetailPage() {
 
         {/* ── MILESTONES TAB ──────────────────────────────────────────── */}
         {activeTab === 'milestones' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {milestones.length === 0 ? (
               <EmptyState title="No milestones" description="Add milestones to track project checkpoints." />
             ) : (
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Milestone</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Status</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Target Date</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Progress</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Milestone</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Status</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Target Date</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Progress</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {milestones.map((m: any) => (
-                    <tr key={m.id} className="hover:bg-[#F8FAFC]">
-                      <td className="px-4 py-3 font-medium text-[#0F172A]">{m.name}</td>
+                    <tr key={m.id} className="hover:bg-[#FBF5EC]">
+                      <td className="px-4 py-3 font-medium text-[#1C1917]">{m.name}</td>
                       <td className="px-4 py-3 text-center"><StatusBadge status={m.status} /></td>
-                      <td className="px-4 py-3 text-[#475569]">
+                      <td className="px-4 py-3 text-[#57534E]">
                         {m.targetDate ? new Date(m.targetDate).toLocaleDateString() : '—'}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="h-1.5 w-12 rounded-full bg-[#E2E8F0]">
-                            <div className="h-1.5 rounded-full bg-[#2563EB]" style={{ width: `${m.progress}%` }} />
+                          <div className="h-1.5 w-12 rounded-full bg-[#DDD0BB]">
+                            <div className="h-1.5 rounded-full bg-[#064E3B]" style={{ width: `${m.progress}%` }} />
                           </div>
-                          <span className="text-[11px] text-[#64748B]">{m.progress}%</span>
+                          <span className="text-[11px] text-[#57534E]">{m.progress}%</span>
                         </div>
                       </td>
                     </tr>
@@ -483,32 +483,32 @@ export default function ProjectDetailPage() {
 
         {/* ── TIME TAB ─────────────────────────────────────────────────── */}
         {activeTab === 'time' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {timeEntries.length === 0 ? (
               <EmptyState title="No time entries" description="Log time against project tasks." />
             ) : (
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Employee</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Date</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Task</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Duration</th>
-                    <th className="text-left px-4 py-2.5 font-medium text-[#64748B]">Description</th>
-                    <th className="text-center px-4 py-2.5 font-medium text-[#64748B]">Status</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Employee</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Date</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Task</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Duration</th>
+                    <th className="text-left px-4 py-2.5 font-medium text-[#57534E]">Description</th>
+                    <th className="text-center px-4 py-2.5 font-medium text-[#57534E]">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {timeEntries.map((e: any) => {
                     const h = Math.floor(e.durationMinutes / 60);
                     const m = e.durationMinutes % 60;
                     return (
-                      <tr key={e.id} className="hover:bg-[#F8FAFC]">
-                        <td className="px-4 py-3 text-[#0F172A]">{e.employee?.firstName} {e.employee?.lastName}</td>
-                        <td className="px-4 py-3 text-[#475569]">{new Date(e.date).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-[#475569]">{e.task?.title || '—'}</td>
-                        <td className="px-4 py-3 text-center font-medium text-[#0F172A]">{h > 0 ? `${h}h ${m}m` : `${m}m`}</td>
-                        <td className="px-4 py-3 text-[#475569] max-w-[200px] truncate">{e.description || '—'}</td>
+                      <tr key={e.id} className="hover:bg-[#FBF5EC]">
+                        <td className="px-4 py-3 text-[#1C1917]">{e.employee?.firstName} {e.employee?.lastName}</td>
+                        <td className="px-4 py-3 text-[#57534E]">{new Date(e.date).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-[#57534E]">{e.task?.title || '—'}</td>
+                        <td className="px-4 py-3 text-center font-medium text-[#1C1917]">{h > 0 ? `${h}h ${m}m` : `${m}m`}</td>
+                        <td className="px-4 py-3 text-[#57534E] max-w-[200px] truncate">{e.description || '—'}</td>
                         <td className="px-4 py-3 text-center"><StatusBadge status={e.status} /></td>
                       </tr>
                     );
@@ -521,19 +521,19 @@ export default function ProjectDetailPage() {
 
         {/* ── ACTIVITY TAB ─────────────────────────────────────────────── */}
         {activeTab === 'activity' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {activities.length === 0 ? (
               <EmptyState title="No activity" description="Project activity will appear here." />
             ) : (
-              <div className="divide-y divide-[#E2E8F0]">
+              <div className="divide-y divide-[#DDD0BB]">
                 {activities.map((a: any) => (
-                  <div key={a.id} className="flex gap-4 px-4 py-3 hover:bg-[#F8FAFC]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[11px] font-semibold text-[#2563EB]">
+                  <div key={a.id} className="flex gap-4 px-4 py-3 hover:bg-[#FBF5EC]">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#D1FAE5] text-[11px] font-semibold text-[#064E3B]">
                       {a.employee?.firstName?.charAt(0)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] text-[#0F172A]">{a.title}</p>
-                      <p className="text-[11px] text-[#64748B]">
+                      <p className="text-[13px] text-[#1C1917]">{a.title}</p>
+                      <p className="text-[11px] text-[#57534E]">
                         {a.employee?.firstName} {a.employee?.lastName} · {new Date(a.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -549,31 +549,31 @@ export default function ProjectDetailPage() {
       {showAddMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowAddMember(false)}>
           <div className="w-[420px] rounded-xl bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="border-b border-[#E2E8F0] px-6 py-4">
-              <h2 className="text-[16px] font-semibold text-[#0F172A]">Add Team Member</h2>
+            <div className="border-b border-[#DDD0BB] px-6 py-4">
+              <h2 className="text-[16px] font-semibold text-[#1C1917]">Add Team Member</h2>
             </div>
             <div className="p-6">
-              <p className="mb-3 text-[12px] text-[#64748B]">Select an employee and role:</p>
+              <p className="mb-3 text-[12px] text-[#57534E]">Select an employee and role:</p>
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {employees.filter(e => !project.members.some(m => m.employee.id === e.id)).map((emp) => (
                   <button
                     key={emp.id}
                     onClick={() => addMember(emp.id, 'DEVELOPER')}
-                    className="flex w-full items-center gap-3 rounded-md border border-[#E2E8F0] px-3 py-2 text-left hover:bg-[#F8FAFC] transition-colors"
+                    className="flex w-full items-center gap-3 rounded-md border border-[#DDD0BB] px-3 py-2 text-left hover:bg-[#FBF5EC] transition-colors"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2563EB] text-[10px] font-semibold text-white">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#064E3B] text-[10px] font-semibold text-white">
                       {emp.firstName?.charAt(0)}{emp.lastName?.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-[13px] font-medium text-[#0F172A]">{emp.firstName} {emp.lastName}</p>
-                      <p className="text-[11px] text-[#64748B]">{emp.department?.name || '—'}</p>
+                      <p className="text-[13px] font-medium text-[#1C1917]">{emp.firstName} {emp.lastName}</p>
+                      <p className="text-[11px] text-[#57534E]">{emp.department?.name || '—'}</p>
                     </div>
                   </button>
                 ))}
               </div>
             </div>
-            <div className="border-t border-[#E2E8F0] px-6 py-4 flex justify-end">
-              <button onClick={() => setShowAddMember(false)} className="px-4 py-2 text-[13px] text-[#64748B] hover:text-[#0F172A]">Cancel</button>
+            <div className="border-t border-[#DDD0BB] px-6 py-4 flex justify-end">
+              <button onClick={() => setShowAddMember(false)} className="px-4 py-2 text-[13px] text-[#57534E] hover:text-[#1C1917]">Cancel</button>
             </div>
           </div>
         </div>
@@ -603,26 +603,26 @@ function AddTaskModal({ employees, onClose, onCreate }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="w-[480px] rounded-xl bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <div className="border-b border-[#E2E8F0] px-6 py-4">
-          <h2 className="text-[16px] font-semibold text-[#0F172A]">New Task</h2>
+        <div className="border-b border-[#DDD0BB] px-6 py-4">
+          <h2 className="text-[16px] font-semibold text-[#1C1917]">New Task</h2>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-[12px] font-medium text-[#475569] mb-1">Title *</label>
+            <label className="block text-[12px] font-medium text-[#57534E] mb-1">Title *</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-[13px] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+              className="w-full rounded-md border border-[#DDD0BB] px-3 py-2 text-[13px] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
               placeholder="Task title"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-medium text-[#475569] mb-1">Priority</label>
+              <label className="block text-[12px] font-medium text-[#57534E] mb-1">Priority</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-[13px]"
+                className="w-full rounded-md border border-[#DDD0BB] px-3 py-2 text-[13px]"
               >
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
@@ -631,22 +631,22 @@ function AddTaskModal({ employees, onClose, onCreate }: {
               </select>
             </div>
             <div>
-              <label className="block text-[12px] font-medium text-[#475569] mb-1">Due Date</label>
+              <label className="block text-[12px] font-medium text-[#57534E] mb-1">Due Date</label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full rounded-md border border-[#E2E8F0] px-3 py-2 text-[13px]"
+                className="w-full rounded-md border border-[#DDD0BB] px-3 py-2 text-[13px]"
               />
             </div>
           </div>
         </div>
-        <div className="border-t border-[#E2E8F0] px-6 py-4 flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 text-[13px] text-[#64748B] hover:text-[#0F172A]">Cancel</button>
+        <div className="border-t border-[#DDD0BB] px-6 py-4 flex justify-end gap-3">
+          <button onClick={onClose} className="px-4 py-2 text-[13px] text-[#57534E] hover:text-[#1C1917]">Cancel</button>
           <button
             onClick={() => { if (title.trim()) onCreate(title, priority, dueDate); }}
             disabled={!title.trim()}
-            className="rounded-md bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50"
+            className="rounded-md bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] disabled:opacity-50"
           >
             Create Task
           </button>

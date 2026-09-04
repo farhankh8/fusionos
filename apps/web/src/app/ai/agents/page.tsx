@@ -65,14 +65,14 @@ export default function AIAgentsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="AI Agents"
         description="Intelligent business agents powered by AI — analyze, plan, and execute with approval controls."
         actions={
           <Link
             href="/ai/agents/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] transition-colors"
           >
             <Plus className="h-4 w-4" />
             Create Agent
@@ -82,15 +82,15 @@ export default function AIAgentsPage() {
 
       <div className="p-5 lg:p-6">
         {/* Tabs */}
-        <div className="mb-5 flex gap-1 rounded-lg border border-[#E2E8F0] bg-white p-1 w-fit">
+        <div className="mb-5 flex gap-1 rounded-lg border border-[#DDD0BB] bg-white p-1 w-fit">
           {(['dashboard', 'agents', 'profiles'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`rounded-md px-4 py-2 text-[13px] font-medium transition-colors ${
                 activeTab === tab
-                  ? 'bg-[#2563EB] text-white'
-                  : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]'
+                  ? 'bg-[#064E3B] text-white'
+                  : 'text-[#57534E] hover:bg-[#F5E6CC] hover:text-[#1C1917]'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -105,7 +105,7 @@ export default function AIAgentsPage() {
               {loading ? (
                 <>
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="rounded-lg border border-[#E2E8F0] bg-white p-4">
+                    <div key={i} className="rounded-lg border border-[#DDD0BB] bg-white p-4">
                       <Skeleton className="h-4 w-20" />
                       <Skeleton className="mt-2 h-7 w-16" />
                     </div>
@@ -154,26 +154,26 @@ export default function AIAgentsPage() {
 
             {/* Agent Profiles */}
             <div className="mt-6">
-              <h2 className="text-[14px] font-semibold text-[#0F172A] mb-3">Available Agent Profiles</h2>
+              <h2 className="text-[14px] font-semibold text-[#1C1917] mb-3">Available Agent Profiles</h2>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {profiles.map((profile) => (
                   <div
                     key={profile.type}
-                    className="rounded-lg border border-[#E2E8F0] bg-white p-5 hover:border-[#2563EB] transition-colors"
+                    className="rounded-lg border border-[#DDD0BB] bg-white p-5 hover:border-[#064E3B] transition-colors"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="rounded-lg bg-[#2563EB]/10 p-2">
-                        <Bot className="h-5 w-5 text-[#2563EB]" />
+                      <div className="rounded-lg bg-[#064E3B]/10 p-2">
+                        <Bot className="h-5 w-5 text-[#064E3B]" />
                       </div>
                       <div>
-                        <h3 className="text-[13px] font-semibold text-[#0F172A]">{profile.name}</h3>
-                        <p className="text-[11px] text-[#94A3B8]">{profile.type} Agent</p>
+                        <h3 className="text-[13px] font-semibold text-[#1C1917]">{profile.name}</h3>
+                        <p className="text-[11px] text-[#8E7E68]">{profile.type} Agent</p>
                       </div>
                     </div>
-                    <p className="text-[12px] text-[#64748B] mb-3">{profile.description}</p>
+                    <p className="text-[12px] text-[#57534E] mb-3">{profile.description}</p>
                     <div className="flex flex-wrap gap-1">
                       {profile.suggestedGoals.slice(0, 2).map((goal, i) => (
-                        <span key={i} className="rounded bg-[#F1F5F9] px-2 py-0.5 text-[10px] text-[#64748B]">
+                        <span key={i} className="rounded bg-[#F5E6CC] px-2 py-0.5 text-[10px] text-[#57534E]">
                           {goal.length > 50 ? goal.substring(0, 50) + '...' : goal}
                         </span>
                       ))}
@@ -187,10 +187,10 @@ export default function AIAgentsPage() {
 
         {/* Agents Tab */}
         {activeTab === 'agents' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] px-5 py-3">
-              <h2 className="text-[14px] font-semibold text-[#0F172A]">All Agents</h2>
-              <span className="text-[12px] text-[#94A3B8]">{agents.length} agents</span>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
+            <div className="flex items-center justify-between border-b border-[#DDD0BB] px-5 py-3">
+              <h2 className="text-[14px] font-semibold text-[#1C1917]">All Agents</h2>
+              <span className="text-[12px] text-[#8E7E68]">{agents.length} agents</span>
             </div>
 
             {loading ? (
@@ -206,30 +206,30 @@ export default function AIAgentsPage() {
                 description="Create your first AI agent to start intelligent business automation."
               />
             ) : (
-              <div className="divide-y divide-[#F1F5F9]">
+              <div className="divide-y divide-[#F5E6CC]">
                 {agents.map((agent) => (
                   <Link
                     key={agent.id}
                     href={`/ai/agents/${agent.id}`}
-                    className="flex items-center justify-between px-5 py-4 hover:bg-[#F8FAFC] transition-colors"
+                    className="flex items-center justify-between px-5 py-4 hover:bg-[#FBF5EC] transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="rounded-lg bg-[#2563EB]/10 p-2">
-                        <Bot className="h-4 w-4 text-[#2563EB]" />
+                      <div className="rounded-lg bg-[#064E3B]/10 p-2">
+                        <Bot className="h-4 w-4 text-[#064E3B]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[13px] font-medium text-[#0F172A] truncate">{agent.name}</p>
-                        <p className="text-[11px] text-[#94A3B8]">
+                        <p className="text-[13px] font-medium text-[#1C1917] truncate">{agent.name}</p>
+                        <p className="text-[11px] text-[#8E7E68]">
                           {agent.agentType} · {agent.description ? agent.description.substring(0, 60) : 'No description'}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <StatusBadge status={agent.status} />
-                      <span className="text-[11px] text-[#94A3B8] whitespace-nowrap">
+                      <span className="text-[11px] text-[#8E7E68] whitespace-nowrap">
                         {agent._count.tasks} tasks
                       </span>
-                      <ArrowRight className="h-4 w-4 text-[#CBD5E1]" />
+                      <ArrowRight className="h-4 w-4 text-[#A7F3D0]" />
                     </div>
                   </Link>
                 ))}
@@ -244,29 +244,29 @@ export default function AIAgentsPage() {
             {profiles.map((profile) => (
               <div
                 key={profile.type}
-                className="rounded-lg border border-[#E2E8F0] bg-white p-5"
+                className="rounded-lg border border-[#DDD0BB] bg-white p-5"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="rounded-lg bg-[#2563EB]/10 p-2">
-                    <Bot className="h-5 w-5 text-[#2563EB]" />
+                  <div className="rounded-lg bg-[#064E3B]/10 p-2">
+                    <Bot className="h-5 w-5 text-[#064E3B]" />
                   </div>
                   <div>
-                    <h3 className="text-[14px] font-semibold text-[#0F172A]">{profile.name}</h3>
-                    <p className="text-[11px] text-[#94A3B8]">{profile.type}</p>
+                    <h3 className="text-[14px] font-semibold text-[#1C1917]">{profile.name}</h3>
+                    <p className="text-[11px] text-[#8E7E68]">{profile.type}</p>
                   </div>
                 </div>
-                <p className="text-[12px] text-[#64748B] mb-4">{profile.description}</p>
+                <p className="text-[12px] text-[#57534E] mb-4">{profile.description}</p>
                 <div className="mb-4">
-                  <p className="text-[11px] font-medium text-[#94A3B8] mb-2">SUGGESTED GOALS</p>
+                  <p className="text-[11px] font-medium text-[#8E7E68] mb-2">SUGGESTED GOALS</p>
                   <ul className="space-y-1">
                     {profile.suggestedGoals.map((goal, i) => (
-                      <li key={i} className="text-[12px] text-[#64748B]">• {goal}</li>
+                      <li key={i} className="text-[12px] text-[#57534E]">• {goal}</li>
                     ))}
                   </ul>
                 </div>
                 <Link
                   href={`/ai/agents/new?profile=${profile.type}`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg border border-[#DDD0BB] px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:border-[#064E3B] hover:text-[#064E3B] transition-colors"
                 >
                   <Plus className="h-3 w-3" />
                   Create from Profile

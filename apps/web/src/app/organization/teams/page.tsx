@@ -64,13 +64,13 @@ export default function TeamsPage() {
   useEffect(() => { fetchTeams(); }, [fetchTeams]);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Teams"
         description="Manage teams within departments"
         breadcrumbs={[{ label: 'Organization' }, { label: 'Teams' }]}
         actions={
-          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors">
+          <button className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors">
             <Plus className="h-3.5 w-3.5" />
             Add Team
           </button>
@@ -84,7 +84,7 @@ export default function TeamsPage() {
             Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
           ) : (
             <>
-              <KpiCard label="Total Teams" value={totalCount} icon={UsersRound} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Teams" value={totalCount} icon={UsersRound} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Active" value={teams.filter(t => t.status === 'ACTIVE').length} icon={UsersRound} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Total Members" value={teams.reduce((sum, t) => sum + (t.memberCount || 0), 0)} icon={Users} iconBg="bg-violet-50" iconColor="text-violet-600" />
             </>
@@ -116,13 +116,13 @@ export default function TeamsPage() {
         {loading ? (
           <TableSkeleton rows={6} cols={5} />
         ) : teams.length === 0 ? (
-          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
             <EmptyState
               icon={UsersRound}
               title="No teams found"
               description="Add your first team to get started."
               action={
-                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+                <button className="inline-flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]">
                   <Plus className="h-3.5 w-3.5" />
                   Add Team
                 </button>
@@ -137,12 +137,12 @@ export default function TeamsPage() {
                 label: 'Team',
                 render: (item: Team) => (
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FF]">
-                      <UsersRound className="h-4 w-4 text-[#2563EB]" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D1FAE5]">
+                      <UsersRound className="h-4 w-4 text-[#064E3B]" />
                     </div>
                     <div>
-                      <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
-                      {item.code && <p className="text-[11px] text-[#64748B]">{item.code}</p>}
+                      <p className="text-[13px] font-medium text-[#1C1917]">{item.name}</p>
+                      {item.code && <p className="text-[11px] text-[#57534E]">{item.code}</p>}
                     </div>
                   </div>
                 ),
@@ -151,21 +151,21 @@ export default function TeamsPage() {
                 key: 'department',
                 label: 'Department',
                 render: (item: Team) => (
-                  <span className="text-[13px] text-[#475569]">{item.department?.name || '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.department?.name || '—'}</span>
                 ),
               },
               {
                 key: 'lead',
                 label: 'Team Lead',
                 render: (item: Team) => (
-                  <span className="text-[13px] text-[#475569]">{item.lead ? `${item.lead.firstName} ${item.lead.lastName}` : '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.lead ? `${item.lead.firstName} ${item.lead.lastName}` : '—'}</span>
                 ),
               },
               {
                 key: 'memberCount',
                 label: 'Members',
                 render: (item: Team) => (
-                  <span className="text-[13px] font-medium text-[#0F172A]">{item.memberCount || 0}</span>
+                  <span className="text-[13px] font-medium text-[#1C1917]">{item.memberCount || 0}</span>
                 ),
                 align: 'right' as const,
               },

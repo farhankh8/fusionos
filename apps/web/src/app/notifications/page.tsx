@@ -185,7 +185,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Notifications"
         description="View and manage your notifications"
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
             <button
               onClick={handleMarkAllAsRead}
               disabled={markingAll}
-              className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] transition-colors hover:bg-[#F8FAFC] disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] transition-colors hover:bg-[#FBF5EC] disabled:opacity-50"
             >
               {markingAll ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -219,7 +219,7 @@ export default function NotificationsPage() {
 
         {/* Filters */}
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 text-[12px] text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-[12px] text-[#57534E]">
             <Filter className="h-3.5 w-3.5" />
             Filters:
           </div>
@@ -227,8 +227,8 @@ export default function NotificationsPage() {
             onClick={() => { setUnreadOnly(!unreadOnly); setPage(1); }}
             className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
               unreadOnly
-                ? 'bg-[#2563EB] text-white'
-                : 'border border-[#E2E8F0] bg-white text-[#64748B] hover:bg-[#F8FAFC]'
+                ? 'bg-[#064E3B] text-white'
+                : 'border border-[#DDD0BB] bg-white text-[#57534E] hover:bg-[#FBF5EC]'
             }`}
           >
             {unreadOnly ? 'Unread Only' : 'All'}
@@ -236,7 +236,7 @@ export default function NotificationsPage() {
           <select
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[12px] text-[#64748B] outline-none focus:border-[#2563EB]"
+            className="rounded-md border border-[#DDD0BB] bg-white px-2.5 py-1 text-[12px] text-[#57534E] outline-none focus:border-[#064E3B]"
           >
             {CATEGORIES.map(c => (
               <option key={c.value} value={c.value}>{c.label}</option>
@@ -245,7 +245,7 @@ export default function NotificationsPage() {
           <select
             value={severity}
             onChange={(e) => { setSeverity(e.target.value); setPage(1); }}
-            className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[12px] text-[#64748B] outline-none focus:border-[#2563EB]"
+            className="rounded-md border border-[#DDD0BB] bg-white px-2.5 py-1 text-[12px] text-[#57534E] outline-none focus:border-[#064E3B]"
           >
             {SEVERITIES.map(s => (
               <option key={s.value} value={s.value}>{s.label}</option>
@@ -254,7 +254,7 @@ export default function NotificationsPage() {
           {(unreadOnly || category || severity) && (
             <button
               onClick={resetFilters}
-              className="text-[12px] text-[#2563EB] hover:text-[#1D4ED8]"
+              className="text-[12px] text-[#064E3B] hover:text-[#047857]"
             >
               Clear filters
             </button>
@@ -266,7 +266,7 @@ export default function NotificationsPage() {
           {loading ? (
             <div className="space-y-2 p-4">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-start gap-3 rounded-lg border border-[#E2E8F0] p-3">
+                <div key={i} className="flex items-start gap-3 rounded-lg border border-[#DDD0BB] p-3">
                   <Skeleton className="h-4 w-4 shrink-0 rounded" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-3.5 w-48" />
@@ -283,14 +283,14 @@ export default function NotificationsPage() {
               description={unreadOnly ? "You're all caught up." : "No notifications yet."}
             />
           ) : (
-            <div className="divide-y divide-[#E2E8F0]">
+            <div className="divide-y divide-[#DDD0BB]">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`flex items-start gap-3 p-3 transition-colors cursor-pointer ${
                     !notification.readAt
                       ? 'bg-blue-50/50 hover:bg-blue-50'
-                      : 'hover:bg-[#F8FAFC]'
+                      : 'hover:bg-[#FBF5EC]'
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
@@ -303,26 +303,26 @@ export default function NotificationsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className={`text-[13px] truncate ${
-                        !notification.readAt ? 'font-semibold text-[#0F172A]' : 'font-medium text-[#475569]'
+                        !notification.readAt ? 'font-semibold text-[#1C1917]' : 'font-medium text-[#57534E]'
                       }`}>
                         {notification.title}
                       </p>
-                      <span className="shrink-0 rounded bg-[#F1F5F9] px-1.5 py-0.5 text-[9px] font-medium text-[#64748B]">
+                      <span className="shrink-0 rounded bg-[#F5E6CC] px-1.5 py-0.5 text-[9px] font-medium text-[#57534E]">
                         {notification.category}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-[12px] text-[#64748B] line-clamp-2">
+                    <p className="mt-0.5 text-[12px] text-[#57534E] line-clamp-2">
                       {notification.body}
                     </p>
                   </div>
 
                   {/* Timestamp + Unread dot */}
                   <div className="flex shrink-0 flex-col items-end gap-1">
-                    <span className="text-[11px] text-[#94A3B8]">
+                    <span className="text-[11px] text-[#8E7E68]">
                       {formatDate(notification.createdAt)}
                     </span>
                     {!notification.readAt && (
-                      <div className="h-2 w-2 rounded-full bg-[#2563EB]" />
+                      <div className="h-2 w-2 rounded-full bg-[#064E3B]" />
                     )}
                     <button
                       onClick={(e) => {
@@ -331,7 +331,7 @@ export default function NotificationsPage() {
                           ? handleMarkAsUnread(notification.id)
                           : handleMarkAsRead(notification.id);
                       }}
-                      className="text-[11px] text-[#94A3B8] hover:text-[#2563EB]"
+                      className="text-[11px] text-[#8E7E68] hover:text-[#064E3B]"
                     >
                       {notification.readAt ? 'Mark unread' : 'Mark read'}
                     </button>
@@ -343,25 +343,25 @@ export default function NotificationsPage() {
 
           {/* Pagination */}
           {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-[#E2E8F0] px-4 py-3">
-              <p className="text-[12px] text-[#64748B]">
+            <div className="flex items-center justify-between border-t border-[#DDD0BB] px-4 py-3">
+              <p className="text-[12px] text-[#57534E]">
                 Showing {((meta.page - 1) * meta.limit) + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total}
               </p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={!meta.hasPrevious}
-                  className="flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] disabled:opacity-40"
+                  className="flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] text-[#57534E] hover:bg-[#FBF5EC] disabled:opacity-40"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
-                <span className="px-2 text-[12px] text-[#64748B]">
+                <span className="px-2 text-[12px] text-[#57534E]">
                   Page {meta.page} of {meta.totalPages}
                 </span>
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={!meta.hasNext}
-                  className="flex h-7 w-7 items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] disabled:opacity-40"
+                  className="flex h-7 w-7 items-center justify-center rounded border border-[#DDD0BB] text-[#57534E] hover:bg-[#FBF5EC] disabled:opacity-40"
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>

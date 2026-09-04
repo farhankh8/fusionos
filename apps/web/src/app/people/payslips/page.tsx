@@ -105,7 +105,7 @@ export default function PayslipsPage() {
 
   if (selectedPayslip) {
     return (
-      <div className="min-h-full bg-[#F8FAFC]">
+      <div className="min-h-full bg-[#FBF5EC]">
         <PageHeader
           title="Payslip Detail"
           description={`${selectedPayslip.employee?.firstName} ${selectedPayslip.employee?.lastName} — ${selectedPayslip.period?.name || 'N/A'}`}
@@ -117,7 +117,7 @@ export default function PayslipsPage() {
           actions={
             <button
               onClick={() => setSelectedPayslip(null)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
             >
               Back to List
             </button>
@@ -129,29 +129,29 @@ export default function PayslipsPage() {
             <SectionCard title="Employee Information">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-semibold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#064E3B] text-[13px] font-semibold text-white">
                     {selectedPayslip.employee?.firstName?.charAt(0)}{selectedPayslip.employee?.lastName?.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-[14px] font-medium text-[#0F172A]">{selectedPayslip.employee?.firstName} {selectedPayslip.employee?.lastName}</p>
-                    <p className="text-[12px] text-[#64748B]">{selectedPayslip.employee?.employeeCode}</p>
+                    <p className="text-[14px] font-medium text-[#1C1917]">{selectedPayslip.employee?.firstName} {selectedPayslip.employee?.lastName}</p>
+                    <p className="text-[12px] text-[#57534E]">{selectedPayslip.employee?.employeeCode}</p>
                   </div>
                 </div>
-                <div className="space-y-2 border-t border-[#E2E8F0] pt-3">
+                <div className="space-y-2 border-t border-[#DDD0BB] pt-3">
                   <div className="flex justify-between">
-                    <span className="text-[12px] text-[#64748B]">Department</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{selectedPayslip.employee?.department?.name || '—'}</span>
+                    <span className="text-[12px] text-[#57534E]">Department</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{selectedPayslip.employee?.department?.name || '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[12px] text-[#64748B]">Designation</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{selectedPayslip.employee?.designation?.name || '—'}</span>
+                    <span className="text-[12px] text-[#57534E]">Designation</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{selectedPayslip.employee?.designation?.name || '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[12px] text-[#64748B]">Period</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{selectedPayslip.period?.name || '—'}</span>
+                    <span className="text-[12px] text-[#57534E]">Period</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{selectedPayslip.period?.name || '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[12px] text-[#64748B]">Status</span>
+                    <span className="text-[12px] text-[#57534E]">Status</span>
                     <StatusBadge status={selectedPayslip.status} />
                   </div>
                 </div>
@@ -162,19 +162,19 @@ export default function PayslipsPage() {
             <SectionCard title="Earnings">
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-[13px] text-[#64748B]">Gross Amount</span>
+                  <span className="text-[13px] text-[#57534E]">Gross Amount</span>
                   <span className="text-[14px] font-semibold text-emerald-600">{formatMoney(selectedPayslip.grossAmount, selectedPayslip.currency)}</span>
                 </div>
-                <div className="border-t border-[#E2E8F0] pt-3">
+                <div className="border-t border-[#DDD0BB] pt-3">
                   <div className="flex justify-between">
-                    <span className="text-[13px] text-[#64748B]">Total Deductions</span>
+                    <span className="text-[13px] text-[#57534E]">Total Deductions</span>
                     <span className="text-[14px] font-semibold text-red-600">-{formatMoney(selectedPayslip.totalDeductions, selectedPayslip.currency)}</span>
                   </div>
                 </div>
-                <div className="border-t border-[#E2E8F0] pt-3">
+                <div className="border-t border-[#DDD0BB] pt-3">
                   <div className="flex justify-between">
-                    <span className="text-[13px] font-semibold text-[#0F172A]">Net Amount</span>
-                    <span className="text-[16px] font-bold text-[#0F172A]">{formatMoney(selectedPayslip.netAmount, selectedPayslip.currency)}</span>
+                    <span className="text-[13px] font-semibold text-[#1C1917]">Net Amount</span>
+                    <span className="text-[16px] font-bold text-[#1C1917]">{formatMoney(selectedPayslip.netAmount, selectedPayslip.currency)}</span>
                   </div>
                 </div>
               </div>
@@ -184,18 +184,18 @@ export default function PayslipsPage() {
             <SectionCard title="Payslip Information">
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-[12px] text-[#64748B]">Generated</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{selectedPayslip.generatedAt ? new Date(selectedPayslip.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
+                  <span className="text-[12px] text-[#57534E]">Generated</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{selectedPayslip.generatedAt ? new Date(selectedPayslip.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                 </div>
                 {selectedPayslip.finalizedAt && (
                   <div className="flex justify-between">
-                    <span className="text-[12px] text-[#64748B]">Finalized</span>
-                    <span className="text-[12px] font-medium text-[#0F172A]">{new Date(selectedPayslip.finalizedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="text-[12px] text-[#57534E]">Finalized</span>
+                    <span className="text-[12px] font-medium text-[#1C1917]">{new Date(selectedPayslip.finalizedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[12px] text-[#64748B]">Currency</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{selectedPayslip.currency}</span>
+                  <span className="text-[12px] text-[#57534E]">Currency</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{selectedPayslip.currency}</span>
                 </div>
               </div>
             </SectionCard>
@@ -208,7 +208,7 @@ export default function PayslipsPage() {
   /* ── List View ──────────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Payslips"
         description="View and manage employee payslips"
@@ -222,7 +222,7 @@ export default function PayslipsPage() {
             Array.from({ length: 3 }).map((_, i) => <KpiSkeleton key={i} />)
           ) : (
             <>
-              <KpiCard label="Total Payslips" value={kpis.total} icon={FileText} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+              <KpiCard label="Total Payslips" value={kpis.total} icon={FileText} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
               <KpiCard label="Finalized" value={kpis.finalized} icon={CheckCircle2} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
               <KpiCard label="Pending" value={kpis.pending} icon={Clock} iconBg="bg-amber-50" iconColor="text-amber-600" />
             </>
@@ -254,7 +254,7 @@ export default function PayslipsPage() {
         {loading ? (
           <TableSkeleton rows={8} cols={7} />
         ) : payslips.length === 0 ? (
-          <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="overflow-hidden rounded-lg border border-[#DDD0BB] bg-white">
             <EmptyState
               icon={Receipt}
               title="No payslips found"
@@ -269,12 +269,12 @@ export default function PayslipsPage() {
                 label: 'Employee',
                 render: (item: Payslip) => (
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[11px] font-semibold text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#064E3B] text-[11px] font-semibold text-white">
                       {item.employee?.firstName?.charAt(0)}{item.employee?.lastName?.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-[13px] font-medium text-[#0F172A]">{item.employee?.firstName} {item.employee?.lastName}</p>
-                      <p className="text-[11px] text-[#64748B]">{item.employee?.employeeCode}</p>
+                      <p className="text-[13px] font-medium text-[#1C1917]">{item.employee?.firstName} {item.employee?.lastName}</p>
+                      <p className="text-[11px] text-[#57534E]">{item.employee?.employeeCode}</p>
                     </div>
                   </div>
                 ),
@@ -283,14 +283,14 @@ export default function PayslipsPage() {
                 key: 'period',
                 label: 'Period',
                 render: (item: Payslip) => (
-                  <span className="text-[13px] text-[#475569]">{item.period?.name || '—'}</span>
+                  <span className="text-[13px] text-[#57534E]">{item.period?.name || '—'}</span>
                 ),
               },
               {
                 key: 'grossAmount',
                 label: 'Gross',
                 render: (item: Payslip) => (
-                  <span className="text-[13px] text-[#475569]">{formatMoney(item.grossAmount, item.currency)}</span>
+                  <span className="text-[13px] text-[#57534E]">{formatMoney(item.grossAmount, item.currency)}</span>
                 ),
                 align: 'right' as const,
               },
@@ -306,7 +306,7 @@ export default function PayslipsPage() {
                 key: 'netAmount',
                 label: 'Net',
                 render: (item: Payslip) => (
-                  <span className="text-[13px] font-semibold text-[#0F172A]">{formatMoney(item.netAmount, item.currency)}</span>
+                  <span className="text-[13px] font-semibold text-[#1C1917]">{formatMoney(item.netAmount, item.currency)}</span>
                 ),
                 align: 'right' as const,
               },
@@ -321,7 +321,7 @@ export default function PayslipsPage() {
                 render: (item: Payslip) => (
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedPayslip(item); }}
-                    className="inline-flex h-7 items-center gap-1 rounded border border-[#E2E8F0] px-2 text-[11px] text-[#64748B] hover:bg-[#F8FAFC]"
+                    className="inline-flex h-7 items-center gap-1 rounded border border-[#DDD0BB] px-2 text-[11px] text-[#57534E] hover:bg-[#FBF5EC]"
                   >
                     <Eye className="h-3 w-3" />
                     View

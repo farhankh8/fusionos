@@ -236,12 +236,12 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
 
   if (loading) {
     return (
-      <div className="min-h-full bg-[#F8FAFC]">
+      <div className="min-h-full bg-[#FBF5EC]">
         <PageHeader title="Edit Employee" description="Loading..." breadcrumbs={[{ label: 'People' }, { label: 'Employees' }]} />
         <div className="flex min-h-[40vh] items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-[#2563EB]" />
-            <p className="text-[13px] text-[#64748B]">Loading employee data...</p>
+            <Loader2 className="h-6 w-6 animate-spin text-[#064E3B]" />
+            <p className="text-[13px] text-[#57534E]">Loading employee data...</p>
           </div>
         </div>
       </div>
@@ -250,13 +250,13 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
 
   if (error) {
     return (
-      <div className="min-h-full bg-[#F8FAFC]">
+      <div className="min-h-full bg-[#FBF5EC]">
         <PageHeader title="Edit Employee" breadcrumbs={[{ label: 'People' }, { label: 'Employees' }]} />
         <div className="flex min-h-[40vh] items-center justify-center">
           <div className="text-center">
-            <AlertCircle className="mx-auto h-10 w-10 text-[#E2E8F0]" strokeWidth={1.5} />
-            <p className="mt-3 text-[14px] font-medium text-[#0F172A]">{error}</p>
-            <button onClick={() => router.push('/people/employees')} className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]">
+            <AlertCircle className="mx-auto h-10 w-10 text-[#DDD0BB]" strokeWidth={1.5} />
+            <p className="mt-3 text-[14px] font-medium text-[#1C1917]">{error}</p>
+            <button onClick={() => router.push('/people/employees')} className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]">
               Back to Employees
             </button>
           </div>
@@ -268,34 +268,34 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
   /* ── Main Render ──────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       {/* Header */}
-      <div className="border-b border-[#E2E8F0] bg-white">
+      <div className="border-b border-[#DDD0BB] bg-white">
         <div className="px-5 py-4 lg:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-[12px] text-[#64748B]">
+              <div className="flex items-center gap-1.5 text-[12px] text-[#57534E]">
                 <span>People</span><span>/</span>
-                <button onClick={() => router.push('/people/employees')} className="hover:text-[#0F172A] transition-colors">Employees</button>
+                <button onClick={() => router.push('/people/employees')} className="hover:text-[#1C1917] transition-colors">Employees</button>
                 <span>/</span>
-                <button onClick={() => router.push(`/people/employees/${employeeId}`)} className="hover:text-[#0F172A] transition-colors">{form.firstName} {form.lastName}</button>
+                <button onClick={() => router.push(`/people/employees/${employeeId}`)} className="hover:text-[#1C1917] transition-colors">{form.firstName} {form.lastName}</button>
                 <span>/</span>
-                <span className="font-medium text-[#0F172A]">Edit</span>
+                <span className="font-medium text-[#1C1917]">Edit</span>
               </div>
-              <h1 className="mt-0.5 text-[18px] font-semibold text-[#0F172A]">Edit Employee</h1>
-              <p className="mt-0.5 text-[13px] text-[#64748B]">Update employee information for {form.firstName} {form.lastName}</p>
+              <h1 className="mt-0.5 text-[18px] font-semibold text-[#1C1917]">Edit Employee</h1>
+              <p className="mt-0.5 text-[13px] text-[#57534E]">Update employee information for {form.firstName} {form.lastName}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => hasChanges ? setShowDiscard(true) : router.push(`/people/employees/${employeeId}`)}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" /> Back
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving || !hasChanges}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors disabled:opacity-50"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors disabled:opacity-50"
               >
                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                 {saving ? 'Saving...' : 'Save Changes'}
@@ -381,28 +381,28 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
         <SectionTitle title="Additional" />
         <div className="mb-6">
           <div>
-            <label className="block text-[12px] font-medium text-[#64748B] mb-1">Notes</label>
+            <label className="block text-[12px] font-medium text-[#57534E] mb-1">Notes</label>
             <textarea
               value={form.notes}
               onChange={e => updateField('notes', e.target.value)}
               rows={3}
-              className="w-full rounded-md border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB] resize-none"
+              className="w-full rounded-md border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] placeholder:text-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B] resize-none"
             />
           </div>
         </div>
 
         {/* Bottom actions */}
-        <div className="flex items-center justify-between border-t border-[#E2E8F0] pt-4 mt-6">
+        <div className="flex items-center justify-between border-t border-[#DDD0BB] pt-4 mt-6">
           <button
             onClick={() => hasChanges ? setShowDiscard(true) : router.push(`/people/employees/${employeeId}`)}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !hasChanges}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors disabled:opacity-50"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
             {saving ? 'Saving...' : 'Save Changes'}
@@ -413,11 +413,11 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
       {/* Discard Confirmation Dialog */}
       {showDiscard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="w-full max-w-sm rounded-lg border border-[#E2E8F0] bg-white p-5 shadow-lg">
-            <h3 className="text-[14px] font-semibold text-[#0F172A]">Discard unsaved changes?</h3>
-            <p className="mt-1 text-[13px] text-[#64748B]">You have unsaved changes. Are you sure you want to leave without saving?</p>
+          <div className="w-full max-w-sm rounded-lg border border-[#DDD0BB] bg-white p-5 shadow-lg">
+            <h3 className="text-[14px] font-semibold text-[#1C1917]">Discard unsaved changes?</h3>
+            <p className="mt-1 text-[13px] text-[#57534E]">You have unsaved changes. Are you sure you want to leave without saving?</p>
             <div className="mt-4 flex items-center justify-end gap-2">
-              <button onClick={() => setShowDiscard(false)} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">
+              <button onClick={() => setShowDiscard(false)} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
                 Stay
               </button>
               <button onClick={() => router.push(`/people/employees/${employeeId}`)} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#DC2626] px-3 text-[12px] font-medium text-white hover:bg-[#B91C1C]">
@@ -434,7 +434,7 @@ export default function EmployeeEditPage(props: { params: Promise<{ id: string }
 /* ── Form Sub-components ───────────────────────────────────────────────── */
 
 function SectionTitle({ title }: { title: string }) {
-  return <h2 className="mb-3 text-[15px] font-semibold text-[#0F172A]">{title}</h2>;
+  return <h2 className="mb-3 text-[15px] font-semibold text-[#1C1917]">{title}</h2>;
 }
 
 function Field({
@@ -445,7 +445,7 @@ function Field({
 }) {
   return (
     <div className={className}>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -454,8 +454,8 @@ function Field({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'h-8 w-full rounded-md border bg-white px-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-1',
-          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#E2E8F0] focus:border-[#2563EB] focus:ring-[#2563EB]',
+          'h-8 w-full rounded-md border bg-white px-3 text-[13px] text-[#1C1917] placeholder:text-[#8E7E68] focus:outline-none focus:ring-1',
+          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#DDD0BB] focus:border-[#064E3B] focus:ring-[#064E3B]',
         )}
       />
       {error && <p className="mt-0.5 text-[11px] text-red-600">{error}</p>}
@@ -471,11 +471,11 @@ function SelectField({
 }) {
   return (
     <div>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">{label}</label>
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">{label}</label>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="h-8 w-full rounded-md border border-[#E2E8F0] bg-white px-2.5 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+        className="h-8 w-full rounded-md border border-[#DDD0BB] bg-white px-2.5 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
       >
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
@@ -491,7 +491,7 @@ function EntitySelect({
 }) {
   return (
     <div>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
@@ -499,8 +499,8 @@ function EntitySelect({
         onChange={e => onChange(e.target.value)}
         disabled={disabled}
         className={cn(
-          'h-8 w-full rounded-md border border-[#E2E8F0] bg-white px-2.5 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]',
-          disabled && 'bg-[#F8FAFC] text-[#94A3B8] cursor-not-allowed',
+          'h-8 w-full rounded-md border border-[#DDD0BB] bg-white px-2.5 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]',
+          disabled && 'bg-[#FBF5EC] text-[#8E7E68] cursor-not-allowed',
         )}
       >
         <option value="">{disabled ? 'Select company first' : 'Select'}</option>

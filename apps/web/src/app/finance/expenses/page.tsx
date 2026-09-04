@@ -94,7 +94,7 @@ export default function ExpensesPage() {
         description="Manage employee and operational expenses with approval workflow."
         breadcrumbs={[{ label: 'Finance', href: '/finance' }, { label: 'Expenses' }]}
         actions={
-          <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] transition-colors">
+          <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] transition-colors">
             + New Expense
           </button>
         }
@@ -103,7 +103,7 @@ export default function ExpensesPage() {
       {error && <div className="mb-4 px-4 py-3 bg-[#FEF2F2] border border-[#FECACA] rounded-md text-[13px] text-[#DC2626]">{error}</div>}
 
       <div className="flex items-center gap-3 mb-4">
-        <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20">
+        <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20">
           <option value="">All Status</option>
           <option value="DRAFT">Draft</option>
           <option value="SUBMITTED">Submitted</option>
@@ -114,33 +114,33 @@ export default function ExpensesPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />)}
+        <div className="bg-white border border-[#DDD0BB] rounded-lg p-6 space-y-3">
+          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />)}
         </div>
       ) : expenses.length === 0 ? (
         <EmptyState title="No expenses" description="Create an expense to get started." />
       ) : (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
-              <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Number</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Description</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Category</th>
-                <th className="text-right px-4 py-3 font-medium text-[#64748B]">Amount</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Date</th>
-                <th className="text-center px-4 py-3 font-medium text-[#64748B]">Status</th>
-                <th className="text-center px-4 py-3 font-medium text-[#64748B]">Actions</th>
+              <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Number</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Description</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Category</th>
+                <th className="text-right px-4 py-3 font-medium text-[#57534E]">Amount</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Date</th>
+                <th className="text-center px-4 py-3 font-medium text-[#57534E]">Status</th>
+                <th className="text-center px-4 py-3 font-medium text-[#57534E]">Actions</th>
               </tr>
             </thead>
             <tbody>
               {expenses.map((e) => (
-                <tr key={e.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-                  <td className="px-4 py-3 font-mono font-medium text-[#2563EB]">{e.expenseNumber}</td>
-                  <td className="px-4 py-3 text-[#475569] max-w-[200px] truncate">{e.description}</td>
-                  <td className="px-4 py-3 text-[#64748B]">{e.category}</td>
-                  <td className="px-4 py-3 text-right font-medium text-[#0F172A]">{formatCurrency(e.amount, e.currency)}</td>
-                  <td className="px-4 py-3 text-[#475569]">{new Date(e.expenseDate).toLocaleDateString()}</td>
+                <tr key={e.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+                  <td className="px-4 py-3 font-mono font-medium text-[#064E3B]">{e.expenseNumber}</td>
+                  <td className="px-4 py-3 text-[#57534E] max-w-[200px] truncate">{e.description}</td>
+                  <td className="px-4 py-3 text-[#57534E]">{e.category}</td>
+                  <td className="px-4 py-3 text-right font-medium text-[#1C1917]">{formatCurrency(e.amount, e.currency)}</td>
+                  <td className="px-4 py-3 text-[#57534E]">{new Date(e.expenseDate).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-center"><StatusBadge status={e.status} /></td>
                   <td className="px-4 py-3 text-center">
                     {e.status === 'SUBMITTED' && (
@@ -152,11 +152,11 @@ export default function ExpensesPage() {
             </tbody>
           </table>
           {meta.totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+            <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
               <span>Page {page} of {meta.totalPages}</span>
               <div className="flex gap-2">
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Prev</button>
-                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Next</button>
+                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Prev</button>
+                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Next</button>
               </div>
             </div>
           )}
@@ -166,32 +166,32 @@ export default function ExpensesPage() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-xl w-[500px] shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="px-6 py-4 border-b border-[#E2E8F0]">
-              <h2 className="text-[16px] font-semibold text-[#0F172A]">New Expense</h2>
+            <div className="px-6 py-4 border-b border-[#DDD0BB]">
+              <h2 className="text-[16px] font-semibold text-[#1C1917]">New Expense</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Description *</label>
-                <input value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Description *</label>
+                <input value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Amount (cents) *</label>
-                  <input type="number" value={createForm.amount || ''} onChange={(e) => setCreateForm({ ...createForm, amount: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Amount (cents) *</label>
+                  <input type="number" value={createForm.amount || ''} onChange={(e) => setCreateForm({ ...createForm, amount: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Category *</label>
-                  <input value={createForm.category} onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" placeholder="e.g. Travel, Office" />
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Category *</label>
+                  <input value={createForm.category} onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" placeholder="e.g. Travel, Office" />
                 </div>
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Date *</label>
-                <input type="date" value={createForm.expenseDate} onChange={(e) => setCreateForm({ ...createForm, expenseDate: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Date *</label>
+                <input type="date" value={createForm.expenseDate} onChange={(e) => setCreateForm({ ...createForm, expenseDate: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-[#E2E8F0] flex justify-end gap-3">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md">Cancel</button>
-              <button onClick={handleCreate} disabled={creating || !createForm.description || !createForm.amount || !createForm.category} className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] disabled:opacity-50">
+            <div className="px-6 py-4 border-t border-[#DDD0BB] flex justify-end gap-3">
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md">Cancel</button>
+              <button onClick={handleCreate} disabled={creating || !createForm.description || !createForm.amount || !createForm.category} className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] disabled:opacity-50">
                 {creating ? 'Creating...' : 'Create Expense'}
               </button>
             </div>

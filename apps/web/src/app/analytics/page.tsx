@@ -64,20 +64,20 @@ export default function AnalyticsPage() {
       kpis: data.finance.hasMixedCurrencies && (data.finance.byCurrency?.length || 0) > 1
         ? data.finance.byCurrency!.flatMap(c => [
             { label: `Revenue (${c.currency})`, value: fmtC(c, c.totalRevenue ?? 0), icon: TrendingUp, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: `Net Profit (${c.currency})`, value: fmtC(c, c.netProfit ?? 0), icon: DollarSign, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: `Net Profit (${c.currency})`, value: fmtC(c, c.netProfit ?? 0), icon: DollarSign, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
           ])
         : [
             { label: 'Revenue', value: fmt(data.finance.totalRevenue, data.finance.currency), icon: TrendingUp, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
             { label: 'Expenses', value: fmt(data.finance.totalExpenses, data.finance.currency), icon: TrendingDown, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
-            { label: 'Net Profit', value: fmt(data.finance.netProfit, data.finance.currency), icon: DollarSign, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: 'Net Profit', value: fmt(data.finance.netProfit, data.finance.currency), icon: DollarSign, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: 'Receivables', value: fmt(data.finance.totalAR, data.finance.currency), icon: DollarSign, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
           ],
     },
     {
       title: 'Workforce', href: '/analytics/workforce',
-      icon: Users, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]',
+      icon: Users, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]',
       kpis: [
-        { label: 'Total Employees', value: data.workforce.totalEmployees, icon: Users, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+        { label: 'Total Employees', value: data.workforce.totalEmployees, icon: Users, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
         { label: 'Active', value: data.workforce.activeEmployees, icon: Users, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
         { label: 'New Hires', value: data.workforce.newHires, icon: Users, iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
       ],
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
       icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
       kpis: [
         { label: 'Present Rate', value: `${data.attendance.presentRate}%`, icon: Clock, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-        { label: 'Worked Hours', value: data.attendance.totalWorkedHours, icon: Clock, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+        { label: 'Worked Hours', value: data.attendance.totalWorkedHours, icon: Clock, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
         { label: 'Overtime Hours', value: data.attendance.totalOvertimeHours, icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
       ],
     },
@@ -98,7 +98,7 @@ export default function AnalyticsPage() {
         { label: 'Total Requests', value: data.leave.totalRequests, icon: CalendarOff, iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
         { label: 'Approved', value: data.leave.approvedRequests, icon: CalendarOff, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
         { label: 'Pending', value: data.leave.pendingRequests, icon: CalendarOff, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
-        { label: 'Approval Rate', value: `${data.leave.approvalRate}%`, icon: TrendingUp, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+        { label: 'Approval Rate', value: `${data.leave.approvalRate}%`, icon: TrendingUp, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
       ],
     },
     {
@@ -107,11 +107,11 @@ export default function AnalyticsPage() {
       kpis: data.payroll.hasMixedCurrencies && (data.payroll.byCurrency?.length || 0) > 1
         ? data.payroll.byCurrency!.flatMap(c => [
             { label: `Gross (${c.currency})`, value: fmtC(c, c.totalGross ?? 0), icon: Wallet, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: `Net (${c.currency})`, value: fmtC(c, c.totalNet ?? 0), icon: Wallet, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: `Net (${c.currency})`, value: fmtC(c, c.totalNet ?? 0), icon: Wallet, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
           ])
         : [
             { label: 'Gross Payroll', value: fmt(data.payroll.totalGross, data.payroll.currency), icon: Wallet, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: 'Net Payroll', value: fmt(data.payroll.totalNet, data.payroll.currency), icon: Wallet, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: 'Net Payroll', value: fmt(data.payroll.totalNet, data.payroll.currency), icon: Wallet, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: 'Deductions', value: fmt(data.payroll.totalDeductions, data.payroll.currency), icon: Wallet, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
           ],
     },
@@ -120,26 +120,26 @@ export default function AnalyticsPage() {
       icon: Handshake, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
       kpis: data.crm.hasMixedCurrencies && (data.crm.byCurrency?.length || 0) > 1
         ? data.crm.byCurrency!.flatMap(c => [
-            { label: `Pipeline (${c.currency})`, value: fmtC(c, c.pipelineValue ?? 0), icon: TrendingUp, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: `Pipeline (${c.currency})`, value: fmtC(c, c.pipelineValue ?? 0), icon: TrendingUp, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: `Won (${c.currency})`, value: fmtC(c, c.wonRevenue ?? 0), icon: DollarSign, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
           ])
         : [
             { label: 'Total Leads', value: data.crm.totalLeads, icon: Handshake, iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
-            { label: 'Pipeline', value: fmt(data.crm.pipelineValue, data.crm.currency), icon: TrendingUp, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: 'Pipeline', value: fmt(data.crm.pipelineValue, data.crm.currency), icon: TrendingUp, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: 'Won Revenue', value: fmt(data.crm.wonRevenue, data.crm.currency), icon: DollarSign, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
             { label: 'Win Rate', value: `${data.crm.winRate}%`, icon: TrendingUp, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
           ],
     },
     {
       title: 'Projects', href: '/analytics/projects',
-      icon: FolderKanban, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]',
+      icon: FolderKanban, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]',
       kpis: data.projects.hasMixedCurrencies && (data.projects.byCurrency?.length || 0) > 1
         ? data.projects.byCurrency!.flatMap(c => [
-            { label: `Budget (${c.currency})`, value: fmtC(c, c.budget ?? 0), icon: FolderKanban, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: `Budget (${c.currency})`, value: fmtC(c, c.budget ?? 0), icon: FolderKanban, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: `Spent (${c.currency})`, value: fmtC(c, c.spent ?? 0), icon: FolderKanban, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
           ])
         : [
-            { label: 'Total Projects', value: data.projects.totalProjects, icon: FolderKanban, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: 'Total Projects', value: data.projects.totalProjects, icon: FolderKanban, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: 'Active', value: data.projects.activeProjects, icon: FolderKanban, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
             { label: 'Completed', value: data.projects.completedProjects, icon: FolderKanban, iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
             { label: 'Overdue Milestones', value: data.projects.overdueMilestones, icon: CalendarOff, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
@@ -150,19 +150,19 @@ export default function AnalyticsPage() {
       icon: Package, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
       kpis: data.assets.hasMixedCurrencies && (data.assets.byCurrency?.length || 0) > 1
         ? data.assets.byCurrency!.flatMap(c => [
-            { label: `Book Value (${c.currency})`, value: fmtC(c, c.totalBookValue ?? 0), icon: DollarSign, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: `Book Value (${c.currency})`, value: fmtC(c, c.totalBookValue ?? 0), icon: DollarSign, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: `Maintenance (${c.currency})`, value: fmtC(c, c.totalMaintenanceCost ?? 0), icon: Package, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
           ])
         : [
             { label: 'Total Assets', value: data.assets.totalAssets, icon: Package, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
-            { label: 'Book Value', value: fmt(data.assets.totalBookValue, data.assets.currency), icon: DollarSign, iconBg: 'bg-[#EFF6FF]', iconColor: 'text-[#2563EB]' },
+            { label: 'Book Value', value: fmt(data.assets.totalBookValue, data.assets.currency), icon: DollarSign, iconBg: 'bg-[#D1FAE5]', iconColor: 'text-[#064E3B]' },
             { label: 'Maintenance Cost', value: fmt(data.assets.totalMaintenanceCost, data.assets.currency), icon: Package, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
           ],
     },
   ] : [];
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Analytics"
         description="Business performance across your organization"
@@ -171,10 +171,10 @@ export default function AnalyticsPage() {
         {loading ? (
           <div className="grid gap-4 lg:grid-cols-2">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+              <div key={i} className="rounded-lg border border-[#DDD0BB] bg-white p-5">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="h-8 w-8 animate-pulse rounded-lg bg-[#F1F5F9]" />
-                  <div className="h-4 w-32 animate-pulse rounded bg-[#F1F5F9]" />
+                  <div className="h-8 w-8 animate-pulse rounded-lg bg-[#F5E6CC]" />
+                  <div className="h-4 w-32 animate-pulse rounded bg-[#F5E6CC]" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {Array.from({ length: 4 }).map((_, j) => <KpiSkeleton key={j} />)}
@@ -190,7 +190,7 @@ export default function AnalyticsPage() {
             action={
               <button
                 onClick={fetchData}
-                className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"
+                className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"
               >
                 <RefreshCw className="h-3.5 w-3.5" />Retry
               </button>
@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
             {sections.map((section) => (
               <div
                 key={section.title}
-                className="rounded-lg border border-[#E2E8F0] bg-white p-5 cursor-pointer hover:border-[#2563EB]/30 transition-colors"
+                className="rounded-lg border border-[#DDD0BB] bg-white p-5 cursor-pointer hover:border-[#064E3B]/30 transition-colors"
                 onClick={() => router.push(section.href)}
               >
                 <div className="mb-4 flex items-center justify-between">
@@ -209,21 +209,21 @@ export default function AnalyticsPage() {
                     <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${section.iconBg}`}>
                       <section.icon className={`h-4 w-4 ${section.iconColor}`} />
                     </div>
-                    <h3 className="text-[14px] font-semibold text-[#0F172A]">{section.title}</h3>
+                    <h3 className="text-[14px] font-semibold text-[#1C1917]">{section.title}</h3>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-[#94A3B8]" />
+                  <ArrowRight className="h-4 w-4 text-[#8E7E68]" />
                 </div>
                 {section.kpis.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3">
                     {section.kpis.map((kpi) => (
-                      <div key={kpi.label} className="rounded-md bg-[#F8FAFC] p-3">
-                        <p className="text-[11px] font-medium text-[#64748B]">{kpi.label}</p>
-                        <p className="text-[16px] font-bold text-[#0F172A]">{kpi.value}</p>
+                      <div key={kpi.label} className="rounded-md bg-[#FBF5EC] p-3">
+                        <p className="text-[11px] font-medium text-[#57534E]">{kpi.label}</p>
+                        <p className="text-[16px] font-bold text-[#1C1917]">{kpi.value}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[12px] text-[#64748B]">No data available</p>
+                  <p className="text-[12px] text-[#57534E]">No data available</p>
                 )}
               </div>
             ))}

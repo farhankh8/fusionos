@@ -91,7 +91,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-[#FBF5EC]">
         <PageHeader title="Loading..." breadcrumbs={[{ label: 'Automation', href: '/automation' }, { label: 'Workflow' }]} />
         <div className="p-5 lg:p-6 space-y-4">
           <Skeleton className="h-32 w-full" />
@@ -103,7 +103,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
 
   if (!workflow) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-[#FBF5EC]">
         <PageHeader title="Workflow Not Found" breadcrumbs={[{ label: 'Automation', href: '/automation' }, { label: 'Not Found' }]} />
         <div className="p-5 lg:p-6">
           <EmptyState
@@ -111,7 +111,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
             title="Workflow not found"
             description="The workflow you're looking for doesn't exist or has been removed."
             action={
-              <Link href="/automation/workflows" className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8]">
+              <Link href="/automation/workflows" className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857]">
                 <ArrowLeft className="h-4 w-4" /> Back to Workflows
               </Link>
             }
@@ -139,7 +139,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
         </button>
       )}
       {workflow.status !== 'ARCHIVED' && (
-        <button onClick={() => handleLifecycleAction('archive')} className="inline-flex items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F1F5F9]">
+        <button onClick={() => handleLifecycleAction('archive')} className="inline-flex items-center gap-1.5 rounded-lg border border-[#DDD0BB] px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#F5E6CC]">
           <Archive className="h-3.5 w-3.5" /> Archive
         </button>
       )}
@@ -147,7 +147,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title={workflow.name}
         description={workflow.description ?? undefined}
@@ -166,15 +166,15 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
 
       <div className="p-5 lg:p-6">
         {/* Tabs */}
-        <div className="mb-4 flex gap-1 border-b border-[#E2E8F0]">
+        <div className="mb-4 flex gap-1 border-b border-[#DDD0BB]">
           {(['overview', 'versions', 'executions'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2.5 text-[13px] font-medium transition-colors border-b-2 -mb-px ${
                 activeTab === tab
-                  ? 'border-[#2563EB] text-[#2563EB]'
-                  : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                  ? 'border-[#064E3B] text-[#064E3B]'
+                  : 'border-transparent text-[#57534E] hover:text-[#1C1917]'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -185,72 +185,72 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
-            <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-              <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">Workflow Details</h3>
+            <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+              <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">Workflow Details</h3>
               <dl className="grid grid-cols-2 gap-4 text-[13px]">
                 <div>
-                  <dt className="text-[#94A3B8]">Status</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]"><StatusBadge status={workflow.status} /></dd>
+                  <dt className="text-[#8E7E68]">Status</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]"><StatusBadge status={workflow.status} /></dd>
                 </div>
                 <div>
-                  <dt className="text-[#94A3B8]">Trigger</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]">{getTriggerLabel(workflow.currentVersion?.triggerConfig as Record<string, unknown> | null)}</dd>
+                  <dt className="text-[#8E7E68]">Trigger</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]">{getTriggerLabel(workflow.currentVersion?.triggerConfig as Record<string, unknown> | null)}</dd>
                 </div>
                 <div>
-                  <dt className="text-[#94A3B8]">Created By</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]">{workflow.createdBy.firstName} {workflow.createdBy.lastName}</dd>
+                  <dt className="text-[#8E7E68]">Created By</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]">{workflow.createdBy.firstName} {workflow.createdBy.lastName}</dd>
                 </div>
                 <div>
-                  <dt className="text-[#94A3B8]">Total Executions</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]">{workflow._count.executions}</dd>
+                  <dt className="text-[#8E7E68]">Total Executions</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]">{workflow._count.executions}</dd>
                 </div>
                 <div>
-                  <dt className="text-[#94A3B8]">Created</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]">{new Date(workflow.createdAt).toLocaleString()}</dd>
+                  <dt className="text-[#8E7E68]">Created</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]">{new Date(workflow.createdAt).toLocaleString()}</dd>
                 </div>
                 <div>
-                  <dt className="text-[#94A3B8]">Updated</dt>
-                  <dd className="mt-0.5 font-medium text-[#0F172A]">{new Date(workflow.updatedAt).toLocaleString()}</dd>
+                  <dt className="text-[#8E7E68]">Updated</dt>
+                  <dd className="mt-0.5 font-medium text-[#1C1917]">{new Date(workflow.updatedAt).toLocaleString()}</dd>
                 </div>
               </dl>
             </div>
 
             {/* Current Version Config */}
             {workflow.currentVersion && (
-              <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-                <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">
+              <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+                <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">
                   Current Version (v{workflow.currentVersion.versionNumber})
                 </h3>
                 <div className="space-y-3">
                   {/* Trigger */}
-                  <div className="rounded-lg bg-[#F8FAFC] p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">Trigger</p>
-                    <p className="text-[13px] text-[#0F172A]">{getTriggerLabel(workflow.currentVersion.triggerConfig as Record<string, unknown>)}</p>
+                  <div className="rounded-lg bg-[#FBF5EC] p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#57534E] mb-1">Trigger</p>
+                    <p className="text-[13px] text-[#1C1917]">{getTriggerLabel(workflow.currentVersion.triggerConfig as Record<string, unknown>)}</p>
                   </div>
 
                   {/* Conditions */}
-                  <div className="rounded-lg bg-[#F8FAFC] p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">Conditions</p>
+                  <div className="rounded-lg bg-[#FBF5EC] p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#57534E] mb-1">Conditions</p>
                     {workflow.currentVersion.conditionConfig ? (
-                      <p className="text-[13px] text-[#0F172A]">
+                      <p className="text-[13px] text-[#1C1917]">
                         {(workflow.currentVersion.conditionConfig as Record<string, unknown>)['logic'] as string ?? 'AND'} conditions configured
                       </p>
                     ) : (
-                      <p className="text-[13px] text-[#94A3B8]">No conditions (always runs)</p>
+                      <p className="text-[13px] text-[#8E7E68]">No conditions (always runs)</p>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="rounded-lg bg-[#F8FAFC] p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">Actions</p>
+                  <div className="rounded-lg bg-[#FBF5EC] p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#57534E] mb-1">Actions</p>
                     <div className="space-y-1">
                       {(workflow.currentVersion.actionsConfig as Array<Record<string, unknown>>).map((action, i) => (
-                        <p key={i} className="text-[13px] text-[#0F172A]">
+                        <p key={i} className="text-[13px] text-[#1C1917]">
                           {i + 1}. {String(action['type']).replace(/_/g, ' ')}
                         </p>
                       ))}
                       {(workflow.currentVersion.actionsConfig as Array<Record<string, unknown>>).length === 0 && (
-                        <p className="text-[13px] text-[#94A3B8]">No actions configured</p>
+                        <p className="text-[13px] text-[#8E7E68]">No actions configured</p>
                       )}
                     </div>
                   </div>
@@ -262,26 +262,26 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Versions Tab */}
         {activeTab === 'versions' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {workflow.versions.length === 0 ? (
               <EmptyState title="No versions" description="Save a configuration to create a version." />
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Version</th>
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Status</th>
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Created</th>
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Published</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Version</th>
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Status</th>
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Created</th>
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Published</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {workflow.versions.map((v) => (
                     <tr key={v.id}>
-                      <td className="px-5 py-3 text-[13px] font-medium text-[#0F172A]">v{v.versionNumber}</td>
+                      <td className="px-5 py-3 text-[13px] font-medium text-[#1C1917]">v{v.versionNumber}</td>
                       <td className="px-5 py-3"><StatusBadge status={v.status} /></td>
-                      <td className="px-5 py-3 text-[12px] text-[#64748B]">{new Date(v.createdAt).toLocaleString()}</td>
-                      <td className="px-5 py-3 text-[12px] text-[#64748B]">
+                      <td className="px-5 py-3 text-[12px] text-[#57534E]">{new Date(v.createdAt).toLocaleString()}</td>
+                      <td className="px-5 py-3 text-[12px] text-[#57534E]">
                         {v.publishedAt ? new Date(v.publishedAt).toLocaleString() : '—'}
                       </td>
                     </tr>
@@ -294,7 +294,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Executions Tab */}
         {activeTab === 'executions' && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="rounded-lg border border-[#DDD0BB] bg-white">
             {executions.length === 0 ? (
               <EmptyState
                 icon={Clock}
@@ -304,28 +304,28 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Execution</th>
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Status</th>
-                    <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Trigger</th>
-                    <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Duration</th>
-                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Date</th>
+                  <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Execution</th>
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Status</th>
+                    <th className="hidden md:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Trigger</th>
+                    <th className="hidden lg:table-cell px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Duration</th>
+                    <th className="px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#57534E]">Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1F5F9]">
+                <tbody className="divide-y divide-[#F5E6CC]">
                   {executions.map((exec) => (
-                    <tr key={exec.id} className="hover:bg-[#F8FAFC]">
+                    <tr key={exec.id} className="hover:bg-[#FBF5EC]">
                       <td className="px-5 py-3">
-                        <Link href={`/automation/executions/${exec.id}`} className="text-[13px] font-medium text-[#2563EB] hover:text-[#1D4ED8]">
+                        <Link href={`/automation/executions/${exec.id}`} className="text-[13px] font-medium text-[#064E3B] hover:text-[#047857]">
                           {exec.id.slice(0, 8)}...
                         </Link>
                       </td>
                       <td className="px-5 py-3"><StatusBadge status={exec.status} /></td>
-                      <td className="hidden md:table-cell px-5 py-3 text-[12px] text-[#64748B]">{exec.triggerEventType}</td>
-                      <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#64748B]">
+                      <td className="hidden md:table-cell px-5 py-3 text-[12px] text-[#57534E]">{exec.triggerEventType}</td>
+                      <td className="hidden lg:table-cell px-5 py-3 text-[12px] text-[#57534E]">
                         {exec.duration ? `${exec.duration}ms` : '—'}
                       </td>
-                      <td className="px-5 py-3 text-[12px] text-[#64748B]">{new Date(exec.createdAt).toLocaleString()}</td>
+                      <td className="px-5 py-3 text-[12px] text-[#57534E]">{new Date(exec.createdAt).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>

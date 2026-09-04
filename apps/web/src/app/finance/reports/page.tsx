@@ -61,7 +61,7 @@ export default function ReportsPage() {
       />
 
       {/* Report Type Tabs */}
-      <div className="flex items-center gap-1 mb-4 bg-white border border-[#E2E8F0] rounded-lg p-1 w-fit">
+      <div className="flex items-center gap-1 mb-4 bg-white border border-[#DDD0BB] rounded-lg p-1 w-fit">
         {([
           { key: 'trial-balance', label: 'Trial Balance' },
           { key: 'balance-sheet', label: 'Balance Sheet' },
@@ -71,7 +71,7 @@ export default function ReportsPage() {
             key={rt.key}
             onClick={() => { setReportType(rt.key); setReportData(null); }}
             className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${
-              reportType === rt.key ? 'bg-[#2563EB] text-white' : 'text-[#475569] hover:bg-[#F8FAFC]'
+              reportType === rt.key ? 'bg-[#064E3B] text-white' : 'text-[#57534E] hover:bg-[#FBF5EC]'
             }`}
           >
             {rt.label}
@@ -81,14 +81,14 @@ export default function ReportsPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6">
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
-        <span className="text-[12px] text-[#64748B]">to</span>
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
-        <button onClick={loadReport} disabled={loading} className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] disabled:opacity-50">
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
+        <span className="text-[12px] text-[#57534E]">to</span>
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
+        <button onClick={loadReport} disabled={loading} className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] disabled:opacity-50">
           {loading ? 'Loading...' : 'Generate Report'}
         </button>
         {reportData && (
-          <button onClick={() => window.print()} className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC]">
+          <button onClick={() => window.print()} className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC]">
             Print
           </button>
         )}
@@ -100,8 +100,8 @@ export default function ReportsPage() {
 
       {/* Report Content */}
       {loading ? (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 space-y-3">
-          {Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-8 bg-[#F8FAFC] rounded animate-pulse" />)}
+        <div className="bg-white border border-[#DDD0BB] rounded-lg p-6 space-y-3">
+          {Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-8 bg-[#FBF5EC] rounded animate-pulse" />)}
         </div>
       ) : !reportData ? (
         <EmptyState title="No report generated" description="Select date range and click Generate Report to view financial statements." />
@@ -114,37 +114,37 @@ export default function ReportsPage() {
 
 function TrialBalanceReport({ data }: { data: any }) {
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#E2E8F0]">
-        <h3 className="text-[15px] font-semibold text-[#0F172A]">Trial Balance</h3>
-        <p className="text-[12px] text-[#64748B] mt-0.5">
+    <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
+      <div className="px-6 py-4 border-b border-[#DDD0BB]">
+        <h3 className="text-[15px] font-semibold text-[#1C1917]">Trial Balance</h3>
+        <p className="text-[12px] text-[#57534E] mt-0.5">
           {data.isBalanced ? '✓ This report is balanced' : '✗ WARNING: This report is NOT balanced — accounting integrity issue'}
         </p>
       </div>
       <table className="w-full text-[13px]">
         <thead>
-          <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-            <th className="text-left px-4 py-3 font-medium text-[#64748B]">Code</th>
-            <th className="text-left px-4 py-3 font-medium text-[#64748B]">Account</th>
-            <th className="text-right px-4 py-3 font-medium text-[#64748B]">Debit</th>
-            <th className="text-right px-4 py-3 font-medium text-[#64748B]">Credit</th>
+          <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+            <th className="text-left px-4 py-3 font-medium text-[#57534E]">Code</th>
+            <th className="text-left px-4 py-3 font-medium text-[#57534E]">Account</th>
+            <th className="text-right px-4 py-3 font-medium text-[#57534E]">Debit</th>
+            <th className="text-right px-4 py-3 font-medium text-[#57534E]">Credit</th>
           </tr>
         </thead>
         <tbody>
           {(data.accounts || []).map((a: any, idx: number) => (
-            <tr key={idx} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-              <td className="px-4 py-3 font-mono font-medium text-[#0F172A]">{a.code}</td>
-              <td className="px-4 py-3 text-[#475569]">{a.name}</td>
-              <td className="px-4 py-3 text-right font-medium text-[#0F172A]">{a.debit > 0 ? formatCurrency(a.debit) : '—'}</td>
-              <td className="px-4 py-3 text-right font-medium text-[#0F172A]">{a.credit > 0 ? formatCurrency(a.credit) : '—'}</td>
+            <tr key={idx} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+              <td className="px-4 py-3 font-mono font-medium text-[#1C1917]">{a.code}</td>
+              <td className="px-4 py-3 text-[#57534E]">{a.name}</td>
+              <td className="px-4 py-3 text-right font-medium text-[#1C1917]">{a.debit > 0 ? formatCurrency(a.debit) : '—'}</td>
+              <td className="px-4 py-3 text-right font-medium text-[#1C1917]">{a.credit > 0 ? formatCurrency(a.credit) : '—'}</td>
             </tr>
           ))}
         </tbody>
         <tfoot>
-          <tr className="border-t-2 border-[#CBD5E1] font-semibold bg-[#F8FAFC]">
-            <td colSpan={2} className="px-4 py-3 text-right text-[#0F172A]">Totals</td>
-            <td className="px-4 py-3 text-right text-[#0F172A]">{formatCurrency(data.totalDebit)}</td>
-            <td className="px-4 py-3 text-right text-[#0F172A]">{formatCurrency(data.totalCredit)}</td>
+          <tr className="border-t-2 border-[#A7F3D0] font-semibold bg-[#FBF5EC]">
+            <td colSpan={2} className="px-4 py-3 text-right text-[#1C1917]">Totals</td>
+            <td className="px-4 py-3 text-right text-[#1C1917]">{formatCurrency(data.totalDebit)}</td>
+            <td className="px-4 py-3 text-right text-[#1C1917]">{formatCurrency(data.totalCredit)}</td>
           </tr>
         </tfoot>
       </table>
@@ -154,40 +154,40 @@ function TrialBalanceReport({ data }: { data: any }) {
 
 function BalanceSheetReport({ data }: { data: any }) {
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#E2E8F0]">
-        <h3 className="text-[15px] font-semibold text-[#0F172A]">Balance Sheet</h3>
-        <p className="text-[12px] text-[#64748B] mt-0.5">
+    <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
+      <div className="px-6 py-4 border-b border-[#DDD0BB]">
+        <h3 className="text-[15px] font-semibold text-[#1C1917]">Balance Sheet</h3>
+        <p className="text-[12px] text-[#57534E] mt-0.5">
           {data.isBalanced ? '✓ Accounting equation holds: Assets = Liabilities + Equity' : '✗ WARNING: Accounting equation does not balance'}
         </p>
       </div>
       <div className="p-6">
         <div className="space-y-6">
-          <div className="p-4 border border-[#E2E8F0] rounded-lg">
+          <div className="p-4 border border-[#DDD0BB] rounded-lg">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[14px] font-semibold text-[#2563EB]">Assets</h4>
-              <span className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(data.assets?.total || 0)}</span>
+              <h4 className="text-[14px] font-semibold text-[#064E3B]">Assets</h4>
+              <span className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(data.assets?.total || 0)}</span>
             </div>
           </div>
 
-          <div className="p-4 border border-[#E2E8F0] rounded-lg">
+          <div className="p-4 border border-[#DDD0BB] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-[14px] font-semibold text-[#DC2626]">Liabilities</h4>
-              <span className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(data.liabilities?.total || 0)}</span>
+              <span className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(data.liabilities?.total || 0)}</span>
             </div>
           </div>
 
-          <div className="p-4 border border-[#E2E8F0] rounded-lg">
+          <div className="p-4 border border-[#DDD0BB] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-[14px] font-semibold text-[#7C3AED]">Equity</h4>
-              <span className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(data.equity?.total || 0)}</span>
+              <span className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(data.equity?.total || 0)}</span>
             </div>
           </div>
 
-          <div className="border-t-2 border-[#CBD5E1] pt-4">
+          <div className="border-t-2 border-[#A7F3D0] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-[14px] font-semibold text-[#0F172A]">Total Liabilities + Equity</span>
-              <span className="text-[18px] font-bold text-[#0F172A]">{formatCurrency((data.liabilities?.total || 0) + (data.equity?.total || 0))}</span>
+              <span className="text-[14px] font-semibold text-[#1C1917]">Total Liabilities + Equity</span>
+              <span className="text-[18px] font-bold text-[#1C1917]">{formatCurrency((data.liabilities?.total || 0) + (data.equity?.total || 0))}</span>
             </div>
           </div>
         </div>
@@ -199,29 +199,29 @@ function BalanceSheetReport({ data }: { data: any }) {
 function ProfitLossReport({ data }: { data: any }) {
   const netProfit = data.netProfit || 0;
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#E2E8F0]">
-        <h3 className="text-[15px] font-semibold text-[#0F172A]">Profit & Loss Statement</h3>
+    <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
+      <div className="px-6 py-4 border-b border-[#DDD0BB]">
+        <h3 className="text-[15px] font-semibold text-[#1C1917]">Profit & Loss Statement</h3>
       </div>
       <div className="p-6">
         <div className="space-y-6">
-          <div className="p-4 border border-[#E2E8F0] rounded-lg">
+          <div className="p-4 border border-[#DDD0BB] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-[14px] font-semibold text-[#16A34A]">Revenue</h4>
-              <span className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(data.revenue?.total || 0)}</span>
+              <span className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(data.revenue?.total || 0)}</span>
             </div>
           </div>
 
-          <div className="p-4 border border-[#E2E8F0] rounded-lg">
+          <div className="p-4 border border-[#DDD0BB] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-[14px] font-semibold text-[#D97706]">Expenses</h4>
-              <span className="text-[16px] font-semibold text-[#0F172A]">{formatCurrency(data.expenses?.total || 0)}</span>
+              <span className="text-[16px] font-semibold text-[#1C1917]">{formatCurrency(data.expenses?.total || 0)}</span>
             </div>
           </div>
 
-          <div className="border-t-2 border-[#CBD5E1] pt-4">
+          <div className="border-t-2 border-[#A7F3D0] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-[14px] font-semibold text-[#0F172A]">Net Profit</span>
+              <span className="text-[14px] font-semibold text-[#1C1917]">Net Profit</span>
               <span className={`text-[18px] font-bold ${netProfit >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
                 {formatCurrency(netProfit)}
               </span>

@@ -36,17 +36,17 @@ export default function ProjectsAnalyticsPage() {
   const mixed = !!(s?.hasMixedCurrencies && (s.byCurrency?.length || 0) > 1);
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader title="Project Analytics" description="Project status, milestones, budgets, and tracked time" breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Projects' }]}
-        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
+        actions={<button onClick={() => window.history.back()} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]"><ArrowLeft className="h-3.5 w-3.5" />Back</button>} />
       <div className="px-5 py-4 lg:px-6">
         {loading ? <div className="grid grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)}</div>
           : error ? <EmptyState icon={FolderKanban} title="Unable to load project analytics" description={error}
-              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
+              action={<button onClick={fetchData} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"><RefreshCw className="h-3.5 w-3.5" />Retry</button>} />
           : s ? (
             <>
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <KpiCard label="Total Projects" value={s.totalProjects} icon={FolderKanban} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                <KpiCard label="Total Projects" value={s.totalProjects} icon={FolderKanban} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                 <KpiCard label="Active" value={s.activeProjects} icon={FolderKanban} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
                 <KpiCard label="Completed" value={s.completedProjects} icon={FolderKanban} iconBg="bg-violet-50" iconColor="text-violet-600" />
                 <KpiCard label="Overdue Milestones" value={s.overdueMilestones} icon={AlertTriangle} iconBg="bg-red-50" iconColor="text-red-600" />
@@ -55,11 +55,11 @@ export default function ProjectsAnalyticsPage() {
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
                 {mixed
                   ? s.byCurrency!.flatMap(c => [
-                      <KpiCard key={`b-${c.currency}`} label={`Budget (${c.currency})`} value={fmt(c.budget, c.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />,
+                      <KpiCard key={`b-${c.currency}`} label={`Budget (${c.currency})`} value={fmt(c.budget, c.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />,
                       <KpiCard key={`s-${c.currency}`} label={`Spent (${c.currency})`} value={fmt(c.spent, c.currency)} icon={DollarSign} iconBg="bg-red-50" iconColor="text-red-600" />,
                     ])
                   : <>
-                      <KpiCard label="Total Budget" value={fmt(s.totalBudget, s.currency)} icon={DollarSign} iconBg="bg-[#EFF6FF]" iconColor="text-[#2563EB]" />
+                      <KpiCard label="Total Budget" value={fmt(s.totalBudget, s.currency)} icon={DollarSign} iconBg="bg-[#D1FAE5]" iconColor="text-[#064E3B]" />
                       <KpiCard label="Total Spent" value={fmt(s.totalSpent, s.currency)} icon={DollarSign} iconBg="bg-red-50" iconColor="text-red-600" />
                       <KpiCard label="Logged Hours" value={s.totalLoggedHours} icon={FolderKanban} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
                     </>}
@@ -67,9 +67,9 @@ export default function ProjectsAnalyticsPage() {
               <SectionCard title="Project Status Distribution">
                 {data.statusDistribution.length === 0 ? <EmptyState icon={FolderKanban} title="No project data" /> : (
                   <div className="space-y-2">{data.statusDistribution.map((st: any) => (
-                    <div key={st.status} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                      <span className="text-[13px] font-medium text-[#0F172A]">{st.status.replace(/_/g, ' ')}</span>
-                      <span className="text-[13px] font-bold text-[#2563EB]">{st.count}</span>
+                    <div key={st.status} className="flex items-center justify-between py-2 border-b border-[#F5E6CC] last:border-0">
+                      <span className="text-[13px] font-medium text-[#1C1917]">{st.status.replace(/_/g, ' ')}</span>
+                      <span className="text-[13px] font-bold text-[#064E3B]">{st.count}</span>
                     </div>
                   ))}</div>
                 )}

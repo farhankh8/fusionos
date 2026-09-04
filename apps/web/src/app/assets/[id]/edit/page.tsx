@@ -91,26 +91,26 @@ export default function EditAssetPage() {
     } finally { setSaving(false); }
   };
 
-  const inputCls = 'w-full rounded-md border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors';
-  const labelCls = 'block text-[12px] font-medium text-[#64748B] mb-1';
+  const inputCls = 'w-full rounded-md border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] outline-none focus:border-[#064E3B] transition-colors';
+  const labelCls = 'block text-[12px] font-medium text-[#57534E] mb-1';
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-      <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">{title}</h3>
+    <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+      <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">{title}</h3>
       <div className="grid gap-3 sm:grid-cols-2">{children}</div>
     </div>
   );
 
-  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#DDD0BB] border-t-[#064E3B]" /></div>;
   if (!original) return null;
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title={`Edit ${original.name}`}
         description={`Asset Code: ${original.assetCode}`}
         breadcrumbs={[{ label: 'Assets', href: '/assets' }, { label: original.name, href: `/assets/${id}` }, { label: 'Edit' }]}
         actions={
-          <button onClick={() => router.push(`/assets/${id}`)} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">
+          <button onClick={() => router.push(`/assets/${id}`)} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
             <ArrowLeft className="h-3.5 w-3.5" />Back
           </button>
         }
@@ -188,8 +188,8 @@ export default function EditAssetPage() {
         </div>
 
         <div className="mt-4 flex justify-end gap-2">
-          <button type="button" onClick={() => router.push(`/assets/${id}`)} className="rounded-md border border-[#E2E8F0] bg-white px-4 py-2 text-[13px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">Cancel</button>
-          <button type="submit" disabled={saving || !hasChanges} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50">
+          <button type="button" onClick={() => router.push(`/assets/${id}`)} className="rounded-md border border-[#DDD0BB] bg-white px-4 py-2 text-[13px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">Cancel</button>
+          <button type="submit" disabled={saving || !hasChanges} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] disabled:opacity-50">
             <Save className="h-3.5 w-3.5" />{saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>

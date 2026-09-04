@@ -260,33 +260,33 @@ export default function AddEmployeePage() {
 
   if (success) {
     return (
-      <div className="min-h-full bg-[#F8FAFC]">
+      <div className="min-h-full bg-[#FBF5EC]">
         <div className="px-5 py-4 lg:px-6">
           <div className="flex min-h-[60vh] items-center justify-center">
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
                 <CheckCircle2 className="h-8 w-8 text-emerald-600" />
               </div>
-              <h1 className="text-[18px] font-semibold text-[#0F172A]">Employee Created Successfully</h1>
-              <p className="mt-1 text-[13px] text-[#64748B]">
+              <h1 className="text-[18px] font-semibold text-[#1C1917]">Employee Created Successfully</h1>
+              <p className="mt-1 text-[13px] text-[#57534E]">
                 {form.firstName} {form.lastName} has been added to your organization.
               </p>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <button
                   onClick={() => router.push(`/people/employees/${createdId}`)}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"
                 >
                   View Employee
                 </button>
                 <button
                   onClick={() => { setForm(INITIAL_FORM); setSuccess(false); setStep(1); setCreatedId(null); }}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
                 >
                   Create Another
                 </button>
                 <button
                   onClick={() => router.push('/people/employees')}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
                 >
                   Back to Employees
                 </button>
@@ -301,24 +301,24 @@ export default function AddEmployeePage() {
   /* ── Main Render ────────────────────────────────────────────────────── */
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       {/* Header */}
-      <div className="border-b border-[#E2E8F0] bg-white">
+      <div className="border-b border-[#DDD0BB] bg-white">
         <div className="px-5 py-4 lg:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-[12px] text-[#64748B]">
+              <div className="flex items-center gap-1.5 text-[12px] text-[#57534E]">
                 <span>People</span><span>/</span>
-                <button onClick={() => router.push('/people/employees')} className="hover:text-[#0F172A] transition-colors">Employees</button>
+                <button onClick={() => router.push('/people/employees')} className="hover:text-[#1C1917] transition-colors">Employees</button>
                 <span>/</span>
-                <span className="font-medium text-[#0F172A]">Add Employee</span>
+                <span className="font-medium text-[#1C1917]">Add Employee</span>
               </div>
-              <h1 className="mt-0.5 text-[18px] font-semibold text-[#0F172A]">Add New Employee</h1>
-              <p className="mt-0.5 text-[13px] text-[#64748B]">Complete the following steps to create a new employee record.</p>
+              <h1 className="mt-0.5 text-[18px] font-semibold text-[#1C1917]">Add New Employee</h1>
+              <p className="mt-0.5 text-[13px] text-[#57534E]">Complete the following steps to create a new employee record.</p>
             </div>
             <button
               onClick={() => router.push('/people/employees')}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back
@@ -329,7 +329,7 @@ export default function AddEmployeePage() {
 
       <div className="flex gap-0">
         {/* ── Stepper (Left) ──────────────────────────────────────── */}
-        <div className="hidden w-60 shrink-0 border-r border-[#E2E8F0] bg-white lg:block">
+        <div className="hidden w-60 shrink-0 border-r border-[#DDD0BB] bg-white lg:block">
           <nav className="p-4" aria-label="Employee creation steps">
             {STEPS.map((s, i) => {
               const Icon = s.icon;
@@ -341,31 +341,31 @@ export default function AddEmployeePage() {
                     onClick={() => { if (isComplete) setStep(s.id); }}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors',
-                      isCurrent && 'bg-[#EFF6FF]',
+                      isCurrent && 'bg-[#D1FAE5]',
                       !isCurrent && !isComplete && 'opacity-50 cursor-default',
-                      isComplete && 'hover:bg-[#F8FAFC] cursor-pointer',
+                      isComplete && 'hover:bg-[#FBF5EC] cursor-pointer',
                     )}
                     disabled={!isCurrent && !isComplete}
                   >
                     <div className={cn(
                       'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold',
                       isComplete && 'bg-[#16A34A] text-white',
-                      isCurrent && 'bg-[#2563EB] text-white',
-                      !isCurrent && !isComplete && 'bg-[#F1F5F9] text-[#94A3B8]',
+                      isCurrent && 'bg-[#064E3B] text-white',
+                      !isCurrent && !isComplete && 'bg-[#F5E6CC] text-[#8E7E68]',
                     )}>
                       {isComplete ? <Check className="h-3.5 w-3.5" /> : s.id}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={cn(
                         'text-[13px] font-medium truncate',
-                        isCurrent ? 'text-[#2563EB]' : isComplete ? 'text-[#0F172A]' : 'text-[#94A3B8]',
+                        isCurrent ? 'text-[#064E3B]' : isComplete ? 'text-[#1C1917]' : 'text-[#8E7E68]',
                       )}>
                         {s.label}
                       </p>
                     </div>
-                    {isComplete && <ChevronRight className="h-3.5 w-3.5 text-[#94A3B8]" />}
+                    {isComplete && <ChevronRight className="h-3.5 w-3.5 text-[#8E7E68]" />}
                   </button>
-                  {i < STEPS.length - 1 && <div className="ml-6 h-4 w-px bg-[#E2E8F0]" />}
+                  {i < STEPS.length - 1 && <div className="ml-6 h-4 w-px bg-[#DDD0BB]" />}
                 </div>
               );
             })}
@@ -373,22 +373,22 @@ export default function AddEmployeePage() {
         </div>
 
         {/* ── Mobile Step Indicator ───────────────────────────────── */}
-        <div className="flex lg:hidden w-full border-b border-[#E2E8F0] bg-white px-4 py-2">
+        <div className="flex lg:hidden w-full border-b border-[#DDD0BB] bg-white px-4 py-2">
           <div className="flex items-center gap-2">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex items-center gap-2">
                 <div className={cn(
                   'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold',
                   step > s.id && 'bg-[#16A34A] text-white',
-                  step === s.id && 'bg-[#2563EB] text-white',
-                  step < s.id && 'bg-[#F1F5F9] text-[#94A3B8]',
+                  step === s.id && 'bg-[#064E3B] text-white',
+                  step < s.id && 'bg-[#F5E6CC] text-[#8E7E68]',
                 )}>
                   {step > s.id ? <Check className="h-3 w-3" /> : s.id}
                 </div>
-                {i < STEPS.length - 1 && <ChevronRight className="h-3 w-3 text-[#CBD5E1]" />}
+                {i < STEPS.length - 1 && <ChevronRight className="h-3 w-3 text-[#A7F3D0]" />}
               </div>
             ))}
-            <span className="ml-2 text-[12px] font-medium text-[#64748B]">
+            <span className="ml-2 text-[12px] font-medium text-[#57534E]">
               Step {step}: {STEPS[step - 1]?.label ?? ''}
             </span>
           </div>
@@ -447,7 +447,7 @@ export default function AddEmployeePage() {
               <div className="space-y-6">
                 <SectionTitle title="Organization" />
                 {orgLoading ? (
-                  <div className="flex items-center gap-2 text-[13px] text-[#64748B]">
+                  <div className="flex items-center gap-2 text-[13px] text-[#57534E]">
                     <Loader2 className="h-4 w-4 animate-spin" /> Loading organization data...
                   </div>
                 ) : (
@@ -477,7 +477,7 @@ export default function AddEmployeePage() {
             {step === 3 && (
               <div className="space-y-6">
                 <SectionTitle title="Compensation" />
-                <p className="text-[12px] text-[#64748B] -mt-4">
+                <p className="text-[12px] text-[#57534E] -mt-4">
                   Basic compensation details. Detailed payroll structures are managed in the Payroll module.
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -485,16 +485,16 @@ export default function AddEmployeePage() {
                   <Field label="Basic Salary (per month)" type="number" value={form.basicSalary} onChange={v => updateField('basicSalary', v)} placeholder="e.g. 5000" />
                 </div>
                 {form.basicSalary && (
-                  <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                    <p className="text-[12px] font-medium text-[#64748B] mb-2">Compensation Summary</p>
+                  <div className="rounded-lg border border-[#DDD0BB] bg-[#FBF5EC] p-4">
+                    <p className="text-[12px] font-medium text-[#57534E] mb-2">Compensation Summary</p>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-[13px] text-[#475569]">Basic Salary</span>
-                        <span className="text-[13px] font-medium text-[#0F172A]">{form.currency} {parseInt(form.basicSalary || '0').toLocaleString()}</span>
+                        <span className="text-[13px] text-[#57534E]">Basic Salary</span>
+                        <span className="text-[13px] font-medium text-[#1C1917]">{form.currency} {parseInt(form.basicSalary || '0').toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[13px] text-[#475569]">Currency</span>
-                        <span className="text-[13px] font-medium text-[#0F172A]">{form.currency}</span>
+                        <span className="text-[13px] text-[#57534E]">Currency</span>
+                        <span className="text-[13px] font-medium text-[#1C1917]">{form.currency}</span>
                       </div>
                     </div>
                   </div>
@@ -508,12 +508,12 @@ export default function AddEmployeePage() {
                 <SectionTitle title="Additional Information" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[12px] font-medium text-[#64748B] mb-1">Notes</label>
+                    <label className="block text-[12px] font-medium text-[#57534E] mb-1">Notes</label>
                     <textarea
                       value={form.notes}
                       onChange={e => updateField('notes', e.target.value)}
                       rows={4}
-                      className="w-full rounded-md border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB] resize-none"
+                      className="w-full rounded-md border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] placeholder:text-[#8E7E68] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B] resize-none"
                       placeholder="Any additional notes about this employee..."
                     />
                   </div>
@@ -525,7 +525,7 @@ export default function AddEmployeePage() {
             {step === 5 && (
               <div className="space-y-6">
                 <SectionTitle title="Review & Confirm" />
-                <p className="text-[12px] text-[#64748B] -mt-4">
+                <p className="text-[12px] text-[#57534E] -mt-4">
                   Review all information before creating the employee record.
                 </p>
 
@@ -583,11 +583,11 @@ export default function AddEmployeePage() {
             )}
 
             {/* ── Navigation ─────────────────────────────────────── */}
-            <div className="mt-8 flex items-center justify-between border-t border-[#E2E8F0] pt-4">
+            <div className="mt-8 flex items-center justify-between border-t border-[#DDD0BB] pt-4">
               <button
                 onClick={prevStep}
                 disabled={step === 1}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#E2E8F0] px-3 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors disabled:opacity-50"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#DDD0BB] px-3 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC] transition-colors disabled:opacity-50"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Previous
@@ -596,7 +596,7 @@ export default function AddEmployeePage() {
                 {step < 5 ? (
                   <button
                     onClick={nextStep}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#2563EB] px-3 text-[12px] font-medium text-white hover:bg-[#1D4ED8] transition-colors"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#064E3B] px-3 text-[12px] font-medium text-white hover:bg-[#047857] transition-colors"
                   >
                     Next
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -626,7 +626,7 @@ export default function AddEmployeePage() {
 /* ── Sub-components ─────────────────────────────────────────────────────── */
 
 function SectionTitle({ title }: { title: string }) {
-  return <h2 className="text-[15px] font-semibold text-[#0F172A]">{title}</h2>;
+  return <h2 className="text-[15px] font-semibold text-[#1C1917]">{title}</h2>;
 }
 
 function Field({
@@ -637,7 +637,7 @@ function Field({
 }) {
   return (
     <div className={className}>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -646,8 +646,8 @@ function Field({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'h-8 w-full rounded-md border bg-white px-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-1',
-          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#E2E8F0] focus:border-[#2563EB] focus:ring-[#2563EB]',
+          'h-8 w-full rounded-md border bg-white px-3 text-[13px] text-[#1C1917] placeholder:text-[#8E7E68] focus:outline-none focus:ring-1',
+          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#DDD0BB] focus:border-[#064E3B] focus:ring-[#064E3B]',
         )}
       />
       {error && <p className="mt-0.5 text-[11px] text-red-600">{error}</p>}
@@ -663,11 +663,11 @@ function SelectField({
 }) {
   return (
     <div className={className}>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">{label}</label>
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">{label}</label>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="h-8 w-full rounded-md border border-[#E2E8F0] bg-white px-2.5 text-[13px] text-[#0F172A] focus:border-[#2563EB] focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+        className="h-8 w-full rounded-md border border-[#DDD0BB] bg-white px-2.5 text-[13px] text-[#1C1917] focus:border-[#064E3B] focus:outline-none focus:ring-1 focus:ring-[#064E3B]"
       >
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
@@ -683,7 +683,7 @@ function EntitySelect({
 }) {
   return (
     <div>
-      <label className="block text-[12px] font-medium text-[#64748B] mb-1">
+      <label className="block text-[12px] font-medium text-[#57534E] mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
@@ -691,9 +691,9 @@ function EntitySelect({
         onChange={e => onChange(e.target.value)}
         disabled={disabled}
         className={cn(
-          'h-8 w-full rounded-md border bg-white px-2.5 text-[13px] text-[#0F172A] focus:outline-none focus:ring-1',
-          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#E2E8F0] focus:border-[#2563EB] focus:ring-[#2563EB]',
-          disabled && 'bg-[#F8FAFC] text-[#94A3B8] cursor-not-allowed',
+          'h-8 w-full rounded-md border bg-white px-2.5 text-[13px] text-[#1C1917] focus:outline-none focus:ring-1',
+          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-[#DDD0BB] focus:border-[#064E3B] focus:ring-[#064E3B]',
+          disabled && 'bg-[#FBF5EC] text-[#8E7E68] cursor-not-allowed',
         )}
       >
         <option value="">{disabled ? 'Select company first' : 'Select'}</option>
@@ -710,18 +710,18 @@ function ReviewSection({
   title: string; onEdit: () => void; items: { label: string; value: string | undefined }[];
 }) {
   return (
-    <div className="rounded-lg border border-[#E2E8F0] bg-white">
-      <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
-        <h3 className="text-[13px] font-semibold text-[#0F172A]">{title}</h3>
-        <button onClick={onEdit} className="text-[12px] font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+    <div className="rounded-lg border border-[#DDD0BB] bg-white">
+      <div className="flex items-center justify-between border-b border-[#DDD0BB] px-4 py-3">
+        <h3 className="text-[13px] font-semibold text-[#1C1917]">{title}</h3>
+        <button onClick={onEdit} className="text-[12px] font-medium text-[#064E3B] hover:text-[#047857] transition-colors">
           Edit
         </button>
       </div>
       <div className="p-4 grid gap-2 sm:grid-cols-2">
         {items.map(item => (
           <div key={item.label} className="flex justify-between sm:block">
-            <span className="text-[11px] text-[#94A3B8]">{item.label}</span>
-            <span className="text-[13px] font-medium text-[#0F172A] sm:block">{item.value || '—'}</span>
+            <span className="text-[11px] text-[#8E7E68]">{item.label}</span>
+            <span className="text-[13px] font-medium text-[#1C1917] sm:block">{item.value || '—'}</span>
           </div>
         ))}
       </div>

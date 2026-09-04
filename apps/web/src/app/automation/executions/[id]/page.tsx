@@ -91,7 +91,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-[#FBF5EC]">
         <PageHeader title="Loading..." breadcrumbs={[{ label: 'Automation', href: '/automation' }, { label: 'Execution' }]} />
         <div className="p-5 lg:p-6 space-y-4">
           <Skeleton className="h-32 w-full" />
@@ -103,7 +103,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
 
   if (!execution) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-[#FBF5EC]">
         <PageHeader title="Execution Not Found" breadcrumbs={[{ label: 'Automation', href: '/automation' }, { label: 'Not Found' }]} />
         <div className="p-5 lg:p-6">
           <EmptyState
@@ -111,7 +111,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
             title="Execution not found"
             description="This execution record doesn't exist or you don't have access."
             action={
-              <Link href="/automation/executions" className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8]">
+              <Link href="/automation/executions" className="inline-flex items-center gap-2 rounded-lg bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857]">
                 <ArrowLeft className="h-4 w-4" /> Back to Executions
               </Link>
             }
@@ -122,7 +122,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title={`Execution ${execution.id.slice(0, 8)}...`}
         breadcrumbs={[
@@ -136,7 +136,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
             {execution.status === 'FAILED' && execution.attemptCount < execution.maxAttempts && (
               <button
                 onClick={handleRetry}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#2563EB] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1D4ED8]"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#064E3B] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#047857]"
               >
                 <RotateCw className="h-3.5 w-3.5" /> Retry
               </button>
@@ -155,50 +155,50 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
 
       <div className="p-5 lg:p-6 space-y-4">
         {/* Execution Info */}
-        <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-          <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">Execution Details</h3>
+        <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+          <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">Execution Details</h3>
           <dl className="grid grid-cols-2 gap-4 text-[13px] md:grid-cols-4">
             <div>
-              <dt className="text-[#94A3B8]">Workflow</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">
-                <Link href={`/automation/workflows/${execution.workflow.id}`} className="text-[#2563EB] hover:text-[#1D4ED8]">
+              <dt className="text-[#8E7E68]">Workflow</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">
+                <Link href={`/automation/workflows/${execution.workflow.id}`} className="text-[#064E3B] hover:text-[#047857]">
                   {execution.workflow.name}
                 </Link>
               </dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Version</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">v{execution.workflowVersion.versionNumber}</dd>
+              <dt className="text-[#8E7E68]">Version</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">v{execution.workflowVersion.versionNumber}</dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Trigger</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">{execution.triggerEventType}</dd>
+              <dt className="text-[#8E7E68]">Trigger</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">{execution.triggerEventType}</dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Status</dt>
+              <dt className="text-[#8E7E68]">Status</dt>
               <dd className="mt-0.5"><StatusBadge status={execution.status} /></dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Started</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">
+              <dt className="text-[#8E7E68]">Started</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">
                 {execution.startedAt ? new Date(execution.startedAt).toLocaleString() : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Completed</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">
+              <dt className="text-[#8E7E68]">Completed</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">
                 {execution.completedAt ? new Date(execution.completedAt).toLocaleString() : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Duration</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">
+              <dt className="text-[#8E7E68]">Duration</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">
                 {execution.duration ? `${execution.duration}ms` : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-[#94A3B8]">Attempts</dt>
-              <dd className="mt-0.5 font-medium text-[#0F172A]">
+              <dt className="text-[#8E7E68]">Attempts</dt>
+              <dd className="mt-0.5 font-medium text-[#1C1917]">
                 {execution.attemptCount} / {execution.maxAttempts}
               </dd>
             </div>
@@ -213,15 +213,15 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
         </div>
 
         {/* Step Timeline */}
-        <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-          <h3 className="text-[14px] font-semibold text-[#0F172A] mb-4">Step Timeline</h3>
+        <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+          <h3 className="text-[14px] font-semibold text-[#1C1917] mb-4">Step Timeline</h3>
 
           {execution.steps.length === 0 ? (
-            <p className="text-[13px] text-[#94A3B8]">No steps executed yet.</p>
+            <p className="text-[13px] text-[#8E7E68]">No steps executed yet.</p>
           ) : (
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-[15px] top-0 bottom-0 w-px bg-[#E2E8F0]" />
+              <div className="absolute left-[15px] top-0 bottom-0 w-px bg-[#DDD0BB]" />
 
               <div className="space-y-4">
                 {execution.steps.map((step) => {
@@ -240,26 +240,26 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
                         ) : isRunning ? (
                           <Clock className="h-[18px] w-[18px] text-blue-500 animate-pulse" />
                         ) : (
-                          <div className="h-[18px] w-[18px] rounded-full border-2 border-[#E2E8F0]" />
+                          <div className="h-[18px] w-[18px] rounded-full border-2 border-[#DDD0BB]" />
                         )}
                       </div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0 pb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-medium text-[#0F172A]">
+                          <span className="text-[13px] font-medium text-[#1C1917]">
                             Step {step.stepNumber}: {step.actionType.replace(/_/g, ' ')}
                           </span>
                           <StatusBadge status={step.status} />
                           {step.duration && (
-                            <span className="text-[11px] text-[#94A3B8]">{step.duration}ms</span>
+                            <span className="text-[11px] text-[#8E7E68]">{step.duration}ms</span>
                           )}
                         </div>
                         {step.error && (
                           <p className="mt-1 text-[12px] text-red-600">{step.error}</p>
                         )}
                         {step.result && (
-                          <p className="mt-1 text-[11px] text-[#94A3B8]">
+                          <p className="mt-1 text-[11px] text-[#8E7E68]">
                             Result: {JSON.stringify(step.result)}
                           </p>
                         )}
@@ -274,23 +274,23 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
 
         {/* Approvals */}
         {execution.approvals.length > 0 && (
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[14px] font-semibold text-[#0F172A] mb-3">Approvals</h3>
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[14px] font-semibold text-[#1C1917] mb-3">Approvals</h3>
             <div className="space-y-2">
               {execution.approvals.map((approval) => (
-                <div key={approval.id} className="flex items-center justify-between rounded-lg bg-[#F8FAFC] p-3">
+                <div key={approval.id} className="flex items-center justify-between rounded-lg bg-[#FBF5EC] p-3">
                   <div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={approval.status} />
                       {approval.reason && (
-                        <span className="text-[12px] text-[#64748B]">{approval.reason}</span>
+                        <span className="text-[12px] text-[#57534E]">{approval.reason}</span>
                       )}
                     </div>
                     {approval.comment && (
-                      <p className="mt-1 text-[12px] text-[#0F172A]">{approval.comment}</p>
+                      <p className="mt-1 text-[12px] text-[#1C1917]">{approval.comment}</p>
                     )}
                   </div>
-                  <span className="text-[11px] text-[#94A3B8]">
+                  <span className="text-[11px] text-[#8E7E68]">
                     {approval.decisionAt ? new Date(approval.decisionAt).toLocaleString() : 'Pending'}
                   </span>
                 </div>

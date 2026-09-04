@@ -15,14 +15,14 @@ export default function GlobalError({
           minHeight: '100vh',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#F8FAFC',
+          backgroundColor: '#FBF5EC',
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '72px', fontWeight: 'bold', color: '#DC2626' }}>500</p>
-            <h1 style={{ marginTop: '8px', fontSize: '18px', fontWeight: '600', color: '#0F172A' }}>
+            <h1 style={{ marginTop: '8px', fontSize: '18px', fontWeight: '600', color: '#1C1917' }}>
               Internal Server Error
             </h1>
-            <p style={{ marginTop: '8px', fontSize: '14px', color: '#64748B' }}>
+            <p style={{ marginTop: '8px', fontSize: '14px', color: '#57534E' }}>
               {error.message || 'Something went wrong. Please try again.'}
             </p>
             <button
@@ -34,7 +34,7 @@ export default function GlobalError({
                 gap: '8px',
                 padding: '8px 16px',
                 borderRadius: '6px',
-                backgroundColor: '#2563EB',
+                backgroundColor: '#064E3B',
                 color: '#FFFFFF',
                 fontSize: '13px',
                 fontWeight: '500',

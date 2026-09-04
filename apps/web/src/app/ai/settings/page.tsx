@@ -76,7 +76,7 @@ export default function AIRuntimeSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FBF5EC]">
       <PageHeader
         title="AI Runtime Settings"
         description="Monitor and configure the Ollama AI runtime."
@@ -84,7 +84,7 @@ export default function AIRuntimeSettingsPage() {
           <button
             onClick={handleHealthCheck}
             disabled={healthChecking}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#E2E8F0] px-4 py-2 text-[13px] font-medium text-[#64748B] hover:border-[#0F172A] hover:text-[#0F172A] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#DDD0BB] px-4 py-2 text-[13px] font-medium text-[#57534E] hover:border-[#1C1917] hover:text-[#1C1917] transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${healthChecking ? 'animate-spin' : ''}`} />
             {healthChecking ? 'Checking...' : 'Health Check'}
@@ -95,9 +95,9 @@ export default function AIRuntimeSettingsPage() {
       <div className="p-5 lg:p-6">
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Connection Status */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
-              <Server className="h-4 w-4 text-[#94A3B8]" />
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#1C1917] mb-4 flex items-center gap-2">
+              <Server className="h-4 w-4 text-[#8E7E68]" />
               AI Runtime
             </h3>
             {loading ? (
@@ -109,17 +109,17 @@ export default function AIRuntimeSettingsPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Provider</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.provider ?? 'Unknown'}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Provider</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{status?.provider ?? 'Unknown'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Status</span>
+                  <span className="text-[12px] text-[#8E7E68]">Status</span>
                   <span className={`rounded px-2 py-0.5 text-[11px] font-medium ${statusColor(status?.status ?? 'UNKNOWN')}`}>
                     {status?.status ?? 'UNKNOWN'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Ollama Reachable</span>
+                  <span className="text-[12px] text-[#8E7E68]">Ollama Reachable</span>
                   {status?.ollama.reachable ? (
                     <CheckCircle className="h-4 w-4 text-emerald-600" />
                   ) : (
@@ -127,16 +127,16 @@ export default function AIRuntimeSettingsPage() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Base URL</span>
-                  <span className="text-[12px] font-mono text-[#64748B]">{status?.ollama.baseUrl ?? 'N/A'}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Base URL</span>
+                  <span className="text-[12px] font-mono text-[#57534E]">{status?.ollama.baseUrl ?? 'N/A'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Latency</span>
-                  <span className="text-[12px] text-[#64748B]">{status?.ollama.latencyMs ?? 0}ms</span>
+                  <span className="text-[12px] text-[#8E7E68]">Latency</span>
+                  <span className="text-[12px] text-[#57534E]">{status?.ollama.latencyMs ?? 0}ms</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Last Health Check</span>
-                  <span className="text-[12px] text-[#64748B]">
+                  <span className="text-[12px] text-[#8E7E68]">Last Health Check</span>
+                  <span className="text-[12px] text-[#57534E]">
                     {status?.ollama.lastHealthCheck ? new Date(status.ollama.lastHealthCheck).toLocaleString() : 'Never'}
                   </span>
                 </div>
@@ -145,9 +145,9 @@ export default function AIRuntimeSettingsPage() {
           </div>
 
           {/* Model Info */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-[#94A3B8]" />
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#1C1917] mb-4 flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-[#8E7E68]" />
               Model
             </h3>
             {loading ? (
@@ -158,11 +158,11 @@ export default function AIRuntimeSettingsPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Configured Model</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.ollama.configuredModel ?? 'N/A'}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Configured Model</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{status?.ollama.configuredModel ?? 'N/A'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Model Installed</span>
+                  <span className="text-[12px] text-[#8E7E68]">Model Installed</span>
                   {status?.ollama.modelInstalled ? (
                     <CheckCircle className="h-4 w-4 text-emerald-600" />
                   ) : (
@@ -171,14 +171,14 @@ export default function AIRuntimeSettingsPage() {
                 </div>
                 {status?.ollama.installedModels && status.ollama.installedModels.length > 0 && (
                   <div>
-                    <span className="text-[12px] text-[#94A3B8] block mb-2">Installed Models</span>
+                    <span className="text-[12px] text-[#8E7E68] block mb-2">Installed Models</span>
                     <div className="space-y-1">
                       {status.ollama.installedModels.map((model) => (
-                        <div key={model} className="flex items-center gap-2 rounded bg-[#F8FAFC] px-2 py-1">
-                          <Cpu className="h-3 w-3 text-[#94A3B8]" />
-                          <span className="text-[11px] font-mono text-[#64748B]">{model}</span>
+                        <div key={model} className="flex items-center gap-2 rounded bg-[#FBF5EC] px-2 py-1">
+                          <Cpu className="h-3 w-3 text-[#8E7E68]" />
+                          <span className="text-[11px] font-mono text-[#57534E]">{model}</span>
                           {model === status?.ollama.configuredModel && (
-                            <span className="rounded bg-[#2563EB]/10 px-1 text-[9px] font-medium text-[#2563EB]">DEFAULT</span>
+                            <span className="rounded bg-[#064E3B]/10 px-1 text-[9px] font-medium text-[#064E3B]">DEFAULT</span>
                           )}
                         </div>
                       ))}
@@ -190,9 +190,9 @@ export default function AIRuntimeSettingsPage() {
           </div>
 
           {/* Capabilities */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-[#94A3B8]" />
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#1C1917] mb-4 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#8E7E68]" />
               Capabilities
             </h3>
             {loading ? (
@@ -203,7 +203,7 @@ export default function AIRuntimeSettingsPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Text Generation</span>
+                  <span className="text-[12px] text-[#8E7E68]">Text Generation</span>
                   {status?.capabilities.textGeneration ? (
                     <CheckCircle className="h-4 w-4 text-emerald-600" />
                   ) : (
@@ -211,7 +211,7 @@ export default function AIRuntimeSettingsPage() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Structured Output</span>
+                  <span className="text-[12px] text-[#8E7E68]">Structured Output</span>
                   {status?.capabilities.structuredOutput ? (
                     <CheckCircle className="h-4 w-4 text-emerald-600" />
                   ) : (
@@ -219,21 +219,21 @@ export default function AIRuntimeSettingsPage() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Context Sources</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.capabilities.contextSources ?? 0}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Context Sources</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{status?.capabilities.contextSources ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Tools</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.capabilities.tools ?? 0}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Tools</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{status?.capabilities.tools ?? 0}</span>
                 </div>
               </div>
             )}
           </div>
 
           {/* Usage Stats */}
-          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
-            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-[#94A3B8]" />
+          <div className="rounded-lg border border-[#DDD0BB] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#1C1917] mb-4 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-[#8E7E68]" />
               Usage Statistics
             </h3>
             {loading ? (
@@ -244,28 +244,28 @@ export default function AIRuntimeSettingsPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Total Requests</span>
-                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.usage.totalRequests ?? 0}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Total Requests</span>
+                  <span className="text-[12px] font-medium text-[#1C1917]">{status?.usage.totalRequests ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Successful</span>
+                  <span className="text-[12px] text-[#8E7E68]">Successful</span>
                   <span className="text-[12px] font-medium text-emerald-600">{status?.usage.successfulRequests ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Failed</span>
+                  <span className="text-[12px] text-[#8E7E68]">Failed</span>
                   <span className="text-[12px] font-medium text-red-600">{status?.usage.failedRequests ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Avg Latency</span>
-                  <span className="text-[12px] text-[#64748B]">{status?.usage.averageLatencyMs ?? 0}ms</span>
+                  <span className="text-[12px] text-[#8E7E68]">Avg Latency</span>
+                  <span className="text-[12px] text-[#57534E]">{status?.usage.averageLatencyMs ?? 0}ms</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Total Tokens</span>
-                  <span className="text-[12px] text-[#64748B]">{(status?.usage.totalTokensUsed ?? 0).toLocaleString()}</span>
+                  <span className="text-[12px] text-[#8E7E68]">Total Tokens</span>
+                  <span className="text-[12px] text-[#57534E]">{(status?.usage.totalTokensUsed ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#94A3B8]">Last Request</span>
-                  <span className="text-[12px] text-[#64748B]">
+                  <span className="text-[12px] text-[#8E7E68]">Last Request</span>
+                  <span className="text-[12px] text-[#57534E]">
                     {status?.usage.lastRequestAt ? new Date(status.usage.lastRequestAt).toLocaleString() : 'Never'}
                   </span>
                 </div>

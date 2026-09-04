@@ -24,7 +24,7 @@ interface Account {
 }
 
 const ACCOUNT_TYPE_COLORS: Record<string, string> = {
-  ASSET: '#2563EB',
+  ASSET: '#064E3B',
   LIABILITY: '#DC2626',
   EQUITY: '#7C3AED',
   INCOME: '#16A34A',
@@ -152,13 +152,13 @@ export default function AccountsPage() {
                   loadAccounts();
                 } catch {}
               }}
-              className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC] transition-colors"
+              className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC] transition-colors"
             >
               Seed Defaults
             </button>
             <button
               onClick={() => setShowCreate(true)}
-              className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] transition-colors"
+              className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] transition-colors"
             >
               + New Account
             </button>
@@ -179,12 +179,12 @@ export default function AccountsPage() {
           placeholder="Search accounts..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] w-[280px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] w-[280px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20 focus:border-[#064E3B]"
         />
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20 focus:border-[#064E3B]"
         >
           <option value="">All Types</option>
           <option value="ASSET">Asset</option>
@@ -197,9 +197,9 @@ export default function AccountsPage() {
 
       {/* Accounts Table */}
       {loading ? (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 space-y-3">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg p-6 space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+            <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
           ))}
         </div>
       ) : accounts.length === 0 ? (
@@ -208,26 +208,26 @@ export default function AccountsPage() {
           description="Seed the default chart of accounts or create a new account to get started."
           action={
             <div className="flex gap-2">
-              <button onClick={() => {}} className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8]">
+              <button onClick={() => {}} className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857]">
                 Seed Defaults
               </button>
-              <button onClick={() => setShowCreate(true)} className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC]">
+              <button onClick={() => setShowCreate(true)} className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC]">
                 Create Account
               </button>
             </div>
           }
         />
       ) : (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
-              <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Code</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Account Name</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Subtype</th>
-                <th className="text-center px-4 py-3 font-medium text-[#64748B]">Balance</th>
-                <th className="text-center px-4 py-3 font-medium text-[#64748B]">Status</th>
+              <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Code</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Account Name</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Type</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Subtype</th>
+                <th className="text-center px-4 py-3 font-medium text-[#57534E]">Balance</th>
+                <th className="text-center px-4 py-3 font-medium text-[#57534E]">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -249,8 +249,8 @@ export default function AccountsPage() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-xl w-[520px] max-h-[85vh] overflow-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="px-6 py-4 border-b border-[#E2E8F0]">
-              <h2 className="text-[16px] font-semibold text-[#0F172A]">New Account</h2>
+            <div className="px-6 py-4 border-b border-[#DDD0BB]">
+              <h2 className="text-[16px] font-semibold text-[#1C1917]">New Account</h2>
             </div>
             <div className="p-6 space-y-4">
               {createError && (
@@ -258,22 +258,22 @@ export default function AccountsPage() {
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Code *</label>
-                  <input value={createForm.code} onChange={(e) => setCreateForm({ ...createForm, code: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" placeholder="e.g. 1100" />
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Code *</label>
+                  <input value={createForm.code} onChange={(e) => setCreateForm({ ...createForm, code: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" placeholder="e.g. 1100" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Name *</label>
-                  <input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" placeholder="e.g. Cash" />
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Name *</label>
+                  <input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" placeholder="e.g. Cash" />
                 </div>
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Description</label>
-                <input value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Description</label>
+                <input value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Type *</label>
-                  <select value={createForm.accountType} onChange={(e) => setCreateForm({ ...createForm, accountType: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20">
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Type *</label>
+                  <select value={createForm.accountType} onChange={(e) => setCreateForm({ ...createForm, accountType: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20">
                     <option value="ASSET">Asset</option>
                     <option value="LIABILITY">Liability</option>
                     <option value="EQUITY">Equity</option>
@@ -282,8 +282,8 @@ export default function AccountsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Normal Balance *</label>
-                  <select value={createForm.normalBalance} onChange={(e) => setCreateForm({ ...createForm, normalBalance: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20">
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Normal Balance *</label>
+                  <select value={createForm.normalBalance} onChange={(e) => setCreateForm({ ...createForm, normalBalance: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20">
                     <option value="DEBIT">Debit</option>
                     <option value="CREDIT">Credit</option>
                   </select>
@@ -291,8 +291,8 @@ export default function AccountsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Parent Account</label>
-                  <select value={createForm.parentId} onChange={(e) => setCreateForm({ ...createForm, parentId: e.target.value })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20">
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Parent Account</label>
+                  <select value={createForm.parentId} onChange={(e) => setCreateForm({ ...createForm, parentId: e.target.value })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20">
                     <option value="">None (Root)</option>
                     {flatAccountOptions.map((a) => (
                       <option key={a.id} value={a.id}>{a.code} — {a.name}</option>
@@ -300,28 +300,28 @@ export default function AccountsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Currency</label>
-                  <input value={createForm.currency} onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value.toUpperCase() })} className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" maxLength={3} />
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Currency</label>
+                  <input value={createForm.currency} onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value.toUpperCase() })} className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20" maxLength={3} />
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-[13px] text-[#475569]">
+              <label className="flex items-center gap-2 text-[13px] text-[#57534E]">
                 <input
                   type="checkbox"
                   checked={createForm.allowManualPosting}
                   onChange={(e) => setCreateForm({ ...createForm, allowManualPosting: e.target.checked })}
-                  className="rounded border-[#E2E8F0]"
+                  className="rounded border-[#DDD0BB]"
                 />
                 Allow manual posting
               </label>
             </div>
-            <div className="px-6 py-4 border-t border-[#E2E8F0] flex justify-end gap-3">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC]">
+            <div className="px-6 py-4 border-t border-[#DDD0BB] flex justify-end gap-3">
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC]">
                 Cancel
               </button>
               <button
                 onClick={handleCreate}
                 disabled={creating || !createForm.code || !createForm.name}
-                className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] disabled:opacity-50"
+                className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Create Account'}
               </button>
@@ -340,27 +340,27 @@ function AccountRow({ account, depth, expanded, onToggle }: { account: Account; 
 
   return (
     <>
-      <tr className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
+      <tr className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
         <td className="px-4 py-3">
           <div className="flex items-center" style={{ paddingLeft: indent }}>
             {hasChildren ? (
-              <button onClick={() => onToggle(account.id)} className="mr-2 text-[#64748B] hover:text-[#0F172A] text-[12px] w-4">
+              <button onClick={() => onToggle(account.id)} className="mr-2 text-[#57534E] hover:text-[#1C1917] text-[12px] w-4">
                 {isExpanded ? '▼' : '▶'}
               </button>
             ) : (
               <span className="mr-2 w-4" />
             )}
-            <span className="font-mono font-medium text-[#0F172A]">{account.code}</span>
+            <span className="font-mono font-medium text-[#1C1917]">{account.code}</span>
           </div>
         </td>
-        <td className="px-4 py-3 text-[#475569]">{account.name}</td>
+        <td className="px-4 py-3 text-[#57534E]">{account.name}</td>
         <td className="px-4 py-3">
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium" style={{ backgroundColor: `${ACCOUNT_TYPE_COLORS[account.accountType]}15`, color: ACCOUNT_TYPE_COLORS[account.accountType] || '#475569' }}>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium" style={{ backgroundColor: `${ACCOUNT_TYPE_COLORS[account.accountType]}15`, color: ACCOUNT_TYPE_COLORS[account.accountType] || '#57534E' }}>
             {account.accountType}
           </span>
         </td>
-        <td className="px-4 py-3 text-[#64748B] text-[12px]">{account.accountSubtype?.replace(/_/g, ' ') || '—'}</td>
-        <td className="px-4 py-3 text-center text-[12px] font-medium text-[#64748B]">{account.normalBalance}</td>
+        <td className="px-4 py-3 text-[#57534E] text-[12px]">{account.accountSubtype?.replace(/_/g, ' ') || '—'}</td>
+        <td className="px-4 py-3 text-center text-[12px] font-medium text-[#57534E]">{account.normalBalance}</td>
         <td className="px-4 py-3 text-center">
           <StatusBadge status={account.isActive ? 'ACTIVE' : 'INACTIVE'} />
         </td>

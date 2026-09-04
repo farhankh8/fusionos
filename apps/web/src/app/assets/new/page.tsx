@@ -61,23 +61,23 @@ export default function NewAssetPage() {
     } finally { setSaving(false); }
   };
 
-  const inputCls = 'w-full rounded-md border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors';
-  const labelCls = 'block text-[12px] font-medium text-[#64748B] mb-1';
+  const inputCls = 'w-full rounded-md border border-[#DDD0BB] bg-white px-3 py-2 text-[13px] text-[#1C1917] outline-none focus:border-[#064E3B] transition-colors';
+  const labelCls = 'block text-[12px] font-medium text-[#57534E] mb-1';
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
-      <h3 className="mb-3 text-[13px] font-semibold text-[#0F172A]">{title}</h3>
+    <div className="rounded-lg border border-[#DDD0BB] bg-white p-4">
+      <h3 className="mb-3 text-[13px] font-semibold text-[#1C1917]">{title}</h3>
       <div className="grid gap-3 sm:grid-cols-2">{children}</div>
     </div>
   );
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full bg-[#FBF5EC]">
       <PageHeader
         title="Create Asset"
         description="Register a new company asset"
         breadcrumbs={[{ label: 'Assets', href: '/assets' }, { label: 'New Asset' }]}
         actions={
-          <button onClick={() => router.push('/assets')} className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">
+          <button onClick={() => router.push('/assets')} className="flex items-center gap-1.5 rounded-md border border-[#DDD0BB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">
             <ArrowLeft className="h-3.5 w-3.5" />Back
           </button>
         }
@@ -177,8 +177,8 @@ export default function NewAssetPage() {
         </div>
 
         <div className="mt-4 flex justify-end gap-2">
-          <button type="button" onClick={() => router.push('/assets')} className="rounded-md border border-[#E2E8F0] bg-white px-4 py-2 text-[13px] font-medium text-[#64748B] hover:bg-[#F8FAFC]">Cancel</button>
-          <button type="submit" disabled={saving} className="flex items-center gap-1.5 rounded-md bg-[#2563EB] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1D4ED8] disabled:opacity-50">
+          <button type="button" onClick={() => router.push('/assets')} className="rounded-md border border-[#DDD0BB] bg-white px-4 py-2 text-[13px] font-medium text-[#57534E] hover:bg-[#FBF5EC]">Cancel</button>
+          <button type="submit" disabled={saving} className="flex items-center gap-1.5 rounded-md bg-[#064E3B] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#047857] disabled:opacity-50">
             <Save className="h-3.5 w-3.5" />{saving ? 'Creating...' : 'Create Asset'}
           </button>
         </div>

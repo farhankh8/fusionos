@@ -126,7 +126,7 @@ export default function PaymentsPage() {
         actions={
           <button
             onClick={() => setShowCreate(true)}
-            className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] transition-colors"
+            className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] transition-colors"
           >
             + New Payment
           </button>
@@ -144,7 +144,7 @@ export default function PaymentsPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+          className="px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -156,9 +156,9 @@ export default function PaymentsPage() {
 
       {/* Payments Table */}
       {loading ? (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 space-y-3">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg p-6 space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-10 bg-[#F8FAFC] rounded animate-pulse" />
+            <div key={i} className="h-10 bg-[#FBF5EC] rounded animate-pulse" />
           ))}
         </div>
       ) : payments.length === 0 ? (
@@ -168,35 +168,35 @@ export default function PaymentsPage() {
           action={
             <button
               onClick={() => setShowCreate(true)}
-              className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8]"
+              className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857]"
             >
               Create Payment
             </button>
           }
         />
       ) : (
-        <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+        <div className="bg-white border border-[#DDD0BB] rounded-lg overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
-              <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Payment #</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Date</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Method</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Description</th>
-                <th className="text-left px-4 py-3 font-medium text-[#64748B]">Reference</th>
-                <th className="text-right px-4 py-3 font-medium text-[#64748B]">Amount</th>
-                <th className="text-center px-4 py-3 font-medium text-[#64748B]">Status</th>
+              <tr className="border-b border-[#DDD0BB] bg-[#FBF5EC]">
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Payment #</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Date</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Method</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Description</th>
+                <th className="text-left px-4 py-3 font-medium text-[#57534E]">Reference</th>
+                <th className="text-right px-4 py-3 font-medium text-[#57534E]">Amount</th>
+                <th className="text-center px-4 py-3 font-medium text-[#57534E]">Status</th>
               </tr>
             </thead>
             <tbody>
               {payments.map((p) => (
-                <tr key={p.id} className="border-b border-[#E2E8F0] last:border-b-0 hover:bg-[#F8FAFC]">
-                  <td className="px-4 py-3 font-mono font-medium text-[#2563EB]">{p.paymentNumber}</td>
-                  <td className="px-4 py-3 text-[#475569]">{new Date(p.paymentDate).toLocaleDateString()}</td>
-                  <td className="px-4 py-3 text-[#64748B]">{p.paymentMethod.replace(/_/g, ' ')}</td>
-                  <td className="px-4 py-3 text-[#475569] max-w-[200px] truncate">{p.description || '—'}</td>
-                  <td className="px-4 py-3 text-[#64748B] font-mono text-[12px]">{p.reference || '—'}</td>
-                  <td className="px-4 py-3 text-right font-medium text-[#0F172A]">{formatCurrency(p.amount, p.currency)}</td>
+                <tr key={p.id} className="border-b border-[#DDD0BB] last:border-b-0 hover:bg-[#FBF5EC]">
+                  <td className="px-4 py-3 font-mono font-medium text-[#064E3B]">{p.paymentNumber}</td>
+                  <td className="px-4 py-3 text-[#57534E]">{new Date(p.paymentDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-3 text-[#57534E]">{p.paymentMethod.replace(/_/g, ' ')}</td>
+                  <td className="px-4 py-3 text-[#57534E] max-w-[200px] truncate">{p.description || '—'}</td>
+                  <td className="px-4 py-3 text-[#57534E] font-mono text-[12px]">{p.reference || '—'}</td>
+                  <td className="px-4 py-3 text-right font-medium text-[#1C1917]">{formatCurrency(p.amount, p.currency)}</td>
                   <td className="px-4 py-3 text-center"><StatusBadge status={p.status} /></td>
                 </tr>
               ))}
@@ -205,11 +205,11 @@ export default function PaymentsPage() {
 
           {/* Pagination */}
           {meta.totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center justify-between text-[12px] text-[#64748B]">
+            <div className="px-4 py-3 border-t border-[#DDD0BB] flex items-center justify-between text-[12px] text-[#57534E]">
               <span>Page {page} of {meta.totalPages} ({meta.total} payments)</span>
               <div className="flex gap-2">
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Prev</button>
-                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#E2E8F0] rounded disabled:opacity-50">Next</button>
+                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Prev</button>
+                <button onClick={() => setPage(Math.min(meta.totalPages, page + 1))} disabled={page >= meta.totalPages} className="px-3 py-1 border border-[#DDD0BB] rounded disabled:opacity-50">Next</button>
               </div>
             </div>
           )}
@@ -220,26 +220,26 @@ export default function PaymentsPage() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-xl w-[520px] max-h-[85vh] overflow-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="px-6 py-4 border-b border-[#E2E8F0]">
-              <h2 className="text-[16px] font-semibold text-[#0F172A]">New Payment</h2>
+            <div className="px-6 py-4 border-b border-[#DDD0BB]">
+              <h2 className="text-[16px] font-semibold text-[#1C1917]">New Payment</h2>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Payment Date *</label>
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Payment Date *</label>
                   <input
                     type="date"
                     value={form.paymentDate}
                     onChange={(e) => setForm({ ...form, paymentDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                    className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Payment Method *</label>
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Payment Method *</label>
                   <select
                     value={form.paymentMethod}
                     onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                    className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                   >
                     {PAYMENT_METHODS.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
@@ -250,57 +250,57 @@ export default function PaymentsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Amount (cents) *</label>
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Amount (cents) *</label>
                   <input
                     type="number"
                     value={form.amount || ''}
                     onChange={(e) => setForm({ ...form, amount: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                    className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                     placeholder="e.g. 50000 for $500.00"
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#475569] mb-1">Currency</label>
+                  <label className="block text-[12px] font-medium text-[#57534E] mb-1">Currency</label>
                   <input
                     value={form.currency}
                     onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                    className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                     maxLength={3}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Description</label>
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Description</label>
                 <input
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                  className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                   placeholder="Payment description"
                 />
               </div>
 
               <div>
-                <label className="block text-[12px] font-medium text-[#475569] mb-1">Reference</label>
+                <label className="block text-[12px] font-medium text-[#57534E] mb-1">Reference</label>
                 <input
                   value={form.reference}
                   onChange={(e) => setForm({ ...form, reference: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#E2E8F0] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                  className="w-full px-3 py-2 border border-[#DDD0BB] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/20"
                   placeholder="Check number, transaction ID, etc."
                 />
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-[#E2E8F0] flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-[#DDD0BB] flex justify-end gap-3">
               <button
                 onClick={() => setShowCreate(false)}
-                className="px-4 py-2 border border-[#E2E8F0] text-[#475569] text-[13px] font-medium rounded-md hover:bg-[#F8FAFC]"
+                className="px-4 py-2 border border-[#DDD0BB] text-[#57534E] text-[13px] font-medium rounded-md hover:bg-[#FBF5EC]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreate}
                 disabled={creating || !form.amount || !form.paymentDate}
-                className="px-4 py-2 bg-[#2563EB] text-white text-[13px] font-medium rounded-md hover:bg-[#1D4ED8] disabled:opacity-50"
+                className="px-4 py-2 bg-[#064E3B] text-white text-[13px] font-medium rounded-md hover:bg-[#047857] disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Create Payment'}
               </button>
