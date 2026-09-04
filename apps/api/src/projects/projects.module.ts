@@ -11,8 +11,8 @@ import { ProjectsService } from './services/projects.service';
 @Module({
   controllers: [ProjectsController],
   providers: [
+    PrismaClient,
     ProjectsService,
-    { provide: PrismaClient, useValue: new PrismaClient() },
   ],
   exports: [ProjectsService],
 })

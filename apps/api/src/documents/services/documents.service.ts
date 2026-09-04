@@ -14,7 +14,7 @@ import { PrismaClient } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { AuditLogService } from '../../common/services/audit-log.service';
 import { EventPublisherService } from '../../common/services/event-publisher.service';
-import type { StorageProvider } from '../storage/storage-provider';
+import { StorageProvider } from '../storage/storage-provider';
 import {
   CreateDocumentDto, UpdateDocumentDto,
   CreateCategoryDto, UpdateCategoryDto,
@@ -35,7 +35,7 @@ const ALLOWED_MIME_TYPES = new Set([
 @Injectable()
 export class DocumentsService {
   constructor(
-    private readonly prisma: PrismaClient,
+    @Inject('DocumentsPrismaClient') private readonly prisma: PrismaClient,
     @Inject('StorageProvider') private readonly storage: StorageProvider,
     private readonly auditLog: AuditLogService,
     private readonly eventPublisher: EventPublisherService,

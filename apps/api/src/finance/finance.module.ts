@@ -11,8 +11,8 @@ import { FinanceService } from './services/finance.service';
 @Module({
   controllers: [FinanceController],
   providers: [
+    PrismaClient,
     FinanceService,
-    { provide: PrismaClient, useValue: new PrismaClient() },
   ],
   exports: [FinanceService],
 })

@@ -8,6 +8,7 @@
 
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import * as crypto from 'crypto';
 import { TokenService } from './token.service';
 
 export interface CreateSessionParams {
@@ -35,31 +36,25 @@ export class SessionService {
     refreshToken: string;
     accessTokenExpiresAt: Date;
   }> {
-    // Create session record
-    const session = await this.prisma.session.create({
-      data: {
-        userId: params.userId,
-        token: '', // Will be updated below
-        refreshToken: '', // Will be updated below
-        expiresAt: new Date(Date.now() + this.tokenService.getRefreshTokenExpiryMs()),
-        ipAddress: params.ipAddress,
-        userAgent: params.userAgent,
-      },
-    });
-
-    // Generate token pair
+    // Generate token pair FIRST to get unique hashes
+    const tempId = crypto.randomUUID();
     const tokens = await this.tokenService.generateTokenPair(
       params.userId,
       '', // email not needed in refresh token
-      session.id,
+      tempId,
     );
+    const tokenHash = this.tokenService.hashToken(tokens.accessToken);
+    const refreshTokenHash = this.tokenService.hashToken(tokens.refreshToken);
 
-    // Update session with token hashes
-    await this.prisma.session.update({
-      where: { id: session.id },
+    // Create session record with unique token hashes
+    const session = await this.prisma.session.create({
       data: {
-        token: this.tokenService.hashToken(tokens.accessToken),
-        refreshToken: this.tokenService.hashToken(tokens.refreshToken),
+        userId: params.userId,
+        token: tokenHash,
+        refreshToken: refreshTokenHash,
+        expiresAt: new Date(Date.now() + this.tokenService.getRefreshTokenExpiryMs()),
+        ipAddress: params.ipAddress,
+        userAgent: params.userAgent,
       },
     });
 

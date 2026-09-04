@@ -8,11 +8,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { PrismaClient } from '@prisma/client';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './services/documents.service';
-import { LocalStorageProvider, type StorageProvider } from './storage/storage-provider';
+import { LocalStorageProvider } from './storage/storage-provider';
 
-const STORAGE_PROVIDER = {
-  provide: 'StorageProvider',
-  useClass: LocalStorageProvider,
+const DOCUMENTS_PRISMA = {
+  provide: 'DocumentsPrismaClient',
+  useFactory: () => new PrismaClient(),
 };
 
 @Module({
@@ -23,9 +23,9 @@ const STORAGE_PROVIDER = {
   ],
   controllers: [DocumentsController],
   providers: [
+    DOCUMENTS_PRISMA,
     DocumentsService,
-    { provide: PrismaClient, useValue: new PrismaClient() },
-    STORAGE_PROVIDER,
+    { provide: 'StorageProvider', useClass: LocalStorageProvider },
     LocalStorageProvider,
   ],
   exports: [DocumentsService],

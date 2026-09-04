@@ -11,8 +11,8 @@ import { CrmService } from './services/crm.service';
 @Module({
   controllers: [CrmController],
   providers: [
+    PrismaClient,
     CrmService,
-    { provide: PrismaClient, useValue: new PrismaClient() },
   ],
   exports: [CrmService],
 })
