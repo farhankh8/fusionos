@@ -174,17 +174,17 @@ export const navigation: NavigationGroup[] = [
       {
         label: 'Automation',
         href: '/automation',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'AI Command Center',
         href: '/ai',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Analytics',
         href: '/analytics',
-        isImplemented: false,
+        isImplemented: true,
       },
       {
         label: 'Reports',

@@ -263,6 +263,16 @@ export class PayrollController {
     return this.payrollService.transitionRun(ctx, id, 'FINALIZED');
   }
 
+  @Post('runs/:id/post-to-finance')
+  @RequirePermission('finance.journal:create')
+  @HttpCode(HttpStatus.CREATED)
+  async postToFinance(
+    @CurrentTenant() ctx: TenantContext,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payrollService.postToFinance(ctx, id);
+  }
+
   // ── Lines ─────────────────────────────────────────────────────────────────
 
   @Get('lines')

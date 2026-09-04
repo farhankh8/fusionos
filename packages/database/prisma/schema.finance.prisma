@@ -1,0 +1,546 @@
+// =============================================================================
+// PHASE 9 — FINANCE & ACCOUNTING
+// =============================================================================
+// Double-entry accounting foundation. Every posted transaction satisfies
+// TOTAL DEBITS = TOTAL CREDITS. The accounting ledger is authoritative.
+// =============================================================================
+
+// ── Finance Enums ─────────────────────────────────────────────────────────
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+enum AccountSubtype {
+  CASH
+  BANK
+  ACCOUNTS_RECEIVABLE
+  ACCOUNTS_PAYABLE
+  PAYROLL_PAYABLE
+  TAX_PAYABLE
+  FIXED_ASSET
+  INVENTORY
+  REVENUE
+  OPERATING_EXPENSE
+  OTHER
+}
+
+enum NormalBalance {
+  DEBIT
+  CREDIT
+}
+
+enum AccountingPeriodStatus {
+  OPEN
+  CLOSING
+  CLOSED
+}
+
+enum JournalEntryStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  POSTED
+  REVERSED
+  VOIDED
+}
+
+enum JournalEntryType {
+  STANDARD
+  PAYROLL
+  EXPENSE
+  PAYMENT
+  ADJUSTMENT
+  REVERSAL
+  OPENING_BALANCE
+}
+
+enum SourceDocumentType {
+  MANUAL_JOURNAL
+  PAYROLL_RUN
+  PAYROLL_LINE
+  PAYSLIP
+  EXPENSE
+  INVOICE
+  BILL
+  PAYMENT
+  BANK_ADJUSTMENT
+}
+
+enum ExpenseStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  POSTED
+  PAID
+}
+
+enum VendorStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum BillStatus {
+  DRAFT
+  OPEN
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  VOID
+}
+
+enum BankReconciliationStatus {
+  UNMATCHED
+  MATCHED
+  RECONCILED
+}
+
+// ── Chart of Accounts ─────────────────────────────────────────────────────
+
+model Account {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @db.Uuid
+  companyId         String           @db.Uuid
+  parentId          String?          @db.Uuid
+  code              String           @db.VarChar(20)
+  name              String           @db.VarChar(255)
+  description       String?          @db.Text
+  accountType       AccountType
+  accountSubtype    AccountSubtype?  @default(OTHER)
+  normalBalance     NormalBalance
+  currency          String           @default("USD") @db.VarChar(3)
+  isActive          Boolean          @default(true)
+  isSystemAccount   Boolean          @default(false)
+  allowManualPosting Boolean         @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent            Account?         @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children          Account[]        @relation("AccountHierarchy")
+  journalLines      JournalLine[]
+  accountBalances   AccountBalance[]
+  bankAccounts      BankAccount[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([parentId])
+  @@index([accountType])
+  @@index([tenantId, companyId, accountType])
+  @@map("accounts")
+}
+
+/// AccountBalance stores denormalized balance projections for performance.
+/// These are REBUILDABLE from JournalLine — never the sole source of truth.
+model AccountBalance {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  accountId         String    @db.Uuid
+  periodId          String    @db.Uuid
+  openingDebit      Int       @default(0)
+  openingCredit     Int       @default(0)
+  periodDebit       Int       @default(0)
+  periodCredit      Int       @default(0)
+  closingDebit      Int       @default(0)
+  closingCredit     Int       @default(0)
+  currency          String    @default("USD") @db.VarChar(3)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  account           Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  period            AccountingPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, companyId, accountId, periodId])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([accountId])
+  @@index([periodId])
+  @@map("account_balances")
+}
+
+// ── Fiscal / Accounting Periods ───────────────────────────────────────────
+
+model AccountingPeriod {
+  id                String                 @id @default(uuid()) @db.Uuid
+  tenantId          String                 @db.Uuid
+  companyId         String                 @db.Uuid
+  name              String                 @db.VarChar(100)
+  startDate         DateTime               @db.Date
+  endDate           DateTime               @db.Date
+  status            AccountingPeriodStatus @default(OPEN)
+  isFiscalYearEnd   Boolean                @default(false)
+  closedBy          String?                @db.Uuid
+  closedAt          DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  tenant            Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  journalEntries    JournalEntry[]
+  accountBalances   AccountBalance[]
+
+  @@unique([tenantId, companyId, startDate])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([tenantId, companyId, status])
+  @@map("accounting_periods")
+}
+
+// ── Journal Entries ───────────────────────────────────────────────────────
+
+model JournalEntry {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  journalNumber     String            @db.VarChar(50)
+  postingDate       DateTime          @db.Date
+  documentDate      DateTime          @db.Date
+  entryType         JournalEntryType  @default(STANDARD)
+  referenceType     SourceDocumentType?
+  referenceId       String?           @db.Uuid
+  description       String            @db.VarChar(500)
+  status            JournalEntryStatus @default(DRAFT)
+  currency          String            @default("USD") @db.VarChar(3)
+  totalDebit        Int               @default(0)
+  totalCredit       Int               @default(0)
+  periodId          String?           @db.Uuid
+  reversalOf        String?           @db.Uuid
+  reversedBy        String?           @db.Uuid
+  createdBy         String            @db.Uuid
+  approvedBy        String?           @db.Uuid
+  postedBy          String?           @db.Uuid
+  postedAt          DateTime?
+  voidedBy          String?           @db.Uuid
+  voidedAt          DateTime?
+  voidReason        String?           @db.VarChar(500)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  period            AccountingPeriod? @relation(fields: [periodId], references: [id])
+  lines             JournalLine[]
+  originalEntry     JournalEntry?     @relation("JournalReversal", fields: [reversalOf], references: [id])
+  reversedEntries   JournalEntry[]    @relation("JournalReversal")
+
+  @@unique([tenantId, companyId, journalNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([postingDate])
+  @@index([referenceType, referenceId])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, postingDate])
+  @@index([periodId])
+  @@map("journal_entries")
+}
+
+model JournalLine {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  journalEntryId    String            @db.Uuid
+  accountId         String            @db.Uuid
+  lineNumber        Int
+  description       String?           @db.VarChar(500)
+  debit             Int               @default(0)
+  credit            Int               @default(0)
+  currency          String            @default("USD") @db.VarChar(3)
+  employeeId        String?           @db.Uuid
+  branchId          String?           @db.Uuid
+  departmentId      String?           @db.Uuid
+  reference         String?           @db.VarChar(255)
+  createdAt         DateTime          @default(now())
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  journalEntry      JournalEntry      @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account           Account           @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  employee          Employee?         @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([employeeId])
+  @@index([tenantId, companyId, accountId])
+  @@map("journal_lines")
+}
+
+// ── Expenses ──────────────────────────────────────────────────────────────
+
+model Expense {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  employeeId        String?        @db.Uuid
+  expenseNumber     String         @db.VarChar(50)
+  description       String         @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  expenseDate       DateTime       @db.Date
+  category          String         @db.VarChar(100)
+  accountId         String?        @db.Uuid
+  status            ExpenseStatus  @default(DRAFT)
+  journalEntryId    String?        @db.Uuid
+  approvedBy        String?        @db.Uuid
+  approvedAt        DateTime?
+  rejectReason      String?        @db.VarChar(500)
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee          Employee?      @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, companyId, expenseNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("expenses")
+}
+
+// ── Accounts Receivable ───────────────────────────────────────────────────
+
+model Customer {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  name              String         @db.VarChar(255)
+  code              String         @db.VarChar(50)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  receivableAccountId String?      @db.Uuid
+  currency          String         @default("USD") @db.VarChar(3)
+  status            CustomerStatus @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices          Invoice[]
+  // Phase 10 — CRM
+  crmProfile        CustomerProfile?
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("customers")
+}
+
+model Invoice {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  customerId        String         @db.Uuid
+  invoiceNumber     String         @db.VarChar(50)
+  description       String?        @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  issuedDate        DateTime       @db.Date
+  dueDate           DateTime       @db.Date
+  status            InvoiceStatus  @default(DRAFT)
+  paidAmount        Int            @default(0)
+  outstandingAmount Int            @default(0)
+  journalEntryId    String?        @db.Uuid
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer          Customer       @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, companyId, invoiceNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("invoices")
+}
+
+// ── Accounts Payable ──────────────────────────────────────────────────────
+
+model Vendor {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  name              String         @db.VarChar(255)
+  code              String         @db.VarChar(50)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  taxIdentifier     String?        @db.VarChar(100)
+  payableAccountId  String?        @db.Uuid
+  currency          String         @default("USD") @db.VarChar(3)
+  status            VendorStatus   @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bills             Bill[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("vendors")
+}
+
+model Bill {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  vendorId          String         @db.Uuid
+  billNumber        String         @db.VarChar(50)
+  description       String?        @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  receivedDate      DateTime       @db.Date
+  dueDate           DateTime       @db.Date
+  status            BillStatus     @default(DRAFT)
+  paidAmount        Int            @default(0)
+  outstandingAmount Int            @default(0)
+  journalEntryId    String?        @db.Uuid
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor            Vendor         @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, companyId, billNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("bills")
+}
+
+// ── Payments ──────────────────────────────────────────────────────────────
+
+model Payment {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenantId          String          @db.Uuid
+  companyId         String          @db.Uuid
+  paymentNumber     String          @db.VarChar(50)
+  paymentDate       DateTime        @db.Date
+  amount            Int
+  currency          String          @default("USD") @db.VarChar(3)
+  paymentMethod     PaymentMethod   @default(BANK_TRANSFER)
+  bankAccountId     String?         @db.Uuid
+  reference         String?         @db.VarChar(255)
+  description       String?         @db.VarChar(500)
+  status            PaymentStatus   @default(PENDING)
+  journalEntryId    String?         @db.Uuid
+  vendorId          String?         @db.Uuid
+  billId            String?         @db.Uuid
+  customerId        String?         @db.Uuid
+  invoiceId         String?         @db.Uuid
+  createdBy         String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, companyId, paymentNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("payments")
+}
+
+// ── Banking ───────────────────────────────────────────────────────────────
+
+model BankAccount {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  bankName          String    @db.VarChar(255)
+  accountName       String    @db.VarChar(255)
+  accountNumber     String    @db.VarChar(50)
+  currency          String    @default("USD") @db.VarChar(3)
+  glAccountId       String    @db.Uuid
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  glAccount         Account   @relation(fields: [glAccountId], references: [id], onDelete: Restrict)
+  transactions      BankTransaction[]
+
+  @@unique([tenantId, companyId, accountNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("bank_accounts")
+}
+
+model BankTransaction {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  bankAccountId     String    @db.Uuid
+  transactionDate   DateTime  @db.Date
+  description       String    @db.VarChar(500)
+  amount            Int
+  currency          String    @default("USD") @db.VarChar(3)
+  reference         String?   @db.VarChar(255)
+  journalEntryId    String?   @db.Uuid
+  reconciliationStatus BankReconciliationStatus @default(UNMATCHED)
+  reconciledAt      DateTime?
+  createdAt         DateTime  @default(now())
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bankAccount       BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([bankAccountId])
+  @@index([reconciliationStatus])
+  @@map("bank_transactions")
+}

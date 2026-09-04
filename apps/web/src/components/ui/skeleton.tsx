@@ -8,13 +8,13 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('animate-pulse rounded bg-[#F1F5F9]', className)} />
+    <div className={cn('animate-pulse rounded bg-secondary', className)} />
   );
 }
 
 export function KpiSkeleton() {
   return (
-    <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+    <div className="rounded-lg border border-border bg-card p-3.5">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <Skeleton className="h-3 w-20" />
@@ -28,8 +28,8 @@ export function KpiSkeleton() {
 
 export function TableSkeleton({ rows = 5, cols = 6 }: { rows?: number; cols?: number }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
-      <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="border-b border-border bg-secondary px-4 py-3">
         <div className="flex gap-4">
           {Array.from({ length: cols }).map((_, i) => (
             <Skeleton key={i} className="h-3 w-20" />
@@ -37,7 +37,7 @@ export function TableSkeleton({ rows = 5, cols = 6 }: { rows?: number; cols?: nu
         </div>
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="border-b border-[#F1F5F9] px-4 py-3">
+        <div key={i} className="border-b border-border px-4 py-3">
           <div className="flex gap-4">
             {Array.from({ length: cols }).map((_, j) => (
               <Skeleton key={j} className="h-4 flex-1" />

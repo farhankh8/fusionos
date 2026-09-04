@@ -25,6 +25,7 @@ import {
 import { PrismaClient, Prisma } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { EventPublisherService } from '../../common/services/event-publisher.service';
+import { FinanceService } from '../../finance/services/finance.service';
 import {
   CreatePayrollPolicyDto,
   UpdatePayrollPolicyDto,
@@ -70,6 +71,7 @@ export class PayrollService {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly eventPublisher: EventPublisherService,
+    private readonly financeService: FinanceService,
   ) {}
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1161,6 +1163,14 @@ export class PayrollService {
       totalDeductions: latestRun?.totalDeductions ?? 0,
       totalNet: latestRun?.totalNet ?? 0,
     };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PAYROLL → FINANCE INTEGRATION
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async postToFinance(ctx: TenantContext, runId: string) {
+    return this.financeService.postPayrollToFinance(ctx, runId);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

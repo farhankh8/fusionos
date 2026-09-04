@@ -16,10 +16,10 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const TENANT_A = '00000000-0000-0000-0000-000000000001';
-const TENANT_B = '10000000-0000-0000-0000-000000000001';
-const COMPANY_A = '00000000-0000-0000-0000-000000000002';
-const USER_A = '00000000-0000-0000-0000-000000000003';
+const TENANT_A = '00000000-0000-4000-8000-000000000001';
+const TENANT_B = '10000000-0000-4000-8000-000000000001';
+const COMPANY_A = '00000000-0000-4000-8000-000000000002';
+const USER_A = '00000000-0000-4000-8000-000000000003';
 
 let empA: string;
 let empB: string;
@@ -61,7 +61,7 @@ describe('Attendance Management', () => {
       update: {},
       create: {
         tenantId: TENANT_B,
-        companyId: '10000000-0000-0000-0000-000000000002',
+        companyId: '10000000-0000-4000-8000-000000000002',
         employeeCode: 'ATT-TEST-B01',
         firstName: 'Att',
         lastName: 'TestB',

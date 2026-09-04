@@ -1,0 +1,207 @@
+// =============================================================================
+// PHASE 13 — ENTERPRISE NOTIFICATIONS & COMMUNICATION INFRASTRUCTURE
+// =============================================================================
+// Centralized notification engine. Extends the existing FusionOS EventOutbox
+// pattern with notification processing, delivery tracking, templates, and
+// user preferences.
+//
+// Architecture:
+//   EventOutbox → NotificationProcessor → Notification → Delivery → Channel
+//
+// All models are tenant-scoped. No canonical business entities are duplicated.
+// =============================================================================
+
+// ── Notification Enums ──────────────────────────────────────────────────────
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationTemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum NotificationChannelConfigStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// ── Notification ────────────────────────────────────────────────────────────
+
+/// Notification represents a business notification generated for a specific recipient.
+/// Created by the notification processor in response to domain events from EventOutbox.
+model Notification {
+  id              String               @id @default(uuid()) @db.Uuid
+  tenantId        String               @db.Uuid
+  recipientUserId String               @db.Uuid
+  type            String               @db.VarChar(100) // e.g., LEAVE_APPROVED, PAYROLL_FINALIZED
+  title           String               @db.VarChar(500)
+  body            String               @db.Text
+  severity        NotificationSeverity @default(INFO)
+  category        String               @db.VarChar(50) // e.g., LEAVE, PAYROLL, CRM, PROJECTS
+  entityType      String?              @db.VarChar(50) // e.g., LeaveRequest, PayrollRun
+  entityId        String?              @db.Uuid
+  actionUrl       String?              @db.VarChar(500)
+  metadata        Json?                // JSON-safe metadata (no executable content)
+  readAt          DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  // Relations
+  deliveries NotificationDelivery[]
+
+  @@unique([tenantId, recipientUserId, type, entityId]) // Idempotency constraint
+  @@index([tenantId])
+  @@index([recipientUserId])
+  @@index([tenantId, recipientUserId])
+  @@index([tenantId, recipientUserId, readAt])
+  @@index([tenantId, recipientUserId, createdAt])
+  @@index([tenantId, type])
+  @@index([tenantId, category])
+  @@index([tenantId, severity])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ── Notification Delivery ───────────────────────────────────────────────────
+
+/// NotificationDelivery tracks each delivery attempt for a notification across channels.
+model NotificationDelivery {
+  id                String                   @id @default(uuid()) @db.Uuid
+  tenantId          String                   @db.Uuid
+  notificationId    String                   @db.Uuid
+  channel           NotificationChannel
+  status            NotificationDeliveryStatus @default(PENDING)
+  provider          String?                  @db.VarChar(50) // e.g., "smtp", "console", "sendgrid"
+  providerMessageId String?                  @db.VarChar(255)
+  attemptCount      Int                      @default(0)
+  maxAttempts       Int                      @default(3)
+  lastAttemptAt     DateTime?
+  deliveredAt       DateTime?
+  failedAt          DateTime?
+  failureReason     String?                  @db.Text
+  metadata          Json?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  // Relations
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel]) // One delivery record per notification per channel
+  @@index([tenantId])
+  @@index([notificationId])
+  @@index([tenantId, status])
+  @@index([tenantId, channel])
+  @@index([status, createdAt])
+  @@map("notification_deliveries")
+}
+
+// ── Notification Preferences ────────────────────────────────────────────────
+
+/// NotificationPreference stores per-user, per-type, per-channel preferences.
+model NotificationPreference {
+  id             String              @id @default(uuid()) @db.Uuid
+  tenantId       String              @db.Uuid
+  userId         String              @db.Uuid
+  notificationType String            @db.VarChar(100) // e.g., LEAVE_APPROVED, * for all
+  channel        NotificationChannel
+  enabled        Boolean             @default(true)
+  isMandatory    Boolean             @default(false) // Security notifications cannot be disabled
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([tenantId, userId, notificationType, channel])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tenantId, userId])
+  @@map("notification_preferences")
+}
+
+// ── Notification Templates ──────────────────────────────────────────────────
+
+/// NotificationTemplate defines data-driven templates for notification rendering.
+model NotificationTemplate {
+  id               String                   @id @default(uuid()) @db.Uuid
+  tenantId         String                   @db.Uuid
+  name             String                   @db.VarChar(200)
+  notificationType String                   @db.VarChar(100) // e.g., LEAVE_APPROVED
+  channel          NotificationChannel
+  subject          String?                  @db.VarChar(500) // For EMAIL channel
+  body             String                   @db.Text
+  variables        Json?                    // JSON array of supported variable names
+  status           NotificationTemplateStatus @default(DRAFT)
+  version          Int                      @default(1)
+  isSystemDefault  Boolean                  @default(false) // System-provided default templates
+  createdBy        String?                  @db.Uuid
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  @@unique([tenantId, notificationType, channel, version])
+  @@index([tenantId])
+  @@index([tenantId, notificationType])
+  @@index([tenantId, channel])
+  @@index([tenantId, status])
+  @@map("notification_templates")
+}
+
+// ── Notification Template Version (Immutable history) ───────────────────────
+
+/// NotificationTemplateVersion stores immutable historical snapshots of templates.
+model NotificationTemplateVersion {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @db.Uuid
+  templateId     String   @db.Uuid
+  version        Int
+  name           String   @db.VarChar(200)
+  subject        String?  @db.VarChar(500)
+  body           String   @db.Text
+  variables      Json?
+  changedBy      String?  @db.Uuid
+  createdAt      DateTime @default(now())
+
+  // Relations
+  template NotificationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, version])
+  @@index([tenantId])
+  @@index([templateId])
+  @@map("notification_template_versions")
+}
+
+// ── Notification Channel Configuration ──────────────────────────────────────
+
+/// NotificationChannelConfiguration stores per-tenant channel settings.
+model NotificationChannelConfiguration {
+  id        String                         @id @default(uuid()) @db.Uuid
+  tenantId  String                         @db.Uuid
+  channel   NotificationChannel
+  provider  String                         @db.VarChar(50) // e.g., "smtp", "console", "sendgrid"
+  config    Json                           // Provider-specific configuration (encrypted in production)
+  status    NotificationChannelConfigStatus @default(ACTIVE)
+  createdAt DateTime                       @default(now())
+  updatedAt DateTime                       @updatedAt
+
+  @@unique([tenantId, channel])
+  @@index([tenantId])
+  @@map("notification_channel_configs")
+}

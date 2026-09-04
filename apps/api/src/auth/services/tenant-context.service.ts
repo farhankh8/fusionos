@@ -32,6 +32,7 @@ export interface TenantMembership {
 
 export interface TenantContext {
   userId: string;
+  employeeId: string | null; // Resolved Employee ID for this user+tenant (null if no linked employee)
   sessionId: string | null;
   email: string;
   tenantId: string;
@@ -69,10 +70,15 @@ export class TenantContextService {
       include: {
         tenant: { select: { id: true, name: true, slug: true, status: true } },
         role: {
-          select: { id: true, name: true, isSystem: true },
-          include: {
+          // NOTE: Prisma forbids mixing `select` and `include` at the same
+          // level — use a fully nested select (this was a runtime-only error
+          // that crashed every RBAC request: PrismaClientValidationError).
+          select: {
+            id: true,
+            name: true,
+            isSystem: true,
             rolePermissions: {
-              include: {
+              select: {
                 permission: { select: { name: true } },
               },
             },
@@ -111,9 +117,16 @@ export class TenantContextService {
       (rp) => rp.permission.name,
     );
 
-    // 4. Build context
+    // 4. Resolve employee linked to this user in this tenant (nullable)
+    const employee = await this.prisma.employee.findFirst({
+      where: { userId, tenantId: membership.tenantId, deletedAt: null },
+      select: { id: true },
+    });
+
+    // 5. Build context
     const context: TenantContext = {
       userId,
+      employeeId: employee?.id ?? null,
       sessionId: null,
       email: '', // Will be set by the strategy
       tenantId: membership.tenantId,

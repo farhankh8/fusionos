@@ -18,8 +18,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const TENANT_A = { id: '00000000-0000-0000-0000-000000000001' };
-const TENANT_B = { id: '10000000-0000-0000-0000-000000000001' };
+const TENANT_A = { id: '00000000-0000-4000-8000-000000000001' };
+const TENANT_B = { id: '10000000-0000-4000-8000-000000000001' };
 
 // Test entity IDs (created in beforeAll)
 let companyA: string;

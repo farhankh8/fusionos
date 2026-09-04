@@ -128,6 +128,300 @@ enum DayOfWeek {
 }
 
 // =============================================================================
+// CRM ENUMS — Phase 10
+// =============================================================================
+
+enum CustomerType {
+  INDIVIDUAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum CustomerSegment {
+  STANDARD
+  PREMIUM
+  ENTERPRISE
+  VIP
+}
+
+enum CustomerLifecycleStage {
+  LEAD
+  PROSPECT
+  CUSTOMER
+  INACTIVE
+  CHURNED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  UNQUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  COLD_CALL
+  EMAIL_CAMPAIGN
+  SOCIAL_MEDIA
+  TRADE_SHOW
+  PARTNER
+  ORGANIC
+  OTHER
+}
+
+enum OpportunityStage {
+  PROSPECTING
+  QUALIFICATION
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+  ABANDONED
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  TASK
+  FOLLOW_UP
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// =============================================================================
+// PROJECT MANAGEMENT ENUMS — Phase 11
+// =============================================================================
+
+enum ProjectStatus {
+  DRAFT
+  PLANNED
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum ProjectMemberRole {
+  PROJECT_MANAGER
+  PROJECT_LEAD
+  DEVELOPER
+  DESIGNER
+  ANALYST
+  QA
+  CONSULTANT
+  VIEWER
+}
+
+enum ProjectTaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  IN_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectTaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum TimeEntryStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum ProjectActivityType {
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_STATUS_CHANGED
+  MEMBER_ADDED
+  MEMBER_REMOVED
+  TASK_CREATED
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  MILESTONE_COMPLETED
+  TIME_LOGGED
+  BUDGET_UPDATED
+}
+
+// =============================================================================
+// DOCUMENT MANAGEMENT ENUMS — Phase 12
+// =============================================================================
+
+enum DocumentStatus {
+  ACTIVE
+  ARCHIVED
+  TRASHED
+}
+
+// =============================================================================
+// NOTIFICATION ENUMS — Phase 13
+// =============================================================================
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationTemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum NotificationChannelConfigStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum DocumentEntityType {
+  EMPLOYEE
+  CUSTOMER
+  CONTACT
+  LEAD
+  OPPORTUNITY
+  PROJECT
+  TASK
+  INVOICE
+  BILL
+  EXPENSE
+  PAYSLIP
+  COMPANY
+  BRANCH
+  DEPARTMENT
+  ASSET
+  OTHER
+}
+
+// =============================================================================
+// ASSET MANAGEMENT ENUMS — Phase 14
+// =============================================================================
+
+enum AssetStatus {
+  DRAFT
+  ACTIVE
+  ASSIGNED
+  IN_MAINTENANCE
+  IN_REPAIR
+  AVAILABLE
+  LOST
+  DAMAGED
+  DISPOSED
+  RETIRED
+}
+
+enum AssetCondition {
+  NEW
+  GOOD
+  FAIR
+  POOR
+  DAMAGED
+  RETIRED
+}
+
+enum AssetCategoryType {
+  IT_EQUIPMENT
+  OFFICE_EQUIPMENT
+  FURNITURE
+  VEHICLE
+  MACHINERY
+  TOOLS
+  SOFTWARE
+  OTHER
+}
+
+enum AssetMaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  EMERGENCY
+  INSPECTION
+  CALIBRATION
+}
+
+enum AssetMaintenanceStatus {
+  SCHEDULED
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AssetInspectionStatus {
+  SCHEDULED
+  PASSED
+  FAILED
+  REQUIRES_ACTION
+}
+
+enum AssetDisposalMethod {
+  SOLD
+  SCRAPPED
+  DONATED
+  LOST
+  RETURNED
+  OTHER
+}
+
+enum AssetDepreciationMethod {
+  STRAIGHT_LINE
+  DECLINING_BALANCE
+  UNITS_OF_PRODUCTION
+}
+
+// =============================================================================
 // ATTENDANCE ENUMS — Phase 6
 // =============================================================================
 
@@ -208,6 +502,62 @@ model Tenant {
   payrollComponents PayrollComponent[]
   payrollPeriods   PayrollPeriod[]
   payrollRuns      PayrollRun[]
+  // Phase 9 — Finance
+  accounts         Account[]
+  accountingPeriods AccountingPeriod[]
+  journalEntries   JournalEntry[]
+  journalLines     JournalLine[]
+  accountBalances  AccountBalance[]
+  expenses         Expense[]
+  customers        Customer[]
+  invoices         Invoice[]
+  vendors          Vendor[]
+  bills            Bill[]
+  payments         Payment[]
+  bankAccounts     BankAccount[]
+  bankTransactions BankTransaction[]
+  // Phase 10 — CRM
+  customerProfiles CustomerProfile[]
+  crmContacts      Contact[]
+  crmLeads         Lead[]
+  crmOpportunities Opportunity[]
+  crmActivities    Activity[]
+  crmTasks         Task[]
+  crmNotes         CrmNote[]
+  // Phase 11 — Projects
+  projects          Project[]
+  // Phase 12 — Documents
+  documentCategories DocumentCategory[]
+  documentFolders   DocumentFolder[]
+  documents         Document[]
+  // Phase 13 — Notifications
+  notifications              Notification[]
+  notificationDeliveries     NotificationDelivery[]
+  notificationPreferences    NotificationPreference[]
+  notificationTemplates      NotificationTemplate[]
+  notificationTemplateVersions NotificationTemplateVersion[]
+  notificationChannelConfigs NotificationChannelConfiguration[]
+  // Phase 14 — Assets
+  assetCategories            AssetCategory[]
+  assetLocations             AssetLocation[]
+  assets                     Asset[]
+  // Phase 15 — Analytics
+  savedReports               SavedReport[]
+  // Phase 16 — Automation
+  automationWorkflows        AutomationWorkflow[]
+  automationWorkflowVersions AutomationWorkflowVersion[]
+  automationExecutions       AutomationExecution[]
+  automationStepExecutions   AutomationStepExecution[]
+  automationApprovals        AutomationApproval[]
+  // Phase 17 — AI
+  aiConversations            AIConversation[]
+  aiRequestLogs              AIRequestLog[]
+  // Phase 18 — AI Agents
+  aiAgents                   AIAgent[]
+  aiAgentVersions            AIAgentVersion[]
+  aiAgentTasks               AIAgentTask[]
+  aiAgentSteps               AIAgentStep[]
+  aiAgentMemories            AIAgentMemory[]
 
   @@map("tenants")
 }
@@ -246,6 +596,38 @@ model Company {
   departments  Department[]
   teams        Team[]
   employees    Employee[]
+  // Phase 9 — Finance
+  accounts         Account[]
+  accountingPeriods AccountingPeriod[]
+  journalEntries   JournalEntry[]
+  journalLines     JournalLine[]
+  accountBalances  AccountBalance[]
+  expenses         Expense[]
+  customers        Customer[]
+  invoices         Invoice[]
+  vendors          Vendor[]
+  bills            Bill[]
+  payments         Payment[]
+  bankAccounts     BankAccount[]
+  bankTransactions BankTransaction[]
+  // Phase 10 — CRM
+  customerProfiles CustomerProfile[]
+  crmContacts      Contact[]
+  crmLeads         Lead[]
+  crmOpportunities Opportunity[]
+  crmActivities    Activity[]
+  crmTasks         Task[]
+  crmNotes         CrmNote[]
+  // Phase 11 — Projects
+  projects          Project[]
+  // Phase 12 — Documents
+  documents         Document[]
+  // Phase 14 — Assets
+  assetCategories   AssetCategory[]
+  assetLocations    AssetLocation[]
+  assets            Asset[]
+  // Phase 18 — AI Agents
+  aiAgents          AIAgent[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -272,6 +654,10 @@ model Branch {
   company          Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   departments      Department[]
   employees        Employee[]
+  projects         Project[]
+  assetLocations   AssetLocation[]
+  fromTransfers    AssetTransfer[] @relation("TransferFromBranch")
+  toTransfers      AssetTransfer[] @relation("TransferToBranch")
 
   @@unique([companyId, code])
   @@index([tenantId])
@@ -300,6 +686,7 @@ model Department {
   children    Department[] @relation("DepartmentHierarchy")
   teams       Team[]
   employees   Employee[]
+  projects    Project[]
 
   @@unique([companyId, code])
   @@index([tenantId])
@@ -363,6 +750,25 @@ model User {
   verificationTokens  VerificationToken[]
   passwordResetTokens PasswordResetToken[]
   authEvents          AuthEvent[]
+  // Phase 13 — Notifications
+  notifications              Notification[]
+  notificationPreferences    NotificationPreference[]
+  notificationTemplates      NotificationTemplate[]
+  notificationTemplateVersions NotificationTemplateVersion[]
+  // Phase 15 — Analytics
+  savedReports               SavedReport[]
+  // Phase 16 — Automation
+  automationWorkflows        AutomationWorkflow[]
+  automationPublishedVersions AutomationWorkflowVersion[]
+  automationApprovalsRequested AutomationApproval[] @relation("ApprovalRequester")
+  automationApprovalsToApprove AutomationApproval[] @relation("ApprovalApprover")
+  // Phase 17 — AI
+  aiConversations            AIConversation[]
+  aiRequestLogs              AIRequestLog[]
+  // Phase 18 — AI Agents
+  aiAgentsCreated            AIAgent[]       @relation("AgentCreator")
+  aiAgentPublishedVersions   AIAgentVersion[]
+  aiAgentTasks               AIAgentTask[]
 
   @@unique([email])
   @@index([email])
@@ -553,6 +959,36 @@ model Employee {
   payrollLines             PayrollLine[]
   payrollAdjustments       PayrollAdjustment[]
   payslips                 Payslip[]
+  // Phase 9 — Finance
+  journalLines             JournalLine[]
+  expenses                 Expense[]
+  // Phase 10 — CRM
+  crmCustomerProfiles      CustomerProfile[]
+  crmLeadsOwned            Lead[]
+  crmLeadsConverted        Lead[]        @relation("LeadConvertedBy")
+  crmOpportunitiesOwned    Opportunity[]
+  crmActivities            Activity[]
+  crmTasksAssigned         Task[]
+  crmNotes                 CrmNote[]
+  // Phase 11 — Projects
+  managedProjects          Project[]       @relation("ProjectManager")
+  createdProjects          Project[]       @relation("ProjectCreator")
+  projectMemberships       ProjectMember[]
+  projectTasksReported     ProjectTask[]   @relation("TaskReporter")
+  projectTimeEntries       ProjectTimeEntry[]
+  projectActivities        ProjectActivity[]
+  // Phase 12 — Documents
+  ownedDocuments           Document[]      @relation("DocumentOwner")
+  createdDocuments         Document[]      @relation("DocumentCreator")
+  documentVersions         DocumentVersion[]
+  documentActivities       DocumentActivity[]
+  // Phase 14 — Assets
+  assetAssignments         AssetAssignment[]
+  fromTransfers            AssetTransfer[]  @relation("TransferFromEmployee")
+  toTransfers              AssetTransfer[]  @relation("TransferToEmployee")
+  assetInspections         AssetInspection[]
+  assetMaintenanceRecords  AssetMaintenanceRecord[]
+  assetActivities          AssetActivity[]
 
   @@unique([tenantId, employeeCode])
   @@unique([tenantId, email])
@@ -1404,7 +1840,7 @@ model PayrollAdjustment {
   rejectionReason String?              @db.VarChar(500)
   createdBy     String?                @db.Uuid
   createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
+  updatedAt     DateTime               @updatedAt
 
   line     PayrollLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
   employee Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
@@ -1474,6 +1910,487 @@ model AuditLog {
 }
 
 // =============================================================================
+// PHASE 13 — ENTERPRISE NOTIFICATIONS & COMMUNICATION INFRASTRUCTURE
+// =============================================================================
+// Centralized notification engine. Extends the existing FusionOS EventOutbox
+// pattern with notification processing, delivery tracking, templates, and
+// user preferences.
+// =============================================================================
+
+/// Notification represents a business notification generated for a specific recipient.
+model Notification {
+  id              String               @id @default(uuid()) @db.Uuid
+  tenantId        String               @db.Uuid
+  recipientUserId String               @db.Uuid
+  type            String               @db.VarChar(100)
+  title           String               @db.VarChar(500)
+  body            String               @db.Text
+  severity        NotificationSeverity @default(INFO)
+  category        String               @db.VarChar(50)
+  entityType      String?              @db.VarChar(50)
+  entityId        String?              @db.Uuid
+  actionUrl       String?              @db.VarChar(500)
+  metadata        Json?
+  readAt          DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  tenant   Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  recipient User                   @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+  deliveries NotificationDelivery[]
+
+  @@unique([tenantId, recipientUserId, type, entityId])
+  @@index([tenantId])
+  @@index([recipientUserId])
+  @@index([tenantId, recipientUserId])
+  @@index([tenantId, recipientUserId, readAt])
+  @@index([tenantId, recipientUserId, createdAt])
+  @@index([tenantId, type])
+  @@index([tenantId, category])
+  @@index([tenantId, severity])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+/// NotificationDelivery tracks each delivery attempt for a notification.
+model NotificationDelivery {
+  id                String                   @id @default(uuid()) @db.Uuid
+  tenantId          String                   @db.Uuid
+  notificationId    String                   @db.Uuid
+  channel           NotificationChannel
+  status            NotificationDeliveryStatus @default(PENDING)
+  provider          String?                  @db.VarChar(50)
+  providerMessageId String?                  @db.VarChar(255)
+  attemptCount      Int                      @default(0)
+  maxAttempts       Int                      @default(3)
+  lastAttemptAt     DateTime?
+  deliveredAt       DateTime?
+  failedAt          DateTime?
+  failureReason     String?                  @db.Text
+  metadata          Json?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
+  @@index([tenantId])
+  @@index([notificationId])
+  @@index([tenantId, status])
+  @@index([tenantId, channel])
+  @@index([status, createdAt])
+  @@map("notification_deliveries")
+}
+
+/// NotificationPreference stores per-user, per-type, per-channel preferences.
+model NotificationPreference {
+  id               String              @id @default(uuid()) @db.Uuid
+  tenantId         String              @db.Uuid
+  userId           String              @db.Uuid
+  notificationType String              @db.VarChar(100)
+  channel          NotificationChannel
+  enabled          Boolean             @default(true)
+  isMandatory      Boolean             @default(false)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, notificationType, channel])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tenantId, userId])
+  @@map("notification_preferences")
+}
+
+/// NotificationTemplate defines data-driven templates for notification rendering.
+model NotificationTemplate {
+  id               String                   @id @default(uuid()) @db.Uuid
+  tenantId         String                   @db.Uuid
+  name             String                   @db.VarChar(200)
+  notificationType String                   @db.VarChar(100)
+  channel          NotificationChannel
+  subject          String?                  @db.VarChar(500)
+  body             String                   @db.Text
+  variables        Json?
+  status           NotificationTemplateStatus @default(DRAFT)
+  version          Int                      @default(1)
+  isSystemDefault  Boolean                  @default(false)
+  createdBy        String?                  @db.Uuid
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  tenant   Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creator  User?                      @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  versions NotificationTemplateVersion[]
+
+  @@unique([tenantId, notificationType, channel, version])
+  @@index([tenantId])
+  @@index([tenantId, notificationType])
+  @@index([tenantId, channel])
+  @@index([tenantId, status])
+  @@map("notification_templates")
+}
+
+/// NotificationTemplateVersion stores immutable historical snapshots.
+model NotificationTemplateVersion {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @db.Uuid
+  templateId String   @db.Uuid
+  version    Int
+  name       String   @db.VarChar(200)
+  subject    String?  @db.VarChar(500)
+  body       String   @db.Text
+  variables  Json?
+  changedBy  String?  @db.Uuid
+  createdAt  DateTime @default(now())
+
+  tenant   Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  template NotificationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  changer  User?                @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@unique([templateId, version])
+  @@index([tenantId])
+  @@index([templateId])
+  @@map("notification_template_versions")
+}
+
+/// NotificationChannelConfiguration stores per-tenant channel settings.
+model NotificationChannelConfiguration {
+  id        String                         @id @default(uuid()) @db.Uuid
+  tenantId  String                         @db.Uuid
+  channel   NotificationChannel
+  provider  String                         @db.VarChar(50)
+  config    Json
+  status    NotificationChannelConfigStatus @default(ACTIVE)
+  createdAt DateTime                       @default(now())
+  updatedAt DateTime                       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, channel])
+  @@index([tenantId])
+  @@map("notification_channel_configs")
+}
+
+// =============================================================================
+// PHASE 14 — ENTERPRISE ASSET & EQUIPMENT MANAGEMENT
+// =============================================================================
+// Canonical asset entity with lifecycle, assignment, maintenance,
+// inspection, warranty, depreciation, and disposal management.
+// =============================================================================
+
+/// AssetCategory defines classification of assets (IT, Furniture, Vehicle, etc.)
+model AssetCategory {
+  id              String            @id @default(uuid()) @db.Uuid
+  tenantId        String            @db.Uuid
+  companyId       String            @db.Uuid
+  name            String            @db.VarChar(255)
+  code            String            @db.VarChar(50)
+  description     String?           @db.VarChar(500)
+  categoryType    AssetCategoryType @default(OTHER)
+  defaultUsefulLife Int?            // Default useful life in months
+  defaultDepreciationMethod AssetDepreciationMethod? @default(STRAIGHT_LINE)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  assets  Asset[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([categoryType])
+  @@map("asset_categories")
+}
+
+/// AssetLocation represents a physical/logical location for assets
+model AssetLocation {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid
+  companyId   String    @db.Uuid
+  branchId    String?   @db.Uuid
+  name        String    @db.VarChar(255)
+  code        String    @db.VarChar(50)
+  description String?   @db.VarChar(500)
+  building    String?   @db.VarChar(255)
+  floor       String?   @db.VarChar(100)
+  room        String?   @db.VarChar(100)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branch   Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  assets   Asset[]
+  fromTransfers AssetTransfer[] @relation("TransferFromLocation")
+  toTransfers   AssetTransfer[] @relation("TransferToLocation")
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([branchId])
+  @@map("asset_locations")
+}
+
+/// Asset is the canonical entity for asset & equipment management
+model Asset {
+  id                  String                @id @default(uuid()) @db.Uuid
+  tenantId            String                @db.Uuid
+  companyId           String                @db.Uuid
+  categoryId          String?               @db.Uuid
+  locationId          String?               @db.Uuid
+  assetCode           String                @db.VarChar(50)
+  name                String                @db.VarChar(255)
+  description         String?               @db.Text
+  serialNumber        String?               @db.VarChar(255)
+  manufacturer        String?               @db.VarChar(255)
+  model               String?               @db.VarChar(255)
+  purchaseDate        DateTime?             @db.Date
+  purchaseCost        Int                   @default(0) // Integer minor units
+  currency            String                @default("USD") @db.VarChar(3)
+  status              AssetStatus           @default(DRAFT)
+  condition           AssetCondition        @default(NEW)
+  currentBookValue    Int                   @default(0) // Integer minor units
+  usefulLife          Int?                  // Useful life in months
+  residualValue       Int                   @default(0) // Integer minor units
+  inServiceDate       DateTime?             @db.Date
+  disposalDate        DateTime?             @db.Date
+  disposalMethod      AssetDisposalMethod?
+  disposalReason      String?               @db.VarChar(500)
+  disposalProceeds    Int                   @default(0) // Integer minor units
+  vendorId            String?               @db.Uuid
+  notes               String?               @db.Text
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  tenant     Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company    Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category   AssetCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  location   AssetLocation?      @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  vendor     Vendor?             @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  assignments AssetAssignment[]
+  transfers  AssetTransfer[]
+  maintenanceRecords AssetMaintenanceRecord[]
+  inspections AssetInspection[]
+  warranties  AssetWarranty[]
+  activities  AssetActivity[]
+  depreciations AssetDepreciation[]
+
+  @@unique([tenantId, companyId, assetCode])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, categoryId])
+  @@map("assets")
+}
+
+/// AssetAssignment tracks employee and project assignments for assets
+model AssetAssignment {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @db.Uuid
+  assetId       String    @db.Uuid
+  employeeId    String?   @db.Uuid
+  projectId     String?   @db.Uuid
+  assignedAt    DateTime  @default(now())
+  returnedAt    DateTime?
+  status        String    @default("ACTIVE") @db.VarChar(20) // ACTIVE, RETURNED, TRANSFERRED
+  notes         String?   @db.VarChar(500)
+  assignedBy    String?   @db.Uuid
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  asset    Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  project  Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@unique([assetId, employeeId, status])
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([employeeId])
+  @@index([projectId])
+  @@index([status])
+  @@map("asset_assignments")
+}
+
+/// AssetTransfer tracks asset transfers between employees/branches/locations
+model AssetTransfer {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  assetId           String    @db.Uuid
+  fromEmployeeId    String?   @db.Uuid
+  toEmployeeId      String?   @db.Uuid
+  fromBranchId      String?   @db.Uuid
+  toBranchId        String?   @db.Uuid
+  fromLocationId    String?   @db.Uuid
+  toLocationId      String?   @db.Uuid
+  fromProjectId     String?   @db.Uuid
+  toProjectId       String?   @db.Uuid
+  transferDate      DateTime  @default(now())
+  reason            String?   @db.VarChar(500)
+  notes             String?   @db.Text
+  transferredBy     String?   @db.Uuid
+  createdAt         DateTime  @default(now())
+
+  asset          Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  fromEmployee   Employee? @relation("TransferFromEmployee", fields: [fromEmployeeId], references: [id], onDelete: SetNull)
+  toEmployee     Employee? @relation("TransferToEmployee", fields: [toEmployeeId], references: [id], onDelete: SetNull)
+  fromBranch     Branch?   @relation("TransferFromBranch", fields: [fromBranchId], references: [id], onDelete: SetNull)
+  toBranch       Branch?   @relation("TransferToBranch", fields: [toBranchId], references: [id], onDelete: SetNull)
+  fromLocation   AssetLocation? @relation("TransferFromLocation", fields: [fromLocationId], references: [id], onDelete: SetNull)
+  toLocation     AssetLocation? @relation("TransferToLocation", fields: [toLocationId], references: [id], onDelete: SetNull)
+  fromProject    Project?  @relation("TransferFromProject", fields: [fromProjectId], references: [id], onDelete: SetNull)
+  toProject      Project?  @relation("TransferToProject", fields: [toProjectId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([fromEmployeeId])
+  @@index([toEmployeeId])
+  @@index([transferDate])
+  @@map("asset_transfers")
+}
+
+/// AssetMaintenanceRecord tracks maintenance activities for assets
+model AssetMaintenanceRecord {
+  id              String                  @id @default(uuid()) @db.Uuid
+  tenantId        String                  @db.Uuid
+  assetId         String                  @db.Uuid
+  type            AssetMaintenanceType
+  title           String                  @db.VarChar(255)
+  description     String?                 @db.Text
+  priority        String                  @default("MEDIUM") @db.VarChar(20) // LOW, MEDIUM, HIGH, URGENT
+  scheduledDate   DateTime?               @db.Date
+  startedAt       DateTime?
+  completedAt     DateTime?
+  status          AssetMaintenanceStatus  @default(SCHEDULED)
+  vendor          String?                 @db.VarChar(255)
+  cost            Int                     @default(0) // Integer minor units
+  currency        String                  @default("USD") @db.VarChar(3)
+  notes           String?                 @db.Text
+  assignedToId    String?                 @db.Uuid
+  createdBy       String?                 @db.Uuid
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  asset    Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assignedTo Employee? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@index([tenantId, assetId])
+  @@map("asset_maintenance_records")
+}
+
+/// AssetInspection tracks inspection activities for assets
+model AssetInspection {
+  id              String                @id @default(uuid()) @db.Uuid
+  tenantId        String                @db.Uuid
+  assetId         String                @db.Uuid
+  inspectionType  String                @db.VarChar(100)
+  scheduledDate   DateTime              @db.Date
+  completedDate   DateTime?
+  inspectorId     String?   @db.Uuid
+  status          AssetInspectionStatus @default(SCHEDULED)
+  condition       AssetCondition?
+  findings        String?               @db.Text
+  notes           String?               @db.Text
+  createdBy       String?               @db.Uuid
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  asset     Asset      @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  inspector Employee?  @relation(fields: [inspectorId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("asset_inspections")
+}
+
+/// AssetWarranty tracks warranty information for assets
+model AssetWarranty {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid
+  assetId         String    @db.Uuid
+  provider        String    @db.VarChar(255)
+  startDate       DateTime  @db.Date
+  endDate         DateTime  @db.Date
+  referenceNumber String?   @db.VarChar(255)
+  coverage        String?   @db.VarChar(500)
+  notes           String?   @db.Text
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([endDate])
+  @@map("asset_warranties")
+}
+
+/// AssetDepreciation tracks depreciation calculations for assets
+model AssetDepreciation {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  tenantId            String                 @db.Uuid
+  assetId             String                 @db.Uuid
+  periodStartDate     DateTime               @db.Date
+  periodEndDate       DateTime               @db.Date
+  depreciationMethod  AssetDepreciationMethod
+  openingBookValue    Int                    // Integer minor units
+  depreciationAmount  Int                    // Integer minor units
+  closingBookValue    Int                    // Integer minor units
+  usefulLifeMonths    Int
+  monthlyRate         Int                    // Integer minor units (monthly depreciation)
+  calculatedAt        DateTime               @default(now())
+  calculatedBy        String?                @db.Uuid
+  createdAt           DateTime               @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, periodStartDate])
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([periodStartDate])
+  @@map("asset_depreciations")
+}
+
+/// AssetActivity tracks activity history for assets
+model AssetActivity {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid
+  assetId     String    @db.Uuid
+  action      String    @db.VarChar(100) // e.g., CREATED, ASSIGNED, TRANSFERRED, MAINTENANCE_SCHEDULED
+  description String    @db.VarChar(500)
+  actorId     String?   @db.Uuid
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+
+  asset  Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  actor  Employee? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([assetId])
+  @@index([createdAt])
+  @@index([tenantId, assetId])
+  @@map("asset_activities")
+}
+
+// =============================================================================
 // SCHEMA NOTES
 // =============================================================================
 //
@@ -1518,3 +2435,1857 @@ model AuditLog {
 //    - Phase 24: adds AuditLog model (append-only)
 //
 // =============================================================================
+// =============================================================================
+// PHASE 9 — FINANCE & ACCOUNTING
+// =============================================================================
+// Double-entry accounting foundation. Every posted transaction satisfies
+// TOTAL DEBITS = TOTAL CREDITS. The accounting ledger is authoritative.
+// =============================================================================
+
+// ── Finance Enums ─────────────────────────────────────────────────────────
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+enum AccountSubtype {
+  CASH
+  BANK
+  ACCOUNTS_RECEIVABLE
+  ACCOUNTS_PAYABLE
+  PAYROLL_PAYABLE
+  TAX_PAYABLE
+  FIXED_ASSET
+  INVENTORY
+  REVENUE
+  OPERATING_EXPENSE
+  OTHER
+}
+
+enum NormalBalance {
+  DEBIT
+  CREDIT
+}
+
+enum AccountingPeriodStatus {
+  OPEN
+  CLOSING
+  CLOSED
+}
+
+enum JournalEntryStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  POSTED
+  REVERSED
+  VOIDED
+}
+
+enum JournalEntryType {
+  STANDARD
+  PAYROLL
+  EXPENSE
+  PAYMENT
+  ADJUSTMENT
+  REVERSAL
+  OPENING_BALANCE
+}
+
+enum SourceDocumentType {
+  MANUAL_JOURNAL
+  PAYROLL_RUN
+  PAYROLL_LINE
+  PAYSLIP
+  EXPENSE
+  INVOICE
+  BILL
+  PAYMENT
+  BANK_ADJUSTMENT
+}
+
+enum ExpenseStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  POSTED
+  PAID
+}
+
+enum VendorStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum BillStatus {
+  DRAFT
+  OPEN
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  VOID
+}
+
+enum BankReconciliationStatus {
+  UNMATCHED
+  MATCHED
+  RECONCILED
+}
+
+// ── Chart of Accounts ─────────────────────────────────────────────────────
+
+model Account {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @db.Uuid
+  companyId         String           @db.Uuid
+  parentId          String?          @db.Uuid
+  code              String           @db.VarChar(20)
+  name              String           @db.VarChar(255)
+  description       String?          @db.Text
+  accountType       AccountType
+  accountSubtype    AccountSubtype?  @default(OTHER)
+  normalBalance     NormalBalance
+  currency          String           @default("USD") @db.VarChar(3)
+  isActive          Boolean          @default(true)
+  isSystemAccount   Boolean          @default(false)
+  allowManualPosting Boolean         @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent            Account?         @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children          Account[]        @relation("AccountHierarchy")
+  journalLines      JournalLine[]
+  accountBalances   AccountBalance[]
+  bankAccounts      BankAccount[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([parentId])
+  @@index([accountType])
+  @@index([tenantId, companyId, accountType])
+  @@map("accounts")
+}
+
+/// AccountBalance stores denormalized balance projections for performance.
+/// These are REBUILDABLE from JournalLine — never the sole source of truth.
+model AccountBalance {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  accountId         String    @db.Uuid
+  periodId          String    @db.Uuid
+  openingDebit      Int       @default(0)
+  openingCredit     Int       @default(0)
+  periodDebit       Int       @default(0)
+  periodCredit      Int       @default(0)
+  closingDebit      Int       @default(0)
+  closingCredit     Int       @default(0)
+  currency          String    @default("USD") @db.VarChar(3)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  account           Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  period            AccountingPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, companyId, accountId, periodId])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([accountId])
+  @@index([periodId])
+  @@map("account_balances")
+}
+
+// ── Fiscal / Accounting Periods ───────────────────────────────────────────
+
+model AccountingPeriod {
+  id                String                 @id @default(uuid()) @db.Uuid
+  tenantId          String                 @db.Uuid
+  companyId         String                 @db.Uuid
+  name              String                 @db.VarChar(100)
+  startDate         DateTime               @db.Date
+  endDate           DateTime               @db.Date
+  status            AccountingPeriodStatus @default(OPEN)
+  isFiscalYearEnd   Boolean                @default(false)
+  closedBy          String?                @db.Uuid
+  closedAt          DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  tenant            Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  journalEntries    JournalEntry[]
+  accountBalances   AccountBalance[]
+
+  @@unique([tenantId, companyId, startDate])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([tenantId, companyId, status])
+  @@map("accounting_periods")
+}
+
+// ── Journal Entries ───────────────────────────────────────────────────────
+
+model JournalEntry {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  journalNumber     String            @db.VarChar(50)
+  postingDate       DateTime          @db.Date
+  documentDate      DateTime          @db.Date
+  entryType         JournalEntryType  @default(STANDARD)
+  referenceType     SourceDocumentType?
+  referenceId       String?           @db.Uuid
+  description       String            @db.VarChar(500)
+  status            JournalEntryStatus @default(DRAFT)
+  currency          String            @default("USD") @db.VarChar(3)
+  totalDebit        Int               @default(0)
+  totalCredit       Int               @default(0)
+  periodId          String?           @db.Uuid
+  reversalOf        String?           @db.Uuid
+  reversedBy        String?           @db.Uuid
+  createdBy         String            @db.Uuid
+  approvedBy        String?           @db.Uuid
+  postedBy          String?           @db.Uuid
+  postedAt          DateTime?
+  voidedBy          String?           @db.Uuid
+  voidedAt          DateTime?
+  voidReason        String?           @db.VarChar(500)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  period            AccountingPeriod? @relation(fields: [periodId], references: [id])
+  lines             JournalLine[]
+  originalEntry     JournalEntry?     @relation("JournalReversal", fields: [reversalOf], references: [id])
+  reversedEntries   JournalEntry[]    @relation("JournalReversal")
+
+  @@unique([tenantId, companyId, journalNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([postingDate])
+  @@index([referenceType, referenceId])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, postingDate])
+  @@index([periodId])
+  @@map("journal_entries")
+}
+
+model JournalLine {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  journalEntryId    String            @db.Uuid
+  accountId         String            @db.Uuid
+  lineNumber        Int
+  description       String?           @db.VarChar(500)
+  debit             Int               @default(0)
+  credit            Int               @default(0)
+  currency          String            @default("USD") @db.VarChar(3)
+  employeeId        String?           @db.Uuid
+  branchId          String?           @db.Uuid
+  departmentId      String?           @db.Uuid
+  reference         String?           @db.VarChar(255)
+  createdAt         DateTime          @default(now())
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  journalEntry      JournalEntry      @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account           Account           @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  employee          Employee?         @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([employeeId])
+  @@index([tenantId, companyId, accountId])
+  @@map("journal_lines")
+}
+
+// ── Expenses ──────────────────────────────────────────────────────────────
+
+model Expense {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  employeeId        String?        @db.Uuid
+  expenseNumber     String         @db.VarChar(50)
+  description       String         @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  expenseDate       DateTime       @db.Date
+  category          String         @db.VarChar(100)
+  accountId         String?        @db.Uuid
+  status            ExpenseStatus  @default(DRAFT)
+  journalEntryId    String?        @db.Uuid
+  approvedBy        String?        @db.Uuid
+  approvedAt        DateTime?
+  rejectReason      String?        @db.VarChar(500)
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee          Employee?      @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, companyId, expenseNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("expenses")
+}
+
+// ── Accounts Receivable ───────────────────────────────────────────────────
+
+model Customer {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  name              String         @db.VarChar(255)
+  code              String         @db.VarChar(50)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  receivableAccountId String?      @db.Uuid
+  currency          String         @default("USD") @db.VarChar(3)
+  status            CustomerStatus @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices          Invoice[]
+  // Phase 10 — CRM
+  crmProfile        CustomerProfile?
+  // Phase 11 — Projects
+  projects          Project[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("customers")
+}
+
+model Invoice {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  customerId        String         @db.Uuid
+  invoiceNumber     String         @db.VarChar(50)
+  description       String?        @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  issuedDate        DateTime       @db.Date
+  dueDate           DateTime       @db.Date
+  status            InvoiceStatus  @default(DRAFT)
+  paidAmount        Int            @default(0)
+  outstandingAmount Int            @default(0)
+  journalEntryId    String?        @db.Uuid
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer          Customer       @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, companyId, invoiceNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("invoices")
+}
+
+// ── Accounts Payable ──────────────────────────────────────────────────────
+
+model Vendor {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  name              String         @db.VarChar(255)
+  code              String         @db.VarChar(50)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  taxIdentifier     String?        @db.VarChar(100)
+  payableAccountId  String?        @db.Uuid
+  currency          String         @default("USD") @db.VarChar(3)
+  status            VendorStatus   @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bills             Bill[]
+  assets            Asset[]
+
+  @@unique([tenantId, companyId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("vendors")
+}
+
+model Bill {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  vendorId          String         @db.Uuid
+  billNumber        String         @db.VarChar(50)
+  description       String?        @db.VarChar(500)
+  amount            Int
+  currency          String         @default("USD") @db.VarChar(3)
+  receivedDate      DateTime       @db.Date
+  dueDate           DateTime       @db.Date
+  status            BillStatus     @default(DRAFT)
+  paidAmount        Int            @default(0)
+  outstandingAmount Int            @default(0)
+  journalEntryId    String?        @db.Uuid
+  createdBy         String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor            Vendor         @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, companyId, billNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("bills")
+}
+
+// ── Payments ──────────────────────────────────────────────────────────────
+
+model Payment {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenantId          String          @db.Uuid
+  companyId         String          @db.Uuid
+  paymentNumber     String          @db.VarChar(50)
+  paymentDate       DateTime        @db.Date
+  amount            Int
+  currency          String          @default("USD") @db.VarChar(3)
+  paymentMethod     PaymentMethod   @default(BANK_TRANSFER)
+  bankAccountId     String?         @db.Uuid
+  reference         String?         @db.VarChar(255)
+  description       String?         @db.VarChar(500)
+  status            PaymentStatus   @default(PENDING)
+  journalEntryId    String?         @db.Uuid
+  vendorId          String?         @db.Uuid
+  billId            String?         @db.Uuid
+  customerId        String?         @db.Uuid
+  invoiceId         String?         @db.Uuid
+  createdBy         String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, companyId, paymentNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([tenantId, companyId, status])
+  @@map("payments")
+}
+
+// ── Banking ───────────────────────────────────────────────────────────────
+
+model BankAccount {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  bankName          String    @db.VarChar(255)
+  accountName       String    @db.VarChar(255)
+  accountNumber     String    @db.VarChar(50)
+  currency          String    @default("USD") @db.VarChar(3)
+  glAccountId       String    @db.Uuid
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  glAccount         Account   @relation(fields: [glAccountId], references: [id], onDelete: Restrict)
+  transactions      BankTransaction[]
+
+  @@unique([tenantId, companyId, accountNumber])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("bank_accounts")
+}
+
+model BankTransaction {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  bankAccountId     String    @db.Uuid
+  transactionDate   DateTime  @db.Date
+  description       String    @db.VarChar(500)
+  amount            Int
+  currency          String    @default("USD") @db.VarChar(3)
+  reference         String?   @db.VarChar(255)
+  journalEntryId    String?   @db.Uuid
+  reconciliationStatus BankReconciliationStatus @default(UNMATCHED)
+  reconciledAt      DateTime?
+  createdAt         DateTime  @default(now())
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bankAccount       BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([bankAccountId])
+  @@index([reconciliationStatus])
+  @@map("bank_transactions")
+}
+
+// =============================================================================
+// CRM — Phase 10
+// =============================================================================
+// CRM extends the existing FusionOS architecture.
+// The canonical Customer entity lives in Finance.
+// CRM adds CRM-specific relationships and activities.
+
+/// CustomerProfile adds CRM-specific information to the existing Finance Customer.
+model CustomerProfile {
+  id                String                @id @default(uuid()) @db.Uuid
+  tenantId          String                @db.Uuid
+  companyId         String                @db.Uuid
+  customerId        String                @db.Uuid
+  customerType      CustomerType          @default(BUSINESS)
+  customerSegment   CustomerSegment       @default(STANDARD)
+  lifecycleStage    CustomerLifecycleStage @default(CUSTOMER)
+  industry          String?               @db.VarChar(100)
+  website           String?               @db.VarChar(500)
+  description       String?               @db.Text
+  ownerId           String?               @db.Uuid
+  annualRevenue     Int?
+  employeeCount     Int?
+  rating            Int?
+  source            LeadSource?
+  tags              String?               @db.VarChar(500)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  tenant            Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer          Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  owner             Employee?             @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  contacts          Contact[]
+  activities        Activity[]
+  tasks             Task[]
+  notes             CrmNote[]
+  opportunities     Opportunity[]
+  leads             Lead[]
+
+  @@unique([tenantId, customerId])
+  @@unique([customerId])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([ownerId])
+  @@index([lifecycleStage])
+  @@map("customer_profiles")
+}
+
+/// Contact represents a person at a customer organization.
+model Contact {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  customerProfileId String    @db.Uuid
+  firstName         String    @db.VarChar(255)
+  lastName          String    @db.VarChar(255)
+  jobTitle          String?   @db.VarChar(255)
+  email             String?   @db.VarChar(255)
+  phone             String?   @db.VarChar(50)
+  mobile            String?   @db.VarChar(50)
+  department        String?   @db.VarChar(100)
+  isPrimary         Boolean   @default(false)
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  activities        Activity[]
+  opportunities     Opportunity[]
+  tasks             Task[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([email])
+  @@map("crm_contacts")
+}
+
+/// Lead represents a potential business relationship.
+model Lead {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  customerProfileId String?        @db.Uuid
+  firstName         String         @db.VarChar(255)
+  lastName          String?        @db.VarChar(255)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  companyName       String?        @db.VarChar(255)
+  source            LeadSource     @default(OTHER)
+  status            LeadStatus     @default(NEW)
+  ownerId           String?        @db.Uuid
+  rating            Int?
+  notes             String?        @db.Text
+  convertedAt       DateTime?
+  convertedById     String?        @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  owner             Employee?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  convertedBy       Employee?       @relation("LeadConvertedBy", fields: [convertedById], references: [id], onDelete: SetNull)
+  activities        Activity[]
+  tasks             Task[]
+  crmNotes          CrmNote[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([ownerId])
+  @@index([source])
+  @@map("crm_leads")
+}
+
+/// Opportunity represents a qualified sales opportunity.
+model Opportunity {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  customerProfileId String            @db.Uuid
+  contactId         String?           @db.Uuid
+  ownerId           String?           @db.Uuid
+  name              String            @db.VarChar(255)
+  stage             OpportunityStage  @default(PROSPECTING)
+  status            OpportunityStatus @default(OPEN)
+  amount            Int               @default(0)
+  currency          String            @default("USD") @db.VarChar(3)
+  probability       Int               @default(0)
+  expectedCloseDate DateTime?         @db.Date
+  actualCloseDate   DateTime?         @db.Date
+  description       String?           @db.Text
+  source            LeadSource?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  owner             Employee?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  activities        Activity[]
+  tasks             Task[]
+  notes             CrmNote[]
+  // Phase 11 — Projects
+  projects          Project[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([stage])
+  @@index([status])
+  @@index([ownerId])
+  @@map("crm_opportunities")
+}
+
+/// Activity represents a customer interaction.
+model Activity {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String        @db.Uuid
+  contactId         String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  activityType      ActivityType
+  subject           String        @db.VarChar(255)
+  description       String?       @db.Text
+  actorId           String        @db.Uuid
+  dueDate           DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  actor             Employee        @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([activityType])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("crm_activities")
+}
+
+/// Task represents a CRM task.
+model Task {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String?       @db.Uuid
+  contactId         String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  title             String        @db.VarChar(255)
+  description       String?       @db.Text
+  assigneeId        String?       @db.Uuid
+  priority          TaskPriority  @default(MEDIUM)
+  status            TaskStatus    @default(TODO)
+  dueDate           DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  assignee          Employee?       @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@map("crm_tasks")
+}
+
+/// CrmNote represents a note against a CRM entity.
+model CrmNote {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  authorId          String        @db.Uuid
+  content           String        @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  author            Employee        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([leadId])
+  @@index([opportunityId])
+  @@index([authorId])
+  @@map("crm_notes")
+}
+
+// =============================================================================
+// PROJECT MANAGEMENT — Phase 11
+// =============================================================================
+// Projects orchestrate delivery/work between Employee, Customer, Finance, CRM.
+// Employee remains canonical for workforce identity.
+// Customer (Finance) remains canonical for customer identity.
+// Finance remains the accounting authority.
+// CRM remains the relationship layer.
+
+model Project {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  code              String        @db.VarChar(50)
+  name              String        @db.VarChar(255)
+  description       String?       @db.Text
+  status            ProjectStatus @default(DRAFT)
+
+  // Ownership
+  projectManagerId  String?       @db.Uuid
+  createdById       String?       @db.Uuid
+
+  // Customer relationship (Finance Customer is canonical)
+  customerId        String?       @db.Uuid
+  // CRM integration (optional)
+  opportunityId     String?       @db.Uuid
+
+  // Organization
+  branchId          String?       @db.Uuid
+  departmentId      String?       @db.Uuid
+
+  // Dates
+  plannedStartDate  DateTime?     @db.Date
+  plannedEndDate    DateTime?     @db.Date
+  actualStartDate   DateTime?     @db.Date
+  actualEndDate     DateTime?     @db.Date
+
+  // Budget
+  currency          String        @default("USD") @db.VarChar(3)
+  budgetAmount      Int?          // Integer minor units
+  actualCost        Int?          @default(0) // Integer minor units
+
+  // Progress
+  progress          Int           @default(0) // 0-100
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  tenant            Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  projectManager    Employee?     @relation("ProjectManager", fields: [projectManagerId], references: [id], onDelete: SetNull)
+  createdBy         Employee?     @relation("ProjectCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  customer          Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?  @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  branch            Branch?       @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department        Department?   @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  members           ProjectMember[]
+  tasks             ProjectTask[]
+  milestones        ProjectMilestone[]
+  timeEntries       ProjectTimeEntry[]
+  activities        ProjectActivity[]
+  budget            ProjectBudget?
+  assetAssignments  AssetAssignment[]
+  fromTransfers     AssetTransfer[] @relation("TransferFromProject")
+  toTransfers       AssetTransfer[] @relation("TransferToProject")
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([projectManagerId])
+  @@index([customerId])
+  @@index([status])
+  @@index([tenantId, status])
+  @@index([tenantId, companyId])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id            String            @id @default(uuid()) @db.Uuid
+  tenantId      String            @db.Uuid
+  projectId     String            @db.Uuid
+  employeeId    String            @db.Uuid
+  role          ProjectMemberRole @default(DEVELOPER)
+  isActive      Boolean           @default(true)
+  allocatedPct  Int?              // Allocation percentage (0-100)
+  startDate     DateTime?         @db.Date
+  endDate       DateTime?         @db.Date
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employee      Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  tasks         ProjectTask[]     @relation("TaskAssignee")
+
+  @@unique([projectId, employeeId])
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([employeeId])
+  @@map("project_members")
+}
+
+model ProjectTask {
+  id                String             @id @default(uuid()) @db.Uuid
+  tenantId          String             @db.Uuid
+  projectId         String             @db.Uuid
+  parentTaskId      String?            @db.Uuid
+  title             String             @db.VarChar(255)
+  description       String?            @db.Text
+  status            ProjectTaskStatus  @default(TODO)
+  priority          ProjectTaskPriority @default(MEDIUM)
+  progress          Int                @default(0) // 0-100
+  startDate         DateTime?          @db.Date
+  dueDate           DateTime?          @db.Date
+  completedDate     DateTime?          @db.Date
+  estimatedMinutes  Int?               // Estimated effort in minutes
+  actualMinutes     Int?               // Actual effort in minutes
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  project           Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parentTask        ProjectTask?       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  childTasks        ProjectTask[]      @relation("TaskHierarchy")
+  assignee          ProjectMember?     @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  assigneeId        String?            @db.Uuid
+  reporter          Employee?          @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  reporterId        String?            @db.Uuid
+  dependenciesFrom  ProjectTaskDependency[] @relation("DependencyPredecessor")
+  dependenciesTo    ProjectTaskDependency[] @relation("DependencySuccessor")
+  timeEntries       ProjectTimeEntry[]
+  activities        ProjectActivity[]
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([parentTaskId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([tenantId, projectId])
+  @@map("project_tasks")
+}
+
+model ProjectTaskDependency {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  predecessorId   String   @db.Uuid
+  successorId     String   @db.Uuid
+  createdAt       DateTime @default(now())
+
+  predecessor     ProjectTask @relation("DependencyPredecessor", fields: [predecessorId], references: [id], onDelete: Cascade)
+  successor       ProjectTask @relation("DependencySuccessor", fields: [successorId], references: [id], onDelete: Cascade)
+
+  @@unique([predecessorId, successorId])
+  @@index([tenantId])
+  @@index([predecessorId])
+  @@index([successorId])
+  @@map("project_task_dependencies")
+}
+
+model ProjectMilestone {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @db.Uuid
+  projectId       String          @db.Uuid
+  name            String          @db.VarChar(255)
+  description     String?         @db.Text
+  targetDate      DateTime?       @db.Date
+  completedDate   DateTime?       @db.Date
+  status          MilestoneStatus @default(PENDING)
+  progress        Int             @default(0) // 0-100
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([tenantId, projectId])
+  @@map("project_milestones")
+}
+
+model ProjectTimeEntry {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @db.Uuid
+  projectId       String          @db.Uuid
+  taskId          String?         @db.Uuid
+  employeeId      String          @db.Uuid
+  date            DateTime        @db.Date
+  durationMinutes Int             // Integer minutes
+  description     String?         @db.VarChar(500)
+  isBillable      Boolean         @default(true)
+  status          TimeEntryStatus @default(DRAFT)
+  approvedBy      String?         @db.Uuid
+  approvedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task            ProjectTask?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  employee        Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([taskId])
+  @@index([employeeId])
+  @@index([tenantId, projectId])
+  @@map("project_time_entries")
+}
+
+model ProjectActivity {
+  id              String              @id @default(uuid()) @db.Uuid
+  tenantId        String              @db.Uuid
+  projectId       String              @db.Uuid
+  taskId          String?             @db.Uuid
+  employeeId      String?             @db.Uuid
+  activityType    ProjectActivityType
+  title           String              @db.VarChar(255)
+  description     String?             @db.Text
+  metadata        Json?
+  createdAt       DateTime            @default(now())
+
+  project         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task            ProjectTask?        @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  employee        Employee?           @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([employeeId])
+  @@index([createdAt])
+  @@map("project_activities")
+}
+
+model ProjectBudget {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid
+  projectId       String    @unique @db.Uuid
+  budgetAmount    Int       // Integer minor units
+  currency        String    @default("USD") @db.VarChar(3)
+  spentAmount     Int       @default(0) // Integer minor units
+  lastCalculatedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@map("project_budgets")
+}
+
+// =============================================================================
+// DOCUMENT MANAGEMENT — Phase 12
+// =============================================================================
+// Central document infrastructure that every FusionOS module can reference.
+// Binary storage is abstracted through StorageService — never stored in DB.
+// Metadata is tenant-scoped and RBAC-protected.
+
+model DocumentCategory {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid
+  name        String    @db.VarChar(100)
+  description String?   @db.VarChar(500)
+  color       String?   @db.VarChar(7)  // hex color for UI
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  documents   Document[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("document_categories")
+}
+
+model DocumentFolder {
+  id          String           @id @default(uuid()) @db.Uuid
+  tenantId    String           @db.Uuid
+  name        String           @db.VarChar(255)
+  description String?          @db.VarChar(500)
+  parentId    String?          @db.Uuid
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parent      DocumentFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    DocumentFolder[] @relation("FolderHierarchy")
+  documents   Document[]
+
+  @@unique([tenantId, name, parentId])
+  @@index([tenantId])
+  @@index([parentId])
+  @@map("document_folders")
+}
+
+model Document {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String?        @db.Uuid
+  name              String         @db.VarChar(500)
+  description       String?        @db.Text
+  categoryId        String?        @db.Uuid
+  folderId          String?        @db.Uuid
+  status            DocumentStatus @default(ACTIVE)
+  ownerId           String?        @db.Uuid  // Employee who owns this document
+  createdById       String?        @db.Uuid  // Employee who uploaded it
+  currentVersionId  String?        @db.Uuid  // Points to current DocumentVersion
+  currentVersionNum Int            @default(1)
+  fileExtension     String?        @db.VarChar(20)
+  totalSize         Int            @default(0) // Sum of all versions in bytes
+  deletedAt         DateTime?      // Soft deletion
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  category          DocumentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  folder            DocumentFolder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  owner             Employee?         @relation("DocumentOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  createdBy         Employee?         @relation("DocumentCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  versions          DocumentVersion[]
+  entityLinks       DocumentEntityLink[]
+  permissions       DocumentPermission[]
+  activities        DocumentActivity[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([categoryId])
+  @@index([folderId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([tenantId, status])
+  @@index([tenantId, folderId])
+  @@map("documents")
+}
+
+model DocumentVersion {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @db.Uuid
+  documentId    String    @db.Uuid
+  versionNumber Int
+  fileName      String    @db.VarChar(500)  // Original filename from user
+  storageKey    String    @db.VarChar(500)  // Internal storage path (NEVER exposed to client)
+  mimeType      String    @db.VarChar(255)
+  fileSize      Int       // Size in bytes
+  checksum      String?   @db.VarChar(128)  // SHA-256 checksum
+  uploadedById  String?   @db.Uuid
+  createdAt     DateTime  @default(now())
+
+  document      Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  uploadedBy    Employee? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@unique([documentId, versionNumber])
+  @@index([tenantId])
+  @@index([documentId])
+  @@index([checksum])
+  @@map("document_versions")
+}
+
+model DocumentEntityLink {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @db.Uuid
+  documentId    String             @db.Uuid
+  entityType    DocumentEntityType
+  entityId      String             @db.Uuid
+  createdAt     DateTime           @default(now())
+
+  document      Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, documentId, entityType, entityId])
+  @@index([tenantId])
+  @@index([documentId])
+  @@index([entityType, entityId])
+  @@map("document_entity_links")
+}
+
+model DocumentPermission {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  documentId    String   @db.Uuid
+  employeeId    String   @db.Uuid
+  canRead       Boolean  @default(true)
+  canDownload   Boolean  @default(false)
+  canEdit       Boolean  @default(false)
+  canDelete     Boolean  @default(false)
+  canManage     Boolean  @default(false)
+  grantedById   String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, documentId, employeeId])
+  @@index([tenantId])
+  @@index([documentId])
+  @@index([employeeId])
+  @@map("document_permissions")
+}
+
+model DocumentActivity {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  documentId    String   @db.Uuid
+  employeeId    String?  @db.Uuid
+  action        String   @db.VarChar(100) // e.g. DOCUMENT_CREATED, DOCUMENT_VIEWED
+  description   String?  @db.VarChar(500)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  employee      Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([documentId])
+  @@index([createdAt])
+  @@map("document_activities")
+}
+
+// =============================================================================
+// PHASE 15 — ENTERPRISE ANALYTICS & BUSINESS INTELLIGENCE
+// =============================================================================
+// Analytics layer is READ-OPTIMIZED. Operational modules remain authoritative.
+// Only SavedReport is persisted; all metrics are derived via aggregation queries.
+// =============================================================================
+
+/// SavedReport stores user-created analytics report configurations.
+model SavedReport {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  name          String   @db.VarChar(200)
+  description   String?  @db.VarChar(500)
+  domain        String   @db.VarChar(50)
+  filters       Json     @default("{}")
+  metrics       Json     @default("[]")
+  createdBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creator User?   @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, domain])
+  @@index([createdBy])
+  @@map("saved_reports")
+}
+
+// =============================================================================
+// PHASE 16 — ENTERPRISE AUTOMATION & WORKFLOW ENGINE
+// =============================================================================
+// Deterministic, idempotent, multi-tenant-safe workflow automation.
+// Workflows orchestrate existing domain modules via events, conditions, and
+// actions. Automation does NOT own business entities.
+// =============================================================================
+
+// ── Automation Enums ───────────────────────────────────────────────────────
+
+enum AutomationWorkflowStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  ARCHIVED
+}
+
+enum AutomationVersionStatus {
+  DRAFT
+  PUBLISHED
+  SUPERSEDED
+}
+
+enum AutomationExecutionStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  SKIPPED
+}
+
+enum AutomationStepStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  SKIPPED
+}
+
+enum AutomationApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum AutomationTriggerType {
+  DOMAIN_EVENT
+}
+
+enum AutomationActionType {
+  SEND_NOTIFICATION
+  CREATE_TASK
+  REQUEST_APPROVAL
+  UPDATE_ENTITY
+  CREATE_AUDIT_EVENT
+}
+
+// ── Workflow ───────────────────────────────────────────────────────────────
+
+/// AutomationWorkflow is the top-level workflow definition.
+/// A workflow belongs to a tenant and has a controlled lifecycle.
+model AutomationWorkflow {
+  id                String                 @id @default(uuid()) @db.Uuid
+  tenantId          String                 @db.Uuid
+  companyId         String?                @db.Uuid
+  name              String                 @db.VarChar(255)
+  description       String?                @db.VarChar(1000)
+  status            AutomationWorkflowStatus @default(DRAFT)
+  currentVersionId  String?                @db.Uuid
+  createdById       String                 @db.Uuid
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  tenant            Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  currentVersion    AutomationWorkflowVersion? @relation("CurrentWorkflowVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  createdBy         User                   @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  versions          AutomationWorkflowVersion[]
+  executions        AutomationExecution[]
+  approvals         AutomationApproval[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, createdById])
+  @@index([tenantId, createdAt])
+  @@index([companyId])
+  @@map("automation_workflows")
+}
+
+// ── Workflow Version ───────────────────────────────────────────────────────
+
+/// AutomationWorkflowVersion stores an immutable snapshot of a workflow's
+/// configuration at a point in time. Published versions are never mutated.
+model AutomationWorkflowVersion {
+  id                String                  @id @default(uuid()) @db.Uuid
+  tenantId          String                  @db.Uuid
+  workflowId        String                  @db.Uuid
+  versionNumber     Int
+  status            AutomationVersionStatus @default(DRAFT)
+  triggerConfig     Json                    // { type: DOMAIN_EVENT, entityType, eventType, entityTypes[] }
+  conditionConfig   Json?                   // Nested condition tree: { logic: AND|OR, conditions: [...], groups: [...] }
+  actionsConfig     Json                    // Ordered array of action configs: [{ type, config }, ...]
+  validationErrors  Json?                   // Array of validation error strings (populated on validate)
+  publishedById     String?                 @db.Uuid
+  publishedAt       DateTime?
+  createdAt         DateTime                @default(now())
+
+  tenant            Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow          AutomationWorkflow      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  publishedBy       User?                   @relation(fields: [publishedById], references: [id], onDelete: SetNull)
+  currentForWorkflows AutomationWorkflow[]   @relation("CurrentWorkflowVersion")
+  executions        AutomationExecution[]
+
+  @@unique([workflowId, versionNumber])
+  @@index([tenantId])
+  @@index([workflowId])
+  @@index([tenantId, status])
+  @@map("automation_workflow_versions")
+}
+
+// ── Execution ──────────────────────────────────────────────────────────────
+
+/// AutomationExecution records a single execution of a workflow triggered by
+/// a domain event. Every execution references the exact workflow version that
+/// existed at execution time.
+model AutomationExecution {
+  id                String                  @id @default(uuid()) @db.Uuid
+  tenantId          String                  @db.Uuid
+  workflowId        String                  @db.Uuid
+  workflowVersionId String                  @db.Uuid
+  triggerEventId    String?                 @db.Uuid         // EventOutbox ID that triggered this
+  triggerEventType  String                  @db.VarChar(255) // e.g., invoice.overdue
+  triggerEntityType String?                 @db.VarChar(100) // e.g., Invoice
+  triggerEntityId   String?                 @db.Uuid
+  status            AutomationExecutionStatus @default(PENDING)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  duration          Int?                    // Milliseconds
+  error             String?                 @db.Text
+  correlationId     String?                 @db.VarChar(255)
+  actorId           String?                 @db.Uuid         // User who triggered (if manual)
+  attemptCount      Int                     @default(1)
+  maxAttempts       Int                     @default(3)
+  lastError         String?                 @db.Text
+  nextRetryAt       DateTime?
+  metadata          Json?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  tenant            Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow          AutomationWorkflow      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowVersion   AutomationWorkflowVersion @relation(fields: [workflowVersionId], references: [id], onDelete: Restrict)
+  steps             AutomationStepExecution[]
+  approvals         AutomationApproval[]
+
+  @@unique([tenantId, workflowVersionId, triggerEventId])
+  @@index([tenantId])
+  @@index([workflowId])
+  @@index([workflowVersionId])
+  @@index([tenantId, status])
+  @@index([tenantId, workflowId])
+  @@index([tenantId, createdAt])
+  @@index([status, nextRetryAt])
+  @@index([triggerEventId])
+  @@map("automation_executions")
+}
+
+// ── Step Execution ─────────────────────────────────────────────────────────
+
+/// AutomationStepExecution records the result of a single action step within
+/// a workflow execution.
+model AutomationStepExecution {
+  id                String              @id @default(uuid()) @db.Uuid
+  tenantId          String              @db.Uuid
+  executionId       String              @db.Uuid
+  stepNumber        Int
+  actionType        AutomationActionType
+  actionConfig      Json                // Snapshot of the action configuration
+  status            AutomationStepStatus @default(PENDING)
+  result            Json?               // Action-specific result data
+  error             String?             @db.Text
+  attemptCount      Int                 @default(1)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  duration          Int?                // Milliseconds
+  idempotencyKey    String?             @db.VarChar(255)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  tenant            Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  execution         AutomationExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@unique([executionId, stepNumber])
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId])
+  @@index([executionId])
+  @@index([tenantId, executionId])
+  @@index([status])
+  @@map("automation_step_executions")
+}
+
+// ── Approval ───────────────────────────────────────────────────────────────
+
+/// AutomationApproval tracks approval requests generated by workflow actions.
+model AutomationApproval {
+  id                String                  @id @default(uuid()) @db.Uuid
+  tenantId          String                  @db.Uuid
+  workflowId        String                  @db.Uuid
+  executionId       String?                 @db.Uuid
+  stepExecutionId   String?                 @db.Uuid
+  requestedById     String                  @db.Uuid         // userId who requested
+  approverUserId    String                  @db.Uuid         // userId who must approve
+  entityType        String?                 @db.VarChar(100) // e.g., LeaveRequest, Expense
+  entityId          String?                 @db.Uuid
+  status            AutomationApprovalStatus @default(PENDING)
+  reason            String?                 @db.VarChar(1000)
+  decisionAt        DateTime?
+  comment           String?                 @db.VarChar(1000)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  tenant            Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow          AutomationWorkflow      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  execution         AutomationExecution?    @relation(fields: [executionId], references: [id], onDelete: SetNull)
+  requestedBy       User                    @relation("ApprovalRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+  approver          User                    @relation("ApprovalApprover", fields: [approverUserId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([workflowId])
+  @@index([executionId])
+  @@index([approverUserId])
+  @@index([tenantId, status])
+  @@index([tenantId, approverUserId])
+  @@index([approverUserId, status])
+  @@map("automation_approvals")
+}
+
+// =============================================================================
+// PHASE 17 — AI COMMAND CENTER & INTELLIGENCE FOUNDATION
+// =============================================================================
+// AI conversation persistence, action confirmations, and request tracking.
+// AI never directly accesses business data — only through controlled tools.
+// =============================================================================
+
+// ── AI Enums ───────────────────────────────────────────────────────────────
+
+enum AIConversationStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum AIMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+  TOOL
+}
+
+enum AIActionStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  EXECUTED
+  FAILED
+  EXPIRED
+}
+
+// ── AI Agent Enums ──────────────────────────────────────────────────────
+
+enum AIAgentType {
+  HR
+  FINANCE
+  CRM
+  PROJECTS
+  OPERATIONS
+}
+
+enum AIAgentStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum AIAgentVersionStatus {
+  DRAFT
+  PUBLISHED
+  SUPERSEDED
+}
+
+enum AIAgentTaskStatus {
+  PENDING
+  ANALYZING
+  PLANNING
+  WAITING_APPROVAL
+  EXECUTING
+  VERIFYING
+  COMPLETED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum AIAgentStepStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  SKIPPED
+}
+
+enum AIAgentRiskLevel {
+  READ_ONLY
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AIAgentApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+// ── AI Conversation ────────────────────────────────────────────────────────
+
+/// AIConversation represents a persistent conversation between a user and the AI.
+/// Tenant-scoped and user-scoped for security.
+model AIConversation {
+  id            String                   @id @default(uuid()) @db.Uuid
+  tenantId      String                   @db.Uuid
+  userId        String                   @db.Uuid
+  title         String?                  @db.VarChar(500)
+  status        AIConversationStatus     @default(ACTIVE)
+  metadata      Json?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  tenant        Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user          User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      AIMessage[]
+  actions       AIActionConfirmation[]
+
+  @@unique([tenantId, userId, id])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tenantId, userId])
+  @@index([tenantId, userId, status])
+  @@index([createdAt])
+  @@map("ai_conversations")
+}
+
+// ── AI Message ─────────────────────────────────────────────────────────────
+
+/// AIMessage stores individual messages within a conversation.
+model AIMessage {
+  id              String             @id @default(uuid()) @db.Uuid
+  conversationId  String             @db.Uuid
+  tenantId        String             @db.Uuid
+  role            AIMessageRole
+  content         String             @db.Text
+  metadata        Json?              // Tool calls, sources, etc.
+  createdAt       DateTime           @default(now())
+
+  conversation    AIConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([tenantId])
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+
+// ── AI Action Confirmation ─────────────────────────────────────────────────
+
+/// AIActionConfirmation tracks AI-proposed actions that require user confirmation.
+model AIActionConfirmation {
+  id              String             @id @default(uuid()) @db.Uuid
+  tenantId        String             @db.Uuid
+  conversationId  String?            @db.Uuid
+  userId          String             @db.Uuid
+  actionType      String             @db.VarChar(100) // e.g., CREATE_WORKFLOW, UPDATE_ENTITY
+  actionConfig    Json               // The proposed action configuration
+  preview         Json?              // Human-readable preview of the action
+  status          AIActionStatus     @default(PENDING)
+  result          Json?              // Execution result if confirmed
+  error           String?            @db.Text
+  confirmedAt     DateTime?
+  executedAt      DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  conversation    AIConversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([conversationId])
+  @@index([tenantId, userId])
+  @@index([tenantId, status])
+  @@index([status, expiresAt])
+  @@map("ai_action_confirmations")
+}
+
+// ── AI Request Log ─────────────────────────────────────────────────────────
+
+/// AIRequestLog tracks AI requests for observability and rate limiting.
+model AIRequestLog {
+  id              String             @id @default(uuid()) @db.Uuid
+  tenantId        String             @db.Uuid
+  userId          String             @db.Uuid
+  conversationId  String?            @db.Uuid
+  provider        String             @db.VarChar(50) // e.g., ollama, openai
+  model           String             @db.VarChar(100)
+  latencyMs       Int?
+  tokenCount      Int?
+  toolCalls       Json?
+  success         Boolean            @default(true)
+  error           String?            @db.Text
+  createdAt       DateTime           @default(now())
+
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tenantId, createdAt])
+  @@index([createdAt])
+  @@map("ai_request_logs")
+}
+
+// ── AI Agent Domain ──────────────────────────────────────────────────────
+
+/// AIAgent represents an AI agent definition (e.g., HR Agent, Finance Agent).
+/// Each agent has a purpose, allowed tools, policies, and versioned configuration.
+model AIAgent {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @db.Uuid
+  companyId     String?            @db.Uuid
+  name          String             @db.VarChar(255)
+  description   String?            @db.Text
+  agentType     AIAgentType
+  status        AIAgentStatus      @default(DRAFT)
+  configuration Json               @default("{}") // { purpose, allowedTools, riskPolicy, maxSteps, etc. }
+  createdById   String             @db.Uuid
+  currentVersionId String?          @db.Uuid
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  tenant        Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company       Company?           @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  createdBy     User               @relation("AgentCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  currentVersion AIAgentVersion?   @relation("AgentCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions      AIAgentVersion[]  @relation("AgentAllVersions")
+  tasks         AIAgentTask[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([tenantId, status])
+  @@index([createdById])
+  @@map("ai_agents")
+}
+
+/// AIAgentVersion stores immutable snapshots of agent configuration.
+model AIAgentVersion {
+  id              String             @id @default(uuid()) @db.Uuid
+  agentId         String             @db.Uuid
+  tenantId        String             @db.Uuid
+  versionNumber   Int
+  status          AIAgentVersionStatus @default(DRAFT)
+  configuration   Json               // { prompt, tools, policies, limits, approvalRules }
+  publishedById   String?            @db.Uuid
+  publishedAt     DateTime?
+  validationErrors Json?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  agent           AIAgent            @relation("AgentAllVersions", fields: [agentId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  publishedBy     User?              @relation(fields: [publishedById], references: [id], onDelete: SetNull)
+  tasks           AIAgentTask[]
+  usedByAgents    AIAgent[]          @relation("AgentCurrentVersion")
+
+  @@unique([agentId, versionNumber])
+  @@index([agentId])
+  @@index([tenantId])
+  @@index([status])
+  @@map("ai_agent_versions")
+}
+
+/// AIAgentTask represents a single execution of an agent.
+model AIAgentTask {
+  id              String             @id @default(uuid()) @db.Uuid
+  agentId         String             @db.Uuid
+  agentVersionId  String             @db.Uuid
+  tenantId        String             @db.Uuid
+  userId          String             @db.Uuid
+  goal            String             @db.Text
+  status          AIAgentTaskStatus  @default(PENDING)
+  plan            Json?              // Structured execution plan
+  riskAssessment  Json?              // { overallRisk, requiresApproval, stepRisks }
+  result          Json?              // Final result summary
+  error           String?            @db.Text
+  currentStep     Int                @default(0)
+  totalSteps      Int                @default(0)
+  toolCallCount   Int                @default(0)
+  maxToolCalls    Int                @default(10)
+  attemptCount    Int                @default(1)
+  maxAttempts     Int                @default(3)
+  correlationId   String?            @db.Uuid
+  startedAt       DateTime?
+  completedAt     DateTime?
+  duration        Int?               // ms
+  expiresAt       DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  agent           AIAgent            @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentVersion    AIAgentVersion     @relation(fields: [agentVersionId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps           AIAgentStep[]
+  memory          AIAgentMemory[]
+
+  @@unique([tenantId, agentVersionId, goal])
+  @@index([agentId])
+  @@index([agentVersionId])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("ai_agent_tasks")
+}
+
+/// AIAgentStep represents a single step execution within an agent task.
+model AIAgentStep {
+  id              String             @id @default(uuid()) @db.Uuid
+  taskId          String             @db.Uuid
+  tenantId        String             @db.Uuid
+  stepNumber      Int
+  toolName        String             @db.VarChar(100)
+  purpose         String             @db.Text
+  input           Json               @default("{}")
+  output          Json?
+  status          AIAgentStepStatus  @default(PENDING)
+  riskLevel       AIAgentRiskLevel   @default(READ_ONLY)
+  approvalStatus  AIAgentApprovalStatus?
+  error           String?            @db.Text
+  attemptCount    Int                @default(1)
+  idempotencyKey  String             @db.VarChar(255)
+  duration        Int?               // ms
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime           @default(now())
+
+  task            AIAgentTask        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, stepNumber])
+  @@unique([tenantId, idempotencyKey])
+  @@index([taskId])
+  @@index([tenantId])
+  @@index([status])
+  @@map("ai_agent_steps")
+}
+
+/// AIAgentMemory stores persistent memory entries for agent tasks.
+model AIAgentMemory {
+  id              String             @id @default(uuid()) @db.Uuid
+  taskId          String             @db.Uuid
+  tenantId        String             @db.Uuid
+  agentId         String             @db.Uuid
+  category        String             @db.VarChar(100) // e.g., 'execution', 'context', 'result'
+  content         String             @db.Text
+  metadata        Json?
+  retentionDays   Int                @default(30)
+  expiresAt       DateTime?
+  createdAt       DateTime           @default(now())
+
+  task            AIAgentTask        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([tenantId])
+  @@index([agentId])
+  @@index([tenantId, agentId])
+  @@index([expiresAt])
+  @@map("ai_agent_memories")
+}

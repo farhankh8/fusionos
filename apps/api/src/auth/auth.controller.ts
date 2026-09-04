@@ -4,10 +4,7 @@
  * All authentication endpoints under /api/v1/auth.
  * Protected endpoints use the JwtAuthGuard.
  * Public endpoints are marked with @Public().
- */
-
-import {
-  Controller,
+ */import { Controller,
   Post,
   Get,
   Body,
@@ -16,6 +13,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { CurrentUser, type AuthenticatedUser } from './decorators/current-user.decorator';
@@ -35,6 +33,7 @@ export class AuthController {
   // ── Public Endpoints ─────────────────────────────────────────────────────
 
   @Public()
+  @Throttle({ general: { limit: 3, ttl: 60 * 60 * 1000 } }) // 3 registrations / hour
   @Post('register')
   async register(@Body() dto: RegisterDto, @Req() req: Request) {
     return this.authService.register(
@@ -45,6 +44,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 5, ttl: 15 * 60 * 1000 } }) // 5 attempts / 15 min
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto, @Req() req: Request) {
@@ -56,6 +56,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 30, ttl: 15 * 60 * 1000 } }) // refresh churn
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() body: { refreshToken: string }, @Req() req: Request) {
@@ -67,6 +68,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 3, ttl: 15 * 60 * 1000 } }) // verify / resend
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
   async verifyEmail(@Body() dto: VerifyEmailDto) {
@@ -74,6 +76,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 3, ttl: 15 * 60 * 1000 } }) // verify / resend
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
   async resendVerification(@Body() body: { email: string }) {
@@ -81,6 +84,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 3, ttl: 15 * 60 * 1000 } }) // 3 resets / 15 min
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
@@ -88,6 +92,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ general: { limit: 3, ttl: 15 * 60 * 1000 } }) // 3 resets / 15 min
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() dto: ResetPasswordDto) {

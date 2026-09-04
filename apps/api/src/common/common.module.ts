@@ -12,6 +12,7 @@ import { SecurityAuditService } from './services/security-audit.service';
 import { EventPublisherService } from './services/event-publisher.service';
 import { AuditLogService } from './services/audit-log.service';
 import { TenantContextService } from '../auth/services/tenant-context.service';
+import { RedisThrottlerStorage } from './throttler/redis-throttler.storage';
 
 @Global()
 @Module({
@@ -22,13 +23,16 @@ import { TenantContextService } from '../auth/services/tenant-context.service';
     SecurityAuditService,
     EventPublisherService,
     AuditLogService,
+    RedisThrottlerStorage,
   ],
   exports: [
+    PrismaClient,
     TenantContextService,
     RBACGuard,
     SecurityAuditService,
     EventPublisherService,
     AuditLogService,
+    RedisThrottlerStorage,
   ],
 })
 export class CommonModule {}

@@ -53,3 +53,9 @@ docker-compose.override.yml
 .cache/
 tmp/
 temp/
+
+# Upload artifacts
+apps/api/uploads/
+
+# Load test results
+load-testing/results.json

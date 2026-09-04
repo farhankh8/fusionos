@@ -22,13 +22,13 @@ const prisma = new PrismaClient();
 // ── Tenant A: FusionOS Development ──────────────────────────────────────────
 
 const TENANT_A = {
-  id: '00000000-0000-0000-0000-000000000001',
+  id: '00000000-0000-4000-8000-000000000001',
   name: 'FusionOS Development',
   slug: 'fusionos-dev',
 };
 
 const COMPANY_A = {
-  id: '00000000-0000-0000-0000-000000000002',
+  id: '00000000-0000-4000-8000-000000000002',
   name: 'FusionOS Corp',
   legalName: 'FusionOS Corporation Ltd.',
   code: 'FOS',
@@ -36,21 +36,21 @@ const COMPANY_A = {
 };
 
 const USER_A_ADMIN = {
-  id: '00000000-0000-0000-0000-000000000003',
+  id: '00000000-0000-4000-8000-000000000003',
   email: 'admin@fusionos.dev',
   firstName: 'Admin',
   lastName: 'User',
 };
 
 const USER_A_HR = {
-  id: '00000000-0000-0000-0000-000000000010',
+  id: '00000000-0000-4000-8000-000000000010',
   email: 'hr@fusionos.dev',
   firstName: 'HR',
   lastName: 'Manager',
 };
 
 const USER_A_EMPLOYEE = {
-  id: '00000000-0000-0000-0000-000000000011',
+  id: '00000000-0000-4000-8000-000000000011',
   email: 'employee@fusionos.dev',
   firstName: 'Test',
   lastName: 'Employee',
@@ -59,13 +59,13 @@ const USER_A_EMPLOYEE = {
 // ── Tenant B: Acme Corporation (for cross-tenant testing) ──────────────────
 
 const TENANT_B = {
-  id: '10000000-0000-0000-0000-000000000001',
+  id: '10000000-0000-4000-8000-000000000001',
   name: 'Acme Corporation',
   slug: 'acme-corp',
 };
 
 const COMPANY_B = {
-  id: '10000000-0000-0000-0000-000000000002',
+  id: '10000000-0000-4000-8000-000000000002',
   name: 'Acme Industries',
   legalName: 'Acme Industries Inc.',
   code: 'ACM',
@@ -73,14 +73,14 @@ const COMPANY_B = {
 };
 
 const USER_B_ADMIN = {
-  id: '10000000-0000-0000-0000-000000000003',
+  id: '10000000-0000-4000-8000-000000000003',
   email: 'admin@acme.dev',
   firstName: 'Acme',
   lastName: 'Admin',
 };
 
 const USER_B_EMPLOYEE = {
-  id: '10000000-0000-0000-0000-000000000010',
+  id: '10000000-0000-4000-8000-000000000010',
   email: 'employee@acme.dev',
   firstName: 'Acme',
   lastName: 'Employee',
@@ -168,15 +168,175 @@ const SYSTEM_PERMISSIONS = [
   { name: 'payroll.payslip:read', description: 'Read payslips', resource: 'payroll.payslip', action: 'read' },
   { name: 'finance:read', description: 'Read finance', resource: 'finance', action: 'read' },
   { name: 'finance:manage', description: 'Manage finance', resource: 'finance', action: 'manage' },
+  // Finance granular permissions
+  { name: 'finance.account:read', description: 'Read chart of accounts', resource: 'finance.account', action: 'read' },
+  { name: 'finance.account:create', description: 'Create accounts', resource: 'finance.account', action: 'create' },
+  { name: 'finance.account:update', description: 'Update accounts', resource: 'finance.account', action: 'update' },
+  { name: 'finance.journal:read', description: 'Read journal entries', resource: 'finance.journal', action: 'read' },
+  { name: 'finance.journal:create', description: 'Create journal entries', resource: 'finance.journal', action: 'create' },
+  { name: 'finance.journal:approve', description: 'Approve journal entries', resource: 'finance.journal', action: 'approve' },
+  { name: 'finance.journal:post', description: 'Post journal entries', resource: 'finance.journal', action: 'post' },
+  { name: 'finance.journal:reverse', description: 'Reverse journal entries', resource: 'finance.journal', action: 'reverse' },
+  { name: 'finance.ledger:read', description: 'Read general ledger', resource: 'finance.ledger', action: 'read' },
+  { name: 'finance.report:read', description: 'Read financial reports', resource: 'finance.report', action: 'read' },
+  { name: 'finance.expense:read', description: 'Read expenses', resource: 'finance.expense', action: 'read' },
+  { name: 'finance.expense:create', description: 'Create expenses', resource: 'finance.expense', action: 'create' },
+  { name: 'finance.expense:approve', description: 'Approve expenses', resource: 'finance.expense', action: 'approve' },
+  { name: 'finance.ar:read', description: 'Read accounts receivable', resource: 'finance.ar', action: 'read' },
+  { name: 'finance.ar:manage', description: 'Manage accounts receivable', resource: 'finance.ar', action: 'manage' },
+  { name: 'finance.ap:read', description: 'Read accounts payable', resource: 'finance.ap', action: 'read' },
+  { name: 'finance.ap:manage', description: 'Manage accounts payable', resource: 'finance.ap', action: 'manage' },
+  { name: 'finance.payment:read', description: 'Read payments', resource: 'finance.payment', action: 'read' },
+  { name: 'finance.payment:create', description: 'Create payments', resource: 'finance.payment', action: 'create' },
+  { name: 'finance.payment:approve', description: 'Approve payments', resource: 'finance.payment', action: 'approve' },
+  { name: 'finance.period:read', description: 'Read accounting periods', resource: 'finance.period', action: 'read' },
+  { name: 'finance.period:manage', description: 'Manage accounting periods', resource: 'finance.period', action: 'manage' },
+  { name: 'finance.period:close', description: 'Close accounting periods', resource: 'finance.period', action: 'close' },
   { name: 'crm:read', description: 'Read CRM', resource: 'crm', action: 'read' },
   { name: 'crm:manage', description: 'Manage CRM', resource: 'crm', action: 'manage' },
   { name: 'project:read', description: 'Read projects', resource: 'project', action: 'read' },
+  { name: 'project:create', description: 'Create projects', resource: 'project', action: 'create' },
+  { name: 'project:update', description: 'Update projects', resource: 'project', action: 'update' },
   { name: 'project:manage', description: 'Manage projects', resource: 'project', action: 'manage' },
+  { name: 'project:archive', description: 'Archive projects', resource: 'project', action: 'archive' },
+  { name: 'project:delete', description: 'Delete projects', resource: 'project', action: 'delete' },
+  { name: 'project.member:read', description: 'Read project members', resource: 'project.member', action: 'read' },
+  { name: 'project.member:create', description: 'Add project members', resource: 'project.member', action: 'create' },
+  { name: 'project.member:update', description: 'Update project member roles', resource: 'project.member', action: 'update' },
+  { name: 'project.member:remove', description: 'Remove project members', resource: 'project.member', action: 'remove' },
+  { name: 'project.task:read', description: 'Read project tasks', resource: 'project.task', action: 'read' },
+  { name: 'project.task:create', description: 'Create project tasks', resource: 'project.task', action: 'create' },
+  { name: 'project.task:update', description: 'Update project tasks', resource: 'project.task', action: 'update' },
+  { name: 'project.task:assign', description: 'Assign project tasks', resource: 'project.task', action: 'assign' },
+  { name: 'project.task:complete', description: 'Complete project tasks', resource: 'project.task', action: 'complete' },
+  { name: 'project.milestone:read', description: 'Read project milestones', resource: 'project.milestone', action: 'read' },
+  { name: 'project.milestone:create', description: 'Create project milestones', resource: 'project.milestone', action: 'create' },
+  { name: 'project.milestone:update', description: 'Update project milestones', resource: 'project.milestone', action: 'update' },
+  { name: 'project.time:read', description: 'Read project time entries', resource: 'project.time', action: 'read' },
+  { name: 'project.time:create', description: 'Log project time', resource: 'project.time', action: 'create' },
+  { name: 'project.time:update', description: 'Update project time entries', resource: 'project.time', action: 'update' },
+  { name: 'project.time:approve', description: 'Approve project time entries', resource: 'project.time', action: 'approve' },
+  { name: 'project.budget:read', description: 'Read project budgets', resource: 'project.budget', action: 'read' },
+  { name: 'project.budget:create', description: 'Create project budgets', resource: 'project.budget', action: 'create' },
+  { name: 'project.budget:update', description: 'Update project budgets', resource: 'project.budget', action: 'update' },
+  // Document permissions
+  { name: 'document:read', description: 'Read documents', resource: 'document', action: 'read' },
+  { name: 'document:create', description: 'Create/upload documents', resource: 'document', action: 'create' },
+  { name: 'document:update', description: 'Update document metadata', resource: 'document', action: 'update' },
+  { name: 'document:delete', description: 'Delete/trash documents', resource: 'document', action: 'delete' },
+  { name: 'document:restore', description: 'Restore trashed documents', resource: 'document', action: 'restore' },
+  { name: 'document:download', description: 'Download documents', resource: 'document', action: 'download' },
+  { name: 'document:manage', description: 'Manage all document operations', resource: 'document', action: 'manage' },
+  { name: 'document.folder:read', description: 'Read folders', resource: 'document.folder', action: 'read' },
+  { name: 'document.folder:create', description: 'Create folders', resource: 'document.folder', action: 'create' },
+  { name: 'document.folder:update', description: 'Update folders', resource: 'document.folder', action: 'update' },
+  { name: 'document.folder:delete', description: 'Delete folders', resource: 'document.folder', action: 'delete' },
+  { name: 'document.category:read', description: 'Read categories', resource: 'document.category', action: 'read' },
+  { name: 'document.category:create', description: 'Create categories', resource: 'document.category', action: 'create' },
+  { name: 'document.category:update', description: 'Update categories', resource: 'document.category', action: 'update' },
+  { name: 'document.category:delete', description: 'Delete categories', resource: 'document.category', action: 'delete' },
+  { name: 'document.version:read', description: 'Read document versions', resource: 'document.version', action: 'read' },
+  { name: 'document.version:create', description: 'Create document versions', resource: 'document.version', action: 'create' },
+  { name: 'document.permission:read', description: 'Read document permissions', resource: 'document.permission', action: 'read' },
+  { name: 'document.permission:manage', description: 'Manage document permissions', resource: 'document.permission', action: 'manage' },
   { name: 'settings:read', description: 'Read settings', resource: 'settings', action: 'read' },
   { name: 'settings:manage', description: 'Manage settings', resource: 'settings', action: 'manage' },
   { name: 'audit:read', description: 'Read audit logs', resource: 'audit', action: 'read' },
   { name: 'user:manage', description: 'Manage users', resource: 'user', action: 'manage' },
   { name: 'role:manage', description: 'Manage roles', resource: 'role', action: 'manage' },
+  // Notification permissions (Phase 13)
+  { name: 'notification:read', description: 'Read notifications', resource: 'notification', action: 'read' },
+  { name: 'notification:manage', description: 'Manage notifications (admin)', resource: 'notification', action: 'manage' },
+  { name: 'notification:send', description: 'Send manual notifications', resource: 'notification', action: 'send' },
+  { name: 'notification:template:read', description: 'Read notification templates', resource: 'notification.template', action: 'read' },
+  { name: 'notification:template:create', description: 'Create notification templates', resource: 'notification.template', action: 'create' },
+  { name: 'notification:template:update', description: 'Update notification templates', resource: 'notification.template', action: 'update' },
+  { name: 'notification:template:delete', description: 'Delete notification templates', resource: 'notification.template', action: 'delete' },
+  { name: 'notification:preference:read', description: 'Read notification preferences', resource: 'notification.preference', action: 'read' },
+  { name: 'notification:preference:update', description: 'Update notification preferences', resource: 'notification.preference', action: 'update' },
+  { name: 'notification:delivery:read', description: 'Read notification delivery records', resource: 'notification.delivery', action: 'read' },
+  // Asset permissions (Phase 14)
+  { name: 'asset:read', description: 'Read assets', resource: 'asset', action: 'read' },
+  { name: 'asset:create', description: 'Create assets', resource: 'asset', action: 'create' },
+  { name: 'asset:update', description: 'Update assets', resource: 'asset', action: 'update' },
+  { name: 'asset:manage', description: 'Manage assets (status transitions)', resource: 'asset', action: 'manage' },
+  { name: 'asset:assign', description: 'Assign assets to employees/projects', resource: 'asset', action: 'assign' },
+  { name: 'asset:transfer', description: 'Transfer assets between locations/employees', resource: 'asset', action: 'transfer' },
+  { name: 'asset:retire', description: 'Retire assets', resource: 'asset', action: 'retire' },
+  { name: 'asset:dispose', description: 'Dispose assets', resource: 'asset', action: 'dispose' },
+  { name: 'asset.category:read', description: 'Read asset categories', resource: 'asset.category', action: 'read' },
+  { name: 'asset.category:create', description: 'Create asset categories', resource: 'asset.category', action: 'create' },
+  { name: 'asset.category:update', description: 'Update asset categories', resource: 'asset.category', action: 'update' },
+  { name: 'asset.category:delete', description: 'Delete asset categories', resource: 'asset.category', action: 'delete' },
+  { name: 'asset.location:read', description: 'Read asset locations', resource: 'asset.location', action: 'read' },
+  { name: 'asset.location:create', description: 'Create asset locations', resource: 'asset.location', action: 'create' },
+  { name: 'asset.location:update', description: 'Update asset locations', resource: 'asset.location', action: 'update' },
+  { name: 'asset.location:delete', description: 'Delete asset locations', resource: 'asset.location', action: 'delete' },
+  { name: 'asset.maintenance:read', description: 'Read asset maintenance records', resource: 'asset.maintenance', action: 'read' },
+  { name: 'asset.maintenance:create', description: 'Create asset maintenance records', resource: 'asset.maintenance', action: 'create' },
+  { name: 'asset.maintenance:update', description: 'Update asset maintenance records', resource: 'asset.maintenance', action: 'update' },
+  { name: 'asset.inspection:read', description: 'Read asset inspections', resource: 'asset.inspection', action: 'read' },
+  { name: 'asset.inspection:create', description: 'Create asset inspections', resource: 'asset.inspection', action: 'create' },
+  { name: 'asset.inspection:update', description: 'Update asset inspections', resource: 'asset.inspection', action: 'update' },
+  { name: 'asset.warranty:read', description: 'Read asset warranties', resource: 'asset.warranty', action: 'read' },
+  { name: 'asset.warranty:create', description: 'Create asset warranties', resource: 'asset.warranty', action: 'create' },
+  { name: 'asset.warranty:update', description: 'Update asset warranties', resource: 'asset.warranty', action: 'update' },
+  { name: 'asset.depreciation:read', description: 'Read asset depreciation records', resource: 'asset.depreciation', action: 'read' },
+  { name: 'asset.depreciation:calculate', description: 'Calculate asset depreciation', resource: 'asset.depreciation', action: 'calculate' },
+  // Analytics permissions (Phase 15)
+  { name: 'analytics:read', description: 'Read analytics dashboard', resource: 'analytics', action: 'read' },
+  { name: 'analytics:dashboard:read', description: 'Read analytics dashboard', resource: 'analytics.dashboard', action: 'read' },
+  { name: 'analytics:report:read', description: 'Read analytics reports', resource: 'analytics.report', action: 'read' },
+  { name: 'analytics:report:create', description: 'Create analytics reports', resource: 'analytics.report', action: 'create' },
+  { name: 'analytics:report:update', description: 'Update analytics reports', resource: 'analytics.report', action: 'update' },
+  { name: 'analytics:report:delete', description: 'Delete analytics reports', resource: 'analytics.report', action: 'delete' },
+  { name: 'analytics:export', description: 'Export analytics data', resource: 'analytics', action: 'export' },
+  { name: 'analytics:finance:read', description: 'Read finance analytics', resource: 'analytics.finance', action: 'read' },
+  { name: 'analytics:workforce:read', description: 'Read workforce analytics', resource: 'analytics.workforce', action: 'read' },
+  { name: 'analytics:attendance:read', description: 'Read attendance analytics', resource: 'analytics.attendance', action: 'read' },
+  { name: 'analytics:leave:read', description: 'Read leave analytics', resource: 'analytics.leave', action: 'read' },
+  { name: 'analytics:payroll:read', description: 'Read payroll analytics', resource: 'analytics.payroll', action: 'read' },
+  { name: 'analytics:crm:read', description: 'Read CRM analytics', resource: 'analytics.crm', action: 'read' },
+  { name: 'analytics:project:read', description: 'Read project analytics', resource: 'analytics.project', action: 'read' },
+  { name: 'analytics:asset:read', description: 'Read asset analytics', resource: 'analytics.asset', action: 'read' },
+  // CRM permissions (Phase 10) — required by the CRM controllers
+  { name: 'crm.customer:read', description: 'Read CRM customers', resource: 'crm.customer', action: 'read' },
+  { name: 'crm.customer:create', description: 'Create CRM customers', resource: 'crm.customer', action: 'create' },
+  { name: 'crm.customer:update', description: 'Update CRM customers', resource: 'crm.customer', action: 'update' },
+  { name: 'crm.contact:read', description: 'Read CRM contacts', resource: 'crm.contact', action: 'read' },
+  { name: 'crm.contact:create', description: 'Create CRM contacts', resource: 'crm.contact', action: 'create' },
+  { name: 'crm.contact:update', description: 'Update CRM contacts', resource: 'crm.contact', action: 'update' },
+  { name: 'crm.lead:read', description: 'Read CRM leads', resource: 'crm.lead', action: 'read' },
+  { name: 'crm.lead:create', description: 'Create CRM leads', resource: 'crm.lead', action: 'create' },
+  { name: 'crm.lead:update', description: 'Update CRM leads', resource: 'crm.lead', action: 'update' },
+  { name: 'crm.lead:convert', description: 'Convert CRM leads to customers', resource: 'crm.lead', action: 'convert' },
+  { name: 'crm.opportunity:read', description: 'Read CRM opportunities', resource: 'crm.opportunity', action: 'read' },
+  { name: 'crm.opportunity:create', description: 'Create CRM opportunities', resource: 'crm.opportunity', action: 'create' },
+  { name: 'crm.opportunity:update', description: 'Update CRM opportunities', resource: 'crm.opportunity', action: 'update' },
+  { name: 'crm.task:read', description: 'Read CRM tasks', resource: 'crm.task', action: 'read' },
+  { name: 'crm.task:create', description: 'Create CRM tasks', resource: 'crm.task', action: 'create' },
+  { name: 'crm.task:update', description: 'Update CRM tasks', resource: 'crm.task', action: 'update' },
+  { name: 'crm.activity:read', description: 'Read CRM activities', resource: 'crm.activity', action: 'read' },
+  { name: 'crm.activity:create', description: 'Create CRM activities', resource: 'crm.activity', action: 'create' },
+  // Automation permissions (Phase 16) — required by the automation controllers
+  { name: 'automation:read', description: 'Read automation workflows', resource: 'automation', action: 'read' },
+  { name: 'automation:create', description: 'Create automation workflows', resource: 'automation', action: 'create' },
+  { name: 'automation:update', description: 'Update automation workflows', resource: 'automation', action: 'update' },
+  { name: 'automation:delete', description: 'Delete automation workflows', resource: 'automation', action: 'delete' },
+  { name: 'automation:publish', description: 'Publish automation workflows', resource: 'automation', action: 'publish' },
+  { name: 'automation:pause', description: 'Pause automation workflows', resource: 'automation', action: 'pause' },
+  { name: 'automation:execute', description: 'Execute automation workflows', resource: 'automation', action: 'execute' },
+  { name: 'automation:execution:read', description: 'Read automation executions', resource: 'automation.execution', action: 'read' },
+  { name: 'automation:execution:retry', description: 'Retry automation executions', resource: 'automation.execution', action: 'retry' },
+  { name: 'automation:execution:cancel', description: 'Cancel automation executions', resource: 'automation.execution', action: 'cancel' },
+  // AI permissions (Phase 17-18) — required by the AI controllers
+  { name: 'ai:read', description: 'Read AI runtime status and models', resource: 'ai', action: 'read' },
+  { name: 'ai:admin', description: 'Administer AI runtime configuration', resource: 'ai', action: 'admin' },
+  { name: 'ai:chat', description: 'Use AI chat and command center', resource: 'ai', action: 'chat' },
+  { name: 'ai:tools:use', description: 'Use AI tools', resource: 'ai.tools', action: 'use' },
+  { name: 'ai:insights:read', description: 'Read AI insights', resource: 'ai.insights', action: 'read' },
+  { name: 'ai:conversation:read', description: 'Read AI conversations', resource: 'ai.conversation', action: 'read' },
+  { name: 'ai:conversation:delete', description: 'Delete AI conversations', resource: 'ai.conversation', action: 'delete' },
 ] as const;
 
 // ── Seed Function ────────────────────────────────────────────────────────────
@@ -315,7 +475,7 @@ async function main() {
     console.log('     ✅ company_owner: all permissions assigned');
   }
 
-  // HR Manager: employee + attendance + leave + payroll (read/manage)
+  // HR Manager: employee + attendance + leave + payroll + notifications (read/manage)
   await assignPermissions('hr_manager', [
     'employee:read', 'employee:create', 'employee:update',
     'attendance:read', 'attendance:create', 'attendance:correct', 'attendance:approve', 'attendance:manage',
@@ -328,6 +488,20 @@ async function main() {
     'payroll.component:read', 'payroll.component:manage',
     'payroll.adjustment:read', 'payroll.adjustment:create', 'payroll.adjustment:approve',
     'payroll.payslip:read',
+    'notification:read', 'notification:manage', 'notification:send',
+    'notification:template:read', 'notification:template:create', 'notification:template:update',
+    'notification:preference:read', 'notification:preference:update',
+    'notification:delivery:read',
+    'asset:read', 'asset:create', 'asset:update', 'asset:manage', 'asset:assign', 'asset:transfer', 'asset:retire', 'asset:dispose',
+    'asset.category:read', 'asset.category:create', 'asset.category:update',
+    'asset.location:read', 'asset.location:create', 'asset.location:update',
+    'asset.maintenance:read', 'asset.maintenance:create', 'asset.maintenance:update',
+    'asset.inspection:read', 'asset.inspection:create', 'asset.inspection:update',
+    'asset.warranty:read', 'asset.warranty:create', 'asset.warranty:update',
+    'asset.depreciation:read', 'asset.depreciation:calculate',
+    'analytics:read', 'analytics:dashboard:read', 'analytics:report:read', 'analytics:report:create', 'analytics:report:update',
+    'analytics:export', 'analytics:finance:read', 'analytics:workforce:read', 'analytics:attendance:read',
+    'analytics:leave:read', 'analytics:payroll:read', 'analytics:crm:read', 'analytics:project:read', 'analytics:asset:read',
   ]);
 
   // Finance Manager: finance + payroll
@@ -348,14 +522,12 @@ async function main() {
   // Team Manager: employee read
   await assignPermissions('team_manager', [
     'employee:read',
-  ]);
-
-  // Employee: self-service (read own attendance + clock in/out + leave self-service)
+  ]);  // Employee: self-service (read own attendance + clock in/out + leave self-service + notifications)
   await assignPermissions('employee', [
-    'employee:read',
-    'attendance:read', 'attendance:create',
+    'employee:read', 'attendance:read', 'attendance:create',
     'leave:read', 'leave:create', 'leave:submit', 'leave:cancel',
     'leave.balance:read',
+    'notification:read', 'notification:preference:read', 'notification:preference:update',
   ]);
 
   // ── 6. Users ─────────────────────────────────────────────────────────────

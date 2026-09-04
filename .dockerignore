@@ -1,0 +1,48 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build output
+apps/api/dist
+apps/web/.next
+apps/web/out
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma migrations lock
+packages/database/prisma/migrations/**/migration_lock.toml
+
+# Design system
+design-system/
+
+# Scripts
+scripts/
+
+# Husky
+.husky/

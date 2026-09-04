@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { RedisThrottlerStorage } from '../common/throttler/redis-throttler.storage';
 
 interface ServiceHealth {
   status: 'up' | 'down' | 'unknown';
@@ -22,6 +23,8 @@ export interface HealthCheckResult {
 export class HealthService {
   private readonly logger = new Logger(HealthService.name);
   private readonly startTime = Date.now();
+
+  constructor(private readonly redisThrottlerStorage: RedisThrottlerStorage) {}
 
   async getHealth(): Promise<HealthCheckResult> {
     const [database, redis] = await Promise.all([
@@ -85,25 +88,30 @@ export class HealthService {
     if (!redisUrl) {
       return {
         status: 'unknown',
-        message: 'REDIS_URL not configured',
+        message: 'REDIS_URL not configured — in-memory throttling fallback active',
       };
     }
 
     const start = Date.now();
-    try {
-      // Redis check will be implemented when Redis client is added
+    const result = await this.redisThrottlerStorage.ping();
+    if (result === null) {
       return {
         status: 'unknown',
         latencyMs: Date.now() - start,
-        message: 'Redis health check not yet implemented',
-      };
-    } catch (error) {
-      return {
-        status: 'down',
-        latencyMs: Date.now() - start,
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Redis client not configured',
       };
     }
+    if (result.reachable) {
+      return {
+        status: 'up',
+        latencyMs: result.latencyMs,
+      };
+    }
+    return {
+      status: 'down',
+      latencyMs: Date.now() - start,
+      message: 'Redis unreachable — in-memory throttling fallback active',
+    };
   }
 
   private determineOverallStatus(services: {

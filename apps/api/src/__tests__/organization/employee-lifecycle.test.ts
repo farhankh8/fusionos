@@ -19,15 +19,15 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const TENANT_A = { id: '00000000-0000-0000-0000-000000000001' };
-const TENANT_B = { id: '10000000-0000-0000-0000-000000000001' };
-const COMPANY_A = '00000000-0000-0000-0000-000000000002';
-const COMPANY_B = '10000000-0000-0000-0000-000000000002';
+const TENANT_A = { id: '00000000-0000-4000-8000-000000000001' };
+const TENANT_B = { id: '10000000-0000-4000-8000-000000000001' };
+const COMPANY_A = '00000000-0000-4000-8000-000000000002';
+const COMPANY_B = '10000000-0000-4000-8000-000000000002';
 
 // Test employee IDs
-const EMP_A1 = '00000000-0000-0000-0000-000000000020';
-const EMP_A2 = '00000000-0000-0000-0000-000000000021';
-const EMP_B1 = '10000000-0000-0000-0000-000000000020';
+const EMP_A1 = '00000000-0000-4000-8000-000000000020';
+const EMP_A2 = '00000000-0000-4000-8000-000000000021';
+const EMP_B1 = '10000000-0000-4000-8000-000000000020';
 
 // Valid status transitions
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -224,7 +224,7 @@ describe('Employee Lifecycle & Business Rules', () => {
           effectiveDate: new Date('2024-01-15'),
           employmentStatus: 'ACTIVE',
           newValue: { firstName: 'Alice', lastName: 'Manager' },
-          actorId: '00000000-0000-0000-0000-000000000003',
+          actorId: '00000000-0000-4000-8000-000000000003',
         },
       });
 

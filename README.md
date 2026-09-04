@@ -1,245 +1,225 @@
 # FusionOS by ZORVEXA
 
-**«AI-Native Business Operating System / ERP SaaS»**
+**AI-native Business Operating System / ERP SaaS**
 
-FusionOS is a unified, multi-tenant business platform designed to bring a company's core operations into one connected system.
-
-Instead of using separate tools for HR, attendance, payroll, finance, CRM, projects, assets, analytics, and automation, FusionOS connects them through a shared business data model.
-
-> **Enter data once. Connect everything. Understand everything.**
-> **Automate what can safely be automated.**
-> **Keep humans in control of sensitive decisions. Record everything.**
+FusionOS is a serious multi-tenant Business Operating System built with NestJS, Next.js, Prisma, and PostgreSQL. It features AI-powered intelligence through local Ollama integration, enterprise automation, and cross-module business orchestration.
 
 ---
 
-## 🚀 Core Modules
-
-- 🏢 Company & Organization Management
-- 👥 Users, Roles & RBAC
-- 👨‍💼 HR & Employee Management
-- 🕐 Attendance & Verification
-- 🏖️ Leave Management
-- 💰 Payroll — Attendance-based, Manual & Hybrid
-- 📊 Finance & Double-Entry Accounting
-- 🤝 CRM & Client Management
-- 📁 Projects & Tasks
-- 💻 Asset / Equipment Management
-- 🔔 Notifications & Communication
-- 📈 Analytics & Business Intelligence
-- 🤖 AI Command Center
-- ⚙️ Event-Driven Automation
-- 🧠 AI Agents & Controlled AI Tools
-- 📋 Audit & Security
-
----
-
-## 🔗 One Connected System
+## Architecture
 
 ```
-Company
-  → Employees
-    → Attendance
-      → Leave
-        → Payroll
-          → Finance
-            → CRM
-              → Projects
-                → Assets
-                  → AI
-                    → Automation
-                      → Analytics
-                        → Audit
-```
-
----
-
-## 🤖 AI-Native Architecture
-
-FusionOS uses AI to understand authorized business data, provide insights, assist users, detect potential anomalies, and support controlled automation.
-
-AI does not directly access the database or bypass permissions.
-
-```
-Business Data
-  → Business Rules
-    → Events
-      → AI / Automation
-        → Human Approval (when required)
-          → Action
-            → Audit
-```
-
----
-
-## 🛠️ Technology
-
-| Layer | Technology |
-|---|---|
-| **Frontend** | Next.js, React, TypeScript, Tailwind CSS v4 |
-| **Backend** | NestJS modular monolith (TypeScript) |
-| **Database** | PostgreSQL, Prisma ORM |
-| **Cache/Queue** | Redis |
-| **Infrastructure** | Docker, Git |
-| **Desktop** | Electron, React, TypeScript (Phase 22) |
-
-The architecture follows a **modular monolith** approach with strong domain boundaries.
-
----
-
-## 📁 Project Structure
-
-```
-fusionos/
-├── apps/
-│   ├── web/            # Next.js frontend
-│   ├── api/            # NestJS backend API
-│   └── desktop/        # Electron desktop app (Phase 22)
+FusionOS
+├── apps/api/          # NestJS backend (modular monolith)
+├── apps/web/          # Next.js frontend
 ├── packages/
-│   ├── shared/         # Shared utilities and constants
-│   ├── types/          # Shared TypeScript types
-│   ├── validation/     # Shared Zod validation schemas
-│   ├── config/         # Environment configuration
-│   ├── database/       # Prisma schema and client
-│   └── ui/             # Shared design system components
-├── infrastructure/
-│   └── docker/         # Docker Compose configuration
-├── docs/               # Project documentation
-└── tests/              # Integration and E2E tests (Phase 24)
+│   ├── database/      # Prisma schema & migrations
+│   ├── shared/        # Shared utilities
+│   ├── types/         # TypeScript types
+│   ├── config/        # Configuration
+│   └── ui/            # Shared UI components
+└── docs/              # Documentation
 ```
+
+### Tech Stack
+
+- **Backend**: NestJS, Prisma ORM, PostgreSQL
+- **Frontend**: Next.js 15, React 19, Tailwind CSS
+- **AI**: Ollama (local LLM runtime), provider-agnostic architecture
+- **Testing**: Vitest (data-integrity + application-layer E2E against the real HTTP stack)
+- **CI/CD**: GitHub Actions
+- **Containerization**: Docker, Docker Compose
+
+### Modules
+
+| Module | Description |
+|--------|-------------|
+| Auth | JWT authentication, RBAC |
+| Organization | Companies, branches, departments, teams |
+| Employees | Employee lifecycle management |
+| Attendance | Time tracking, exceptions |
+| Leave | Leave requests, approvals |
+| Payroll | Payroll processing |
+| Finance | Invoices, bills, journal entries |
+| CRM | Leads, customers, opportunities |
+| Projects | Project management, tasks |
+| Documents | Document management |
+| Assets | Asset tracking |
+| Analytics | Business intelligence (read-only) |
+| Automation | Workflow engine, triggers, actions |
+| AI Command Center | Natural-language business queries |
+| AI Agents | Intelligent task execution |
+| Intelligence | Cross-module orchestration |
 
 ---
 
-## 🚀 Getting Started
+## Prerequisites
 
-### Prerequisites
+- Node.js 20+
+- PostgreSQL 16+
+- Redis 7+ (optional, for caching/rate limiting)
+- Ollama (optional, for AI features)
 
-- Node.js >= 20.0.0
-- npm >= 10.0.0
-- Docker (optional, for PostgreSQL and Redis)
+---
 
-### Installation
+## Quick Start
+
+### 1. Clone & Install
 
 ```bash
+git clone https://github.com/zorvexa/fusionos.git
+cd fusionos
 npm install
 ```
+
+### 2. Environment Setup
+
+```bash
+cp .env.example .env.local
+# Edit .env.local with your configuration
+```
+
+### 3. Database Setup
+
+```bash
+# Start PostgreSQL (using Docker)
+docker-compose up -d postgres
+
+# Run migrations
+npx prisma migrate dev
+
+# Seed database (if seed file exists)
+npx tsx packages/database/prisma/seed.ts
+```
+
+### 4. Start Development
+
+```bash
+# Start all services
+npm run dev
+
+# Or start individually
+npm run dev:api    # API on port 3001
+npm run dev:web    # Web on port 3000
+```
+
+### 5. AI Setup (Optional)
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull a model
+ollama pull llama3.2
+
+# Verify
+ollama list
+```
+
+---
+
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run API tests only
+cd apps/api && npm test
+
+# Run specific test file
+cd apps/api && npx vitest run src/__tests__/auth/auth.test.ts
+
+# Run with coverage
+cd apps/api && npx vitest run --coverage
+```
+
+---
+
+## Docker
 
 ### Development
 
 ```bash
-# Start API server (port 3001)
-npm run dev:api
-
-# Start web application (port 3000)
-npm run dev:web
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
-### Infrastructure
+### Production Build
 
 ```bash
-# Start PostgreSQL and Redis (requires Docker)
-docker compose up -d
+# Build API image
+docker build -f apps/api/Dockerfile -t fusionos-api .
+
+# Build Web image
+docker build -f apps/web/Dockerfile -t fusionos-web .
 ```
-
-### Quality Gates
-
-```bash
-npm run typecheck    # Type checking across all packages
-npm run build        # Build all packages and apps
-npm run lint         # Lint all packages
-```
-
-### Health Check
-
-Once the API is running:
-
-```
-GET http://localhost:3001/api/v1/health
-```
-
-Returns application health status, database connectivity, and Redis status.
 
 ---
 
-## 🎯 Core MVP
+## API Documentation
 
-The first major milestone focuses on:
+When running in development mode, Swagger documentation is available at:
 
 ```
-Company → Users → Employees → Attendance → Leave → Payroll → Finance → AI → Automation → Analytics
+http://localhost:3001/api/docs
 ```
 
-Payroll supports:
+---
 
-- Attendance-based calculation
-- Manual payroll
-- Hybrid payroll
-- Configurable earnings and deductions
-- Approval workflow
-- Audit trail
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `NODE_ENV` | No | development | Environment mode |
+| `PORT` | No | 3001 | API port |
+| `DATABASE_URL` | Yes | - | PostgreSQL connection string |
+| `REDIS_URL` | No | - | Redis connection string |
+| `JWT_SECRET` | Yes | - | JWT signing secret |
+| `JWT_EXPIRES_IN` | No | 15m | JWT expiration |
+| `JWT_REFRESH_EXPIRES_IN` | No | 7d | Refresh token expiration |
+| `CORS_ORIGIN` | No | http://localhost:3000 | Allowed CORS origins |
+| `AI_PROVIDER` | No | ollama | AI provider |
+| `AI_BASE_URL` | No | http://localhost:11434 | Ollama base URL |
+| `AI_MODEL` | No | llama3.2 | AI model name |
+| `AI_TIMEOUT` | No | 60000 | AI request timeout (ms) |
 
 ---
 
-## 🔐 Security
+## CI/CD
 
-FusionOS is designed with:
+GitHub Actions CI pipeline runs on every push and PR:
 
-- Multi-tenant isolation
-- Backend-enforced RBAC
-- Secure authentication with MFA
-- Input validation at every boundary
-- Audit logging for all sensitive operations
-- Secure file handling
-- AI permission boundaries
-- Human approval for sensitive operations
+1. **Lint & Typecheck** — Prisma validation, TypeScript checks
+2. **Build** — Compile all packages
+3. **Tests** — Unit and integration tests with PostgreSQL
+4. **Docker** — Build and verify container images
+5. **Security** — Secret scanning, vulnerability checks
 
 ---
 
-## 🗺️ Roadmap
+## Security
 
-| Phase | Focus |
-|---|---|
-| 1 | Foundation & Architecture ✅ |
-| 2 | Database |
-| 3 | Authentication |
-| 4 | Multi-Tenancy |
-| 5 | Organization & Employees |
-| 6 | Attendance & Leave |
-| 7 | Payroll |
-| 8 | Finance |
-| 9 | CRM & Projects |
-| 10 | Assets & Notifications |
-| 11 | AI Platform |
-| 12 | Event Infrastructure & Automation |
-| 13 | AI Agents & Automation Studio |
-| 14 | Analytics & Executive Intelligence |
-| 15 | Desktop Application |
-| 16 | Security Hardening & Testing |
-| 17 | CI/CD, Cloud & Production |
+- JWT authentication with refresh tokens
+- Granular RBAC (Role-Based Access Control)
+- Multi-tenant isolation at database level
+- IDOR protection on all endpoints
+- Rate limiting on authentication endpoints
+- Helmet security headers
+- CORS protection
+- Input validation via DTOs
+- No eval() or dynamic code execution
+- AI prompt injection defense
 
 ---
 
-## 📌 Project Status
+## Documentation
 
-**Phase 1 — Foundation: COMPLETE** ✅
-
-The monorepo foundation is established with:
-
-- Working NestJS API with health endpoint
-- Working Next.js application with navigation shell
-- Shared packages (types, validation, config, database, UI components)
-- Design system foundation
-- Docker Compose configuration
-- Quality gates (typecheck, build)
-
-**Next Phase:** Phase 2 — Database Foundation
-
----
-
-## 📚 Documentation
-
-- [Master Blueprint](docs/00-fusionos-master-blueprint.md) — Complete project specification
-- [Documentation Suite](docs/README.md) — Full documentation index
-- [Project State](docs/project-state.md) — Current development status
+- [Architecture](docs/architecture.md)
+- [Development Guide](docs/development-guide.md)
+- [Testing Strategy](docs/testing-strategy.md)
+- [Security](docs/security.md)
+- [Operations](docs/operations.md)
+- [Phase Reports](docs/)
 
 ---
 

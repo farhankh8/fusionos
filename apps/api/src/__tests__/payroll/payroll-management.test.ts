@@ -28,10 +28,10 @@ const prisma = new PrismaClient();
 
 // ── Test Constants ─────────────────────────────────────────────────────────
 
-const TENANT_A = '00000000-0000-0000-0000-000000000001';
-const TENANT_B = '10000000-0000-0000-0000-000000000001';
-const COMPANY_A = '00000000-0000-0000-0000-000000000002';
-const COMPANY_B = '10000000-0000-0000-0000-000000000002';
+const TENANT_A = '00000000-0000-4000-8000-000000000001';
+const TENANT_B = '10000000-0000-4000-8000-000000000001';
+const COMPANY_A = '00000000-0000-4000-8000-000000000002';
+const COMPANY_B = '10000000-0000-4000-8000-000000000002';
 
 let employeeA: any;
 let employeeB: any;
@@ -142,9 +142,9 @@ beforeAll(async () => {
 
   // Create salary structures (basicSalary in minor units: 3000000 = 30,000.00)
   salaryA = await prisma.salaryStructure.upsert({
-    where: { id: 'f0a00000-0000-0000-0000-000000000001' },
+    where: { id: 'f0a00000-0000-4000-8000-000000000001' },
     create: {
-      id: 'f0a00000-0000-0000-0000-000000000001',
+      id: 'f0a00000-0000-4000-8000-000000000001',
       tenantId: TENANT_A, employeeId: employeeA.id,
       currency: 'USD', payFrequency: 'MONTHLY',
       basicSalary: 3000000, effectiveFrom: new Date('2026-01-01'),
@@ -154,9 +154,9 @@ beforeAll(async () => {
   });
 
   salaryB = await prisma.salaryStructure.upsert({
-    where: { id: 'f0b00000-0000-0000-0000-000000000001' },
+    where: { id: 'f0b00000-0000-4000-8000-000000000001' },
     create: {
-      id: 'f0b00000-0000-0000-0000-000000000001',
+      id: 'f0b00000-0000-4000-8000-000000000001',
       tenantId: TENANT_B, employeeId: employeeB.id,
       currency: 'AED', payFrequency: 'MONTHLY',
       basicSalary: 5000000, effectiveFrom: new Date('2026-01-01'),
@@ -245,8 +245,8 @@ afterAll(async () => {
   await prisma.payrollPeriod.deleteMany({ where: { name: 'August 2026', tenantId: { in: [TENANT_A, TENANT_B] } } });
 
   // Delete salary structures by known IDs only
-  await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructureId: { in: ['f0a00000-0000-0000-0000-000000000001', 'f0b00000-0000-0000-0000-000000000001', 'f0c00000-0000-0000-0000-000000000001'] } } });
-  await prisma.salaryStructure.deleteMany({ where: { id: { in: ['f0a00000-0000-0000-0000-000000000001', 'f0b00000-0000-0000-0000-000000000001', 'f0c00000-0000-0000-0000-000000000001'] } } });
+  await prisma.salaryStructureComponent.deleteMany({ where: { salaryStructureId: { in: ['f0a00000-0000-4000-8000-000000000001', 'f0b00000-0000-4000-8000-000000000001', 'f0c00000-0000-4000-8000-000000000001'] } } });
+  await prisma.salaryStructure.deleteMany({ where: { id: { in: ['f0a00000-0000-4000-8000-000000000001', 'f0b00000-0000-4000-8000-000000000001', 'f0c00000-0000-4000-8000-000000000001'] } } });
 
   // Delete components by code (these are unique per tenant — only this test creates them)
   await prisma.payrollComponent.deleteMany({ where: { code: { in: ['BASIC', 'HOUSING', 'ABSENCE', 'OVERTIME'] }, tenantId: TENANT_A } });
@@ -343,12 +343,12 @@ describe('Payroll Management', () => {
 
     it('should track salary history without overwriting', async () => {
       // Pre-cleanup any leftover from previous runs
-      await prisma.salaryStructure.deleteMany({ where: { id: 'f0c00000-0000-0000-0000-000000000001' } });
+      await prisma.salaryStructure.deleteMany({ where: { id: 'f0c00000-0000-4000-8000-000000000001' } });
 
       // Create a new salary structure for same employee
       const newSalary = await prisma.salaryStructure.create({
         data: {
-          id: 'f0c00000-0000-0000-0000-000000000001',
+          id: 'f0c00000-0000-4000-8000-000000000001',
           tenantId: TENANT_A, employeeId: employeeA.id,
           currency: 'USD', payFrequency: 'MONTHLY',
           basicSalary: 3500000, effectiveFrom: new Date('2026-09-01'),
@@ -447,7 +447,7 @@ describe('Payroll Management', () => {
         data: {
           tenantId: TENANT_A, periodId: periodA.id,
           calculationMode: 'ATTENDANCE',
-          createdBy: '00000000-0000-0000-0000-000000000003',
+          createdBy: '00000000-0000-4000-8000-000000000003',
           currency: 'USD',
         },
       });

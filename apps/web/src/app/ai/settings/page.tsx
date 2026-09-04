@@ -1,0 +1,279 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Settings, Server, Cpu, Activity, CheckCircle, XCircle, AlertTriangle, RefreshCw, BarChart3 } from 'lucide-react';
+import { PageHeader } from '@/components/ui/page-header';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface RuntimeStatus {
+  provider: string;
+  status: string;
+  ollama: {
+    reachable: boolean;
+    baseUrl: string;
+    configuredModel: string;
+    modelInstalled: boolean;
+    installedModels: string[];
+    lastHealthCheck: string | null;
+    latencyMs: number;
+  };
+  capabilities: {
+    textGeneration: boolean;
+    structuredOutput: boolean;
+    contextSources: number;
+    tools: number;
+  };
+  usage: {
+    totalRequests: number;
+    successfulRequests: number;
+    failedRequests: number;
+    averageLatencyMs: number;
+    totalTokensUsed: number;
+    lastRequestAt: string | null;
+  };
+}
+
+export default function AIRuntimeSettingsPage() {
+  const [status, setStatus] = useState<RuntimeStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [healthChecking, setHealthChecking] = useState(false);
+
+  useEffect(() => {
+    loadStatus();
+  }, []);
+
+  async function loadStatus() {
+    try {
+      const res = await fetch('/api/v1/ai/runtime/status');
+      const data = await res.json();
+      if (data) setStatus(data);
+    } catch {
+      // Silent fail
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleHealthCheck() {
+    setHealthChecking(true);
+    try {
+      await fetch('/api/v1/ai/runtime/health', { method: 'POST' });
+      await loadStatus();
+    } catch {
+      // Silent fail
+    } finally {
+      setHealthChecking(false);
+    }
+  }
+
+  const statusColor = (s: string) => {
+    switch (s) {
+      case 'READY': return 'text-emerald-600 bg-emerald-50';
+      case 'UNAVAILABLE': return 'text-red-600 bg-red-50';
+      case 'MODEL_MISSING': return 'text-amber-600 bg-amber-50';
+      default: return 'text-slate-600 bg-slate-50';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <PageHeader
+        title="AI Runtime Settings"
+        description="Monitor and configure the Ollama AI runtime."
+        actions={
+          <button
+            onClick={handleHealthCheck}
+            disabled={healthChecking}
+            className="inline-flex items-center gap-2 rounded-lg border border-[#E2E8F0] px-4 py-2 text-[13px] font-medium text-[#64748B] hover:border-[#0F172A] hover:text-[#0F172A] transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${healthChecking ? 'animate-spin' : ''}`} />
+            {healthChecking ? 'Checking...' : 'Health Check'}
+          </button>
+        }
+      />
+
+      <div className="p-5 lg:p-6">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Connection Status */}
+          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+              <Server className="h-4 w-4 text-[#94A3B8]" />
+              AI Runtime
+            </h3>
+            {loading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Provider</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.provider ?? 'Unknown'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Status</span>
+                  <span className={`rounded px-2 py-0.5 text-[11px] font-medium ${statusColor(status?.status ?? 'UNKNOWN')}`}>
+                    {status?.status ?? 'UNKNOWN'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Ollama Reachable</span>
+                  {status?.ollama.reachable ? (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Base URL</span>
+                  <span className="text-[12px] font-mono text-[#64748B]">{status?.ollama.baseUrl ?? 'N/A'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Latency</span>
+                  <span className="text-[12px] text-[#64748B]">{status?.ollama.latencyMs ?? 0}ms</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Last Health Check</span>
+                  <span className="text-[12px] text-[#64748B]">
+                    {status?.ollama.lastHealthCheck ? new Date(status.ollama.lastHealthCheck).toLocaleString() : 'Never'}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Model Info */}
+          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-[#94A3B8]" />
+              Model
+            </h3>
+            {loading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Configured Model</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.ollama.configuredModel ?? 'N/A'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Model Installed</span>
+                  {status?.ollama.modelInstalled ? (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  )}
+                </div>
+                {status?.ollama.installedModels && status.ollama.installedModels.length > 0 && (
+                  <div>
+                    <span className="text-[12px] text-[#94A3B8] block mb-2">Installed Models</span>
+                    <div className="space-y-1">
+                      {status.ollama.installedModels.map((model) => (
+                        <div key={model} className="flex items-center gap-2 rounded bg-[#F8FAFC] px-2 py-1">
+                          <Cpu className="h-3 w-3 text-[#94A3B8]" />
+                          <span className="text-[11px] font-mono text-[#64748B]">{model}</span>
+                          {model === status?.ollama.configuredModel && (
+                            <span className="rounded bg-[#2563EB]/10 px-1 text-[9px] font-medium text-[#2563EB]">DEFAULT</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Capabilities */}
+          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#94A3B8]" />
+              Capabilities
+            </h3>
+            {loading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Text Generation</span>
+                  {status?.capabilities.textGeneration ? (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Structured Output</span>
+                  {status?.capabilities.structuredOutput ? (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Context Sources</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.capabilities.contextSources ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Tools</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.capabilities.tools ?? 0}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Usage Stats */}
+          <div className="rounded-lg border border-[#E2E8F0] bg-white p-5">
+            <h3 className="text-[13px] font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-[#94A3B8]" />
+              Usage Statistics
+            </h3>
+            {loading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Total Requests</span>
+                  <span className="text-[12px] font-medium text-[#0F172A]">{status?.usage.totalRequests ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Successful</span>
+                  <span className="text-[12px] font-medium text-emerald-600">{status?.usage.successfulRequests ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Failed</span>
+                  <span className="text-[12px] font-medium text-red-600">{status?.usage.failedRequests ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Avg Latency</span>
+                  <span className="text-[12px] text-[#64748B]">{status?.usage.averageLatencyMs ?? 0}ms</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Total Tokens</span>
+                  <span className="text-[12px] text-[#64748B]">{(status?.usage.totalTokensUsed ?? 0).toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-[#94A3B8]">Last Request</span>
+                  <span className="text-[12px] text-[#64748B]">
+                    {status?.usage.lastRequestAt ? new Date(status.usage.lastRequestAt).toLocaleString() : 'Never'}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

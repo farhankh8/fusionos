@@ -1,0 +1,351 @@
+// =============================================================================
+// PHASE 10 — CRM (Customer Relationship Management)
+// =============================================================================
+// CRM extends the existing FusionOS architecture.
+// The canonical Customer entity lives in Finance (schema.finance.prisma).
+// CRM adds CRM-specific relationships and activities around that Customer.
+// =============================================================================
+
+// ── CRM Enums ─────────────────────────────────────────────────────────────
+
+enum CustomerType {
+  INDIVIDUAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum CustomerSegment {
+  STANDARD
+  PREMIUM
+  ENTERPRISE
+  VIP
+}
+
+enum CustomerLifecycleStage {
+  LEAD
+  PROSPECT
+  CUSTOMER
+  INACTIVE
+  CHURNED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  UNQUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  COLD_CALL
+  EMAIL_CAMPAIGN
+  SOCIAL_MEDIA
+  TRADE_SHOW
+  PARTNER
+  ORGANIC
+  OTHER
+}
+
+enum OpportunityStage {
+  PROSPECTING
+  QUALIFICATION
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+  ABANDONED
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  TASK
+  FOLLOW_UP
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// ── CRM Customer Profile (extends Finance Customer) ───────────────────────
+
+/// CustomerProfile adds CRM-specific information to the existing Finance Customer.
+/// The canonical Customer record remains in Finance — this is an extension layer.
+model CustomerProfile {
+  id                String                @id @default(uuid()) @db.Uuid
+  tenantId          String                @db.Uuid
+  companyId         String                @db.Uuid
+  customerId        String                @db.Uuid  // References Finance Customer
+  customerType      CustomerType          @default(BUSINESS)
+  customerSegment   CustomerSegment       @default(STANDARD)
+  lifecycleStage    CustomerLifecycleStage @default(CUSTOMER)
+  industry          String?               @db.VarChar(100)
+  website           String?               @db.VarChar(500)
+  description       String?               @db.Text
+  ownerId           String?               @db.Uuid  // Employee who owns this customer
+  annualRevenue     Int?                  // Integer minor units
+  employeeCount     Int?
+  rating            Int?                  // 1-5 stars
+  source            LeadSource?
+  tags              String?               @db.VarChar(500) // Comma-separated tags
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  tenant            Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer          Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  owner             Employee?             @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  contacts          Contact[]
+  activities        Activity[]
+  tasks             Task[]
+  notes             CrmNote[]
+  opportunities     Opportunity[]
+  leads             Lead[]
+
+  @@unique([tenantId, customerId])
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([ownerId])
+  @@index([lifecycleStage])
+  @@index([customerType])
+  @@map("customer_profiles")
+}
+
+// ── Contacts ──────────────────────────────────────────────────────────────
+
+model Contact {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  companyId         String    @db.Uuid
+  customerProfileId String    @db.Uuid
+  firstName         String    @db.VarChar(255)
+  lastName          String    @db.VarChar(255)
+  jobTitle          String?   @db.VarChar(255)
+  email             String?   @db.VarChar(255)
+  phone             String?   @db.VarChar(50)
+  mobile            String?   @db.VarChar(50)
+  department        String?   @db.VarChar(100)
+  isPrimary         Boolean   @default(false)
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  activities        Activity[]
+  opportunities     Opportunity[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([email])
+  @@map("crm_contacts")
+}
+
+// ── Leads ─────────────────────────────────────────────────────────────────
+
+model Lead {
+  id                String         @id @default(uuid()) @db.Uuid
+  tenantId          String         @db.Uuid
+  companyId         String         @db.Uuid
+  customerProfileId String?        @db.Uuid  // null until converted
+  firstName         String         @db.VarChar(255)
+  lastName          String?        @db.VarChar(255)
+  email             String?        @db.VarChar(255)
+  phone             String?        @db.VarChar(50)
+  company           String?        @db.VarChar(255)  // Company name before conversion
+  source            LeadSource     @default(OTHER)
+  status            LeadStatus     @default(NEW)
+  ownerId           String?        @db.Uuid
+  rating            Int?           // 1-5
+  notes             String?        @db.Text
+  convertedAt       DateTime?
+  convertedById     String?        @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  owner             Employee?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  convertedBy       Employee?       @relation("LeadConvertedBy", fields: [convertedById], references: [id], onDelete: SetNull)
+  activities        Activity[]
+  notes             CrmNote[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([status])
+  @@index([ownerId])
+  @@index([source])
+  @@map("crm_leads")
+}
+
+// ── Opportunities ─────────────────────────────────────────────────────────
+
+model Opportunity {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  companyId         String            @db.Uuid
+  customerProfileId String            @db.Uuid
+  contactId         String?           @db.Uuid
+  ownerId           String?           @db.Uuid
+  name              String            @db.VarChar(255)
+  stage             OpportunityStage  @default(PROSPECTING)
+  status            OpportunityStatus @default(OPEN)
+  amount            Int               @default(0) // Integer minor units
+  currency          String            @default("USD") @db.VarChar(3)
+  probability       Int               @default(0) // 0-100 percentage
+  expectedCloseDate DateTime?         @db.Date
+  actualCloseDate   DateTime?         @db.Date
+  description       String?           @db.Text
+  source            LeadSource?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  owner             Employee?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  activities        Activity[]
+  notes             CrmNote[]
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([stage])
+  @@index([status])
+  @@index([ownerId])
+  @@map("crm_opportunities")
+}
+
+// ── Activities ────────────────────────────────────────────────────────────
+
+model Activity {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String        @db.Uuid
+  contactId         String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  activityType      ActivityType
+  subject           String        @db.VarChar(255)
+  description       String?       @db.Text
+  actorId           String        @db.Uuid  // Employee who performed the activity
+  dueDate           DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  actor             Employee        @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([contactId])
+  @@index([leadId])
+  @@index([opportunityId])
+  @@index([activityType])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("crm_activities")
+}
+
+// ── Tasks ─────────────────────────────────────────────────────────────────
+
+model Task {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String?       @db.Uuid
+  contactId         String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  title             String        @db.VarChar(255)
+  description       String?       @db.Text
+  assigneeId        String?       @db.Uuid  // Employee
+  priority          TaskPriority  @default(MEDIUM)
+  status            TaskStatus    @default(TODO)
+  dueDate           DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  contact           Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  assignee          Employee?       @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@map("crm_tasks")
+}
+
+// ── Notes ─────────────────────────────────────────────────────────────────
+
+model CrmNote {
+  id                String        @id @default(uuid()) @db.Uuid
+  tenantId          String        @db.Uuid
+  companyId         String        @db.Uuid
+  customerProfileId String?       @db.Uuid
+  leadId            String?       @db.Uuid
+  opportunityId     String?       @db.Uuid
+  authorId          String        @db.Uuid  // Employee
+  content           String        @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  lead              Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity       Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  author            Employee        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([customerProfileId])
+  @@index([leadId])
+  @@index([opportunityId])
+  @@index([authorId])
+  @@map("crm_notes")
+}

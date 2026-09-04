@@ -9,15 +9,15 @@ interface StatusBadgeProps {
 }
 
 const VARIANT_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  default: { bg: 'bg-[#F1F5F9]', text: 'text-[#475569]', dot: 'bg-[#94A3B8]' },
-  success: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-  warning: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
-  danger: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
-  info: { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-700', dot: 'bg-purple-500' },
+  default: { bg: 'bg-secondary', text: 'text-muted-foreground', dot: 'bg-muted-foreground/60' },
+  success: { bg: 'bg-success-light', text: 'text-success', dot: 'bg-success' },
+  warning: { bg: 'bg-warning-light', text: 'text-warning', dot: 'bg-warning' },
+  danger: { bg: 'bg-[#FEF2F2] dark:bg-[rgba(239,68,68,0.15)]', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
+  info: { bg: 'bg-info-light', text: 'text-primary', dot: 'bg-primary' },
+  purple: { bg: 'bg-[#F5F3FF] dark:bg-[rgba(139,92,246,0.15)]', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
 };
 
-const DEFAULT_STYLE = { bg: 'bg-[#F1F5F9]', text: 'text-[#475569]', dot: 'bg-[#94A3B8]' };
+const DEFAULT_STYLE = { bg: 'bg-secondary', text: 'text-muted-foreground', dot: 'bg-muted-foreground/60' };
 
 const STATUS_VARIANT_MAP: Record<string, string> = {
   ACTIVE: 'success',
@@ -52,8 +52,8 @@ export function StatusBadge({ status, variant, className }: StatusBadgeProps) {
   const styles = VARIANT_STYLES[variantKey] || DEFAULT_STYLE;
 
   return (
-    <span className={cn(`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${styles.bg} ${styles.text}`, className)}>
-      <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
+    <span className={cn('inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium', styles.bg, styles.text, className)}>
+      <span className={cn('h-1.5 w-1.5 rounded-full', styles.dot)} />
       {status.replace(/_/g, ' ')}
     </span>
   );
