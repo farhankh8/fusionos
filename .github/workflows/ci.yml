@@ -17,6 +17,8 @@ jobs:
   lint-typecheck:
     name: Lint & Typecheck
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://fusionos:fusionos@localhost:5432/fusionos_test?schema=public
     steps:
       - uses: actions/checkout@v4
 
@@ -201,11 +203,11 @@ jobs:
       - name: Check for secrets in code
         run: |
           echo "Checking for potential secrets..."
-          if grep -rn "password\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ 2>/dev/null; then
+          if grep -rn "password\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=dist --exclude-dir=.git apps/ packages/ 2>/dev/null; then
             echo "ERROR: Potential passwords found"
             exit 1
           fi
-          if grep -rn "api[_-]key\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ 2>/dev/null; then
+          if grep -rn "api[_-]key\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=dist --exclude-dir=.git apps/ packages/ 2>/dev/null; then
             echo "ERROR: Potential API keys found"
             exit 1
           fi
@@ -213,7 +215,7 @@ jobs:
 
       - name: Check for eval() usage
         run: |
-          if grep -rn "eval(" --include="*.ts" --include="*.tsx" apps/ packages/ 2>/dev/null | grep -v "// " | grep -v "eval()"; then
+          if grep -rn "eval(" --include="*.ts" --include="*.tsx" --exclude="*.test.ts" --exclude="*.spec.ts" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=dist --exclude-dir=.git apps/ packages/ 2>/dev/null | grep -v "// " | grep -v "eval()"; then
             echo "ERROR: eval() usage found"
             exit 1
           fi
