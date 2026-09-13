@@ -16,7 +16,7 @@ import { FilterBar } from '@/components/ui/filter-bar';
 import { Tabs } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
-import { Clock, Users, UserCheck, UserX, CalendarOff, AlertTriangle, Search, Plus } from 'lucide-react';
+import { Clock, Users, UserCheck, UserX, CalendarOff, AlertTriangle, Plus } from 'lucide-react';
 
 interface AttendanceRecord {
   id: string;

@@ -116,15 +116,37 @@ jobs:
       - name: Prisma Generate
         run: npx prisma generate --schema=packages/database/prisma/schema.prisma
 
-      - name: Push schema to test DB
-        run: npx prisma db push --schema=packages/database/prisma/schema.prisma --skip-generate
+      - name: Apply migrations to test DB (migrate deploy — includes RLS)
+        run: npx prisma migrate deploy --schema=packages/database/prisma/schema.prisma
+
+      - name: Verify RLS policies present (migrated, not db push)
+        run: |
+          npx prisma db execute --schema=packages/database/prisma/schema.prisma \
+            --stdin <<'SQL'
+          SELECT count(*) AS enabled_rls_tables
+          FROM pg_class c
+          WHERE c.relrowsecurity = true
+            AND c.relkind = 'r'
+            AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public');
+          SQL
 
       - name: Seed test database
         run: npx tsx packages/database/prisma/seed.ts
-        continue-on-error: true
 
       - name: Run API tests
         run: cd apps/api && npx vitest run --no-file-parallelism --reporter=verbose
+
+      - name: RLS tests must EXECUTE (not skip)
+        run: |
+          cd apps/api
+          output=$(npx vitest run --no-file-parallelism src/__tests__/security/rls-tenant-isolation.test.ts 2>&1)
+          echo "$output"
+          if echo "$output" | grep -qE 'Tests\s+22 passed'; then
+            echo "RLS OK: 22/22 tests executed and passed."
+          else
+            echo "::error::RLS suite did not report 22 tests passed. RLS migration may not be applied in CI."
+            exit 1
+          fi
 
       - name: Run tests (determinism check #1)
         run: cd apps/api && npx vitest run --no-file-parallelism 2>&1 | grep -E "(Tests|Test Files)"
@@ -153,11 +175,11 @@ jobs:
           docker run -d --name fusionos-api-test -p 3001:3001 \
             -e DATABASE_URL=postgresql://unused:unused@localhost:5432/unused \
             -e JWT_SECRET=test \
-            fusionos-api:ci || true
+            fusionos-api:ci
           sleep 5
-          docker logs fusionos-api-test 2>&1 || true
-          docker stop fusionos-api-test || true
-          docker rm fusionos-api-test || true
+          docker logs fusionos-api-test 2>&1
+          docker stop fusionos-api-test
+          docker rm fusionos-api-test
 
   # ══════════════════════════════════════════════════════════════════════════
   # SECURITY CHECKS
@@ -179,13 +201,23 @@ jobs:
       - name: Check for secrets in code
         run: |
           echo "Checking for potential secrets..."
-          ! grep -rn "password\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ || echo "WARNING: Potential passwords found"
-          ! grep -rn "api[_-]key\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ || echo "WARNING: Potential API keys found"
-          ! grep -rn "secret\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ || echo "WARNING: Potential secrets found"
+          if grep -rn "password\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ 2>/dev/null; then
+            echo "ERROR: Potential passwords found"
+            exit 1
+          fi
+          if grep -rn "api[_-]key\s*=\s*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" apps/ packages/ 2>/dev/null; then
+            echo "ERROR: Potential API keys found"
+            exit 1
+          fi
+          echo "No secrets detected"
 
       - name: Check for eval() usage
         run: |
-          ! grep -rn "eval(" --include="*.ts" --include="*.tsx" apps/ packages/ || echo "WARNING: eval() usage found"
+          if grep -rn "eval(" --include="*.ts" --include="*.tsx" apps/ packages/ 2>/dev/null | grep -v "// " | grep -v "eval()"; then
+            echo "ERROR: eval() usage found"
+            exit 1
+          fi
+          echo "No eval() usage detected"
 
       - name: npm audit
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=critical

@@ -13,7 +13,6 @@ import { DataTable } from '@/components/ui/data-table';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SectionCard } from '@/components/ui/section-card';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
 import { Wallet, Users, TrendingUp, TrendingDown, DollarSign, Clock, CheckCircle2, FileText, Settings, BarChart3, Plus } from 'lucide-react';
 
@@ -89,10 +88,6 @@ const formatMoney = (amount: number, currency: string = 'USD') => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount / 100);
-};
-
-const PERIOD_STATUS_ORDER: Record<string, number> = {
-  DRAFT: 0, OPEN: 1, PROCESSING: 2, CALCULATED: 3, UNDER_REVIEW: 4, APPROVED: 5, FINALIZED: 6, CLOSED: 7,
 };
 
 /* ── Main Component ──────────────────────────────────────────────────────── */

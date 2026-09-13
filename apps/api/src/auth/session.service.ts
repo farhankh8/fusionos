@@ -115,7 +115,7 @@ export class SessionService {
     accessTokenExpiresAt: Date;
   }> {
     // Verify the refresh token JWT
-    const payload = await this.tokenService.verifyRefreshToken(refreshToken);
+    await this.tokenService.verifyRefreshToken(refreshToken);
 
     // Find the session by refresh token hash
     const refreshTokenHash = this.tokenService.hashToken(refreshToken);

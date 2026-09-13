@@ -46,7 +46,7 @@ services:
       PORT: 3001
       DATABASE_URL: postgresql://fusionos:fusionos@postgres:5432/fusionos?schema=public
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: dev-jwt-secret-change-in-production
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
       JWT_EXPIRES_IN: 15m
       JWT_REFRESH_EXPIRES_IN: 7d
       AI_PROVIDER: ollama
@@ -54,6 +54,7 @@ services:
       AI_MODEL: llama3.2
       AI_TIMEOUT: 60000
       CORS_ORIGIN: http://localhost:3000
+      EMAIL_PROVIDER: console
     depends_on:
       postgres:
         condition: service_healthy

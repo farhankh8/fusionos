@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { RedisThrottlerStorage } from '../common/throttler/redis-throttler.storage';
 
 interface ServiceHealth {
@@ -16,6 +17,7 @@ export interface HealthCheckResult {
     application: ServiceHealth;
     database: ServiceHealth;
     redis: ServiceHealth;
+    ollama: ServiceHealth;
   };
 }
 
@@ -24,18 +26,23 @@ export class HealthService {
   private readonly logger = new Logger(HealthService.name);
   private readonly startTime = Date.now();
 
-  constructor(private readonly redisThrottlerStorage: RedisThrottlerStorage) {}
+  constructor(
+    private readonly redisThrottlerStorage: RedisThrottlerStorage,
+    private readonly prisma: PrismaClient,
+  ) {}
 
   async getHealth(): Promise<HealthCheckResult> {
-    const [database, redis] = await Promise.all([
+    const [database, redis, ollama] = await Promise.all([
       this.checkDatabase(),
       this.checkRedis(),
+      this.checkOllama(),
     ]);
 
     const services = {
       application: this.checkApplication(),
       database,
       redis,
+      ollama,
     };
 
     const status = this.determineOverallStatus(services);
@@ -64,11 +71,7 @@ export class HealthService {
 
     const start = Date.now();
     try {
-      // Dynamic import to avoid hard dependency when DB is not configured
-      const { PrismaClient } = await import('@prisma/client');
-      const client = new PrismaClient();
-      await client.$queryRaw`SELECT 1`;
-      await client.$disconnect();
+      await this.prisma.$queryRaw`SELECT 1`;
       return {
         status: 'up',
         latencyMs: Date.now() - start,
@@ -114,14 +117,43 @@ export class HealthService {
     };
   }
 
+  private async checkOllama(): Promise<ServiceHealth> {
+    const ollamaUrl = process.env['AI_BASE_URL'] ?? 'http://localhost:11434';
+    const start = Date.now();
+    try {
+      const response = await fetch(`${ollamaUrl}/api/tags`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000),
+      });
+      if (response.ok) {
+        return { status: 'up', latencyMs: Date.now() - start };
+      }
+      return {
+        status: 'down',
+        latencyMs: Date.now() - start,
+        message: `Ollama returned ${response.status}`,
+      };
+    } catch (error) {
+      // Ollama failure should NOT kill the ERP — log and return degraded
+      this.logger.debug(`Ollama health check failed: ${error}`);
+      return {
+        status: 'down',
+        latencyMs: Date.now() - start,
+        message: 'Ollama unavailable — AI features disabled',
+      };
+    }
+  }
+
   private determineOverallStatus(services: {
     application: ServiceHealth;
     database: ServiceHealth;
     redis: ServiceHealth;
+    ollama: ServiceHealth;
   }): 'healthy' | 'degraded' | 'unhealthy' {
     if (services.application.status === 'down') return 'unhealthy';
     if (services.database.status === 'down') return 'degraded';
-    if (services.redis.status === 'down') return 'degraded';
+    // Redis and Ollama failures are degraded, not unhealthy
+    // AI is optional — ERP continues operating without it
     return 'healthy';
   }
 }

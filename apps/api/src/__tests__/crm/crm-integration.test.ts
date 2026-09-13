@@ -31,12 +31,9 @@ describe('CRM — Integration & Invariant Tests', () => {
   let customerA: string;
   let customerB: string;
   let customerProfileA: string;
-  let contactA: string;
   let leadA1: string;
   let leadA2: string;
-  let leadB1: string;
   let opportunityA: string;
-  let activityA: string;
   let taskA: string;
   let noteA: string;
 
@@ -166,14 +163,13 @@ describe('CRM — Integration & Invariant Tests', () => {
           isPrimary: true,
         },
       });
-      contactA = contact.id;
       expect(contact.id).toBeDefined();
       expect(contact.isPrimary).toBe(true);
       expect(contact.email).toBe('john.doe@example.com');
     });
 
     it('should create multiple contacts per profile', async () => {
-      const contact2 = await prisma.contact.create({
+      await prisma.contact.create({
         data: {
           tenantId: TENANT_A, companyId: COMPANY_A,
           customerProfileId: customerProfileA,
@@ -229,7 +225,6 @@ describe('CRM — Integration & Invariant Tests', () => {
           status: 'NEW',
         },
       });
-      leadB1 = leadB.id;
       expect(leadB.tenantId).toBe(TENANT_B);
     });
 
@@ -440,7 +435,6 @@ describe('CRM — Integration & Invariant Tests', () => {
           actorId: EMPLOYEE_A,
         },
       });
-      activityA = activity.id;
       expect(activity.id).toBeDefined();
       expect(activity.activityType).toBe('CALL');
     });

@@ -1,4 +1,19 @@
-version: '3.8'
+# =============================================================================
+# FusionOS Production Docker Compose
+# =============================================================================
+# Usage:
+#   docker compose up -d
+#
+# Environment:
+#   Copy .env.example to .env and configure for production.
+#   NEVER use development defaults in production.
+#
+# Services:
+#   postgres  — PostgreSQL 16 database
+#   redis     — Redis 7 cache/rate-limiting
+#   api       — NestJS backend
+#   web       — Next.js frontend
+# =============================================================================
 
 services:
   postgres:
@@ -6,25 +21,27 @@ services:
     container_name: fusionos-postgres
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT:-5432}:5432'
     environment:
-      POSTGRES_USER: fusionos
-      POSTGRES_PASSWORD: fusionos
-      POSTGRES_DB: fusionos
+      POSTGRES_USER: ${POSTGRES_USER:-fusionos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      POSTGRES_DB: ${POSTGRES_DB:-fusionos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U fusionos -d fusionos']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-fusionos} -d ${POSTGRES_DB:-fusionos}']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - fusionos
 
   redis:
     image: redis:7-alpine
     container_name: fusionos-redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis_data:/data
     healthcheck:
@@ -32,6 +49,82 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - fusionos
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: fusionos-api
+    restart: unless-stopped
+    ports:
+      - '${API_PORT:-3001}:3001'
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fusionos}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fusionos}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      AI_PROVIDER: ${AI_PROVIDER:-ollama}
+      AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:11434}
+      AI_MODEL: ${AI_MODEL:-llama3.2}
+      AI_TIMEOUT: ${AI_TIMEOUT:-60000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
+      EMAIL_API_KEY: ${EMAIL_API_KEY:-}
+      EMAIL_API_URL: ${EMAIL_API_URL:-}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@fusionos.dev}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-100}
+      RLS_ENABLED: ${RLS_ENABLED:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3001/api/v1/health/live']
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    networks:
+      - fusionos
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # Baked into client bundles by Next.js at build time.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:3001}
+    container_name: fusionos-web
+    restart: unless-stopped
+    ports:
+      - '${WEB_PORT:-3000}:3000'
+    environment:
+      NODE_ENV: production
+      # Read by apps/web/src/lib/api-client.ts and auth-client.ts. Set at BUILD
+      # time for Next.js inlining into client bundles.
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:3001}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1:3000']
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    networks:
+      - fusionos
+
+networks:
+  fusionos:
+    driver: bridge
 
 volumes:
   postgres_data:

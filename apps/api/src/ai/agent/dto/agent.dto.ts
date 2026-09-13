@@ -15,7 +15,6 @@ import {
   Max,
   MaxLength,
   IsObject,
-  IsArray,
 } from 'class-validator';
 
 // ── Agent CRUD ──────────────────────────────────────────────────────────

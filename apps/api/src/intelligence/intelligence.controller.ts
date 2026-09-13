@@ -11,7 +11,6 @@ import {
   Post,
   Body,
   Param,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CurrentTenant, RequirePermission } from '../common/decorators';
 import type { TenantContext } from '../auth/services/tenant-context.service';

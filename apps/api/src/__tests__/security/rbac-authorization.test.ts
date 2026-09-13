@@ -16,30 +16,11 @@ const prisma = new PrismaClient();
 
 // ── Role-Permission Matrix ────────────────────────────────────────────────
 
-const EXPECTED_ROLE_PERMISSIONS: Record<string, string[]> = {
-  super_admin: ['*'], // All permissions
-  company_owner: ['*'], // All permissions within tenant
-  hr_manager: [
-    'employee:read', 'employee:create', 'employee:update',
-    'attendance:read', 'attendance:manage',
-    'leave:read', 'leave:approve',
-    'payroll:read', 'payroll:manage',
-  ],
-  finance_manager: [
-    'finance:read', 'finance:manage',
-    'payroll:read', 'payroll:approve',
-  ],
-  crm_manager: ['crm:read', 'crm:manage'],
-  team_manager: ['employee:read'],
-  employee: ['employee:read'],
-};
-
 // ── Tests ─────────────────────────────────────────────────────────────────
 
 describe('RBAC Authorization', () => {
   let roles: any[];
   let permissions: any[];
-  let rolePermissions: any[];
 
   beforeAll(async () => {
     roles = await prisma.role.findMany({

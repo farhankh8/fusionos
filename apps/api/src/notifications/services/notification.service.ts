@@ -18,7 +18,6 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
-  ConflictException,
 } from '@nestjs/common';
 import { PrismaClient, Prisma } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
@@ -540,16 +539,6 @@ export class NotificationService {
   }
 
   async createTemplate(ctx: TenantContext, dto: CreateNotificationTemplateDto) {
-    // Check for existing active template with same type+channel
-    const existing = await this.prisma.notificationTemplate.findFirst({
-      where: {
-        tenantId: ctx.tenantId,
-        notificationType: dto.notificationType,
-        channel: dto.channel as any,
-        status: 'ACTIVE',
-      },
-    });
-
     // Determine next version number
     const maxVersion = await this.prisma.notificationTemplate.aggregate({
       where: {

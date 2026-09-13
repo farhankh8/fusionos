@@ -18,22 +18,13 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import type { TenantContext } from '../../../auth/services/tenant-context.service';
 import { AuditLogService } from '../../../common/services/audit-log.service';
 import { OllamaProvider } from '../../providers/ollama.provider';
-import {
-  type ExecutionPlan,
-  generatePlan,
-  validatePlan,
-} from '../engine/planning-engine';
-import {
-  assessPlanRisk,
-  type RiskAssessment,
-} from '../engine/risk-engine';
+import { generatePlan } from '../engine/planning-engine';
+import { assessPlanRisk } from '../engine/risk-engine';
 import { evaluatePolicy } from '../engine/policy-engine';
 import { verifyToolResult, generateVerificationCriteria } from '../engine/verification-engine';
-import { AGENT_PROFILES, getProfileByType, type AgentProfile } from '../engine/agent-profiles';
-import { TOOL_REGISTRY, getToolByName } from '../../engine/tool-registry';
-import { CONTEXT_REGISTRY } from '../../engine/context-registry';
-import { buildSystemPrompt, buildContextSection } from '../../engine/prompt-builder';
-import type { CreateAgentDto, UpdateAgentDto, ListAgentsDto, SaveAgentVersionDto, CreateAgentTaskDto, ListAgentTasksDto } from '../dto/agent.dto';
+import { AGENT_PROFILES, getProfileByType } from '../engine/agent-profiles';
+import { getToolByName } from '../../engine/tool-registry';
+import type { CreateAgentDto, UpdateAgentDto, ListAgentsDto, CreateAgentTaskDto, ListAgentTasksDto } from '../dto/agent.dto';
 
 @Injectable()
 export class AgentService {
@@ -520,7 +511,6 @@ export class AgentService {
 
     // Create step records
     for (const step of plan.steps) {
-      const toolDef = getToolByName(step.tool);
       const policyResult = evaluatePolicy({
         toolName: step.tool,
         riskLevel: step.riskLevel,
@@ -961,48 +951,56 @@ export class AgentService {
         };
       }
       case 'get_finance_summary': {
-        const invoices = await this.prisma.invoice.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { status: true, amount: true, outstandingAmount: true },
-        });
-        const totalRevenue = invoices
-          .filter((i) => ['PAID', 'PARTIALLY_PAID', 'ISSUED'].includes(i.status))
-          .reduce((sum, i) => sum + i.amount, 0);
-        const totalAR = invoices
-          .filter((i) => ['ISSUED', 'PARTIALLY_PAID'].includes(i.status))
-          .reduce((sum, i) => sum + i.outstandingAmount, 0);
+        // Use aggregation instead of loading all invoices
+        const [revenueAgg, arAgg, invoiceCount] = await Promise.all([
+          this.prisma.invoice.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['PAID', 'PARTIALLY_PAID', 'ISSUED'] } },
+            _sum: { amount: true },
+          }),
+          this.prisma.invoice.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['ISSUED', 'PARTIALLY_PAID'] } },
+            _sum: { outstandingAmount: true },
+          }),
+          this.prisma.invoice.count({ where: { tenantId: ctx.tenantId } }),
+        ]);
         return {
-          totalRevenue,
-          totalAR,
-          invoiceCount: invoices.length,
+          totalRevenue: revenueAgg._sum.amount ?? 0,
+          totalAR: arAgg._sum.outstandingAmount ?? 0,
+          invoiceCount,
         };
       }
       case 'get_receivables': {
-        const invoices = await this.prisma.invoice.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { status: true, outstandingAmount: true, currency: true },
-        });
-        const outstanding = invoices.filter(
-          (i) => ['ISSUED', 'PARTIALLY_PAID'].includes(i.status) && i.outstandingAmount > 0,
-        );
+        const [totalAR, invoiceCount, unpaidAR] = await Promise.all([
+          this.prisma.invoice.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['ISSUED', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+            _sum: { outstandingAmount: true },
+          }),
+          this.prisma.invoice.count({ where: { tenantId: ctx.tenantId } }),
+          this.prisma.invoice.count({
+            where: { tenantId: ctx.tenantId, status: { in: ['ISSUED', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+          }),
+        ]);
         return {
-          totalAR: outstanding.reduce((sum, i) => sum + i.outstandingAmount, 0),
-          invoiceCount: invoices.length,
-          unpaidInvoiceCount: outstanding.length,
+          totalAR: totalAR._sum.outstandingAmount ?? 0,
+          invoiceCount,
+          unpaidInvoiceCount: unpaidAR,
         };
       }
       case 'get_payables': {
-        const bills = await this.prisma.bill.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { status: true, outstandingAmount: true },
-        });
-        const outstanding = bills.filter(
-          (b) => ['OPEN', 'PARTIALLY_PAID'].includes(b.status) && b.outstandingAmount > 0,
-        );
+        const [totalAP, billCount, unpaidAP] = await Promise.all([
+          this.prisma.bill.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['OPEN', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+            _sum: { outstandingAmount: true },
+          }),
+          this.prisma.bill.count({ where: { tenantId: ctx.tenantId } }),
+          this.prisma.bill.count({
+            where: { tenantId: ctx.tenantId, status: { in: ['OPEN', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+          }),
+        ]);
         return {
-          totalAP: outstanding.reduce((sum, b) => sum + b.outstandingAmount, 0),
-          billCount: bills.length,
-          unpaidBillCount: outstanding.length,
+          totalAP: totalAP._sum.outstandingAmount ?? 0,
+          billCount,
+          unpaidBillCount: unpaidAP,
         };
       }
       case 'get_crm_pipeline': {
@@ -1069,15 +1067,27 @@ export class AgentService {
         return execution ?? { error: 'Execution not found' };
       }
       case 'get_payroll_summary': {
-        const payslips = await this.prisma.payslip.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { grossPay: true, netPay: true, totalDeductions: true },
-        });
+        // Use aggregation instead of loading all payslips
+        const [grossAgg, netAgg, deductionsAgg, payslipCount] = await Promise.all([
+          this.prisma.payslip.aggregate({
+            where: { tenantId: ctx.tenantId },
+            _sum: { grossPay: true },
+          }),
+          this.prisma.payslip.aggregate({
+            where: { tenantId: ctx.tenantId },
+            _sum: { netPay: true },
+          }),
+          this.prisma.payslip.aggregate({
+            where: { tenantId: ctx.tenantId },
+            _sum: { totalDeductions: true },
+          }),
+          this.prisma.payslip.count({ where: { tenantId: ctx.tenantId } }),
+        ]);
         return {
-          totalGross: payslips.reduce((sum, p) => sum + p.grossPay, 0),
-          totalNet: payslips.reduce((sum, p) => sum + p.netPay, 0),
-          totalDeductions: payslips.reduce((sum, p) => sum + p.totalDeductions, 0),
-          payslipCount: payslips.length,
+          totalGross: grossAgg._sum.grossPay ?? 0,
+          totalNet: netAgg._sum.netPay ?? 0,
+          totalDeductions: deductionsAgg._sum.totalDeductions ?? 0,
+          payslipCount,
         };
       }
       default:

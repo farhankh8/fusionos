@@ -40,8 +40,8 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 
-# Prisma
-packages/database/prisma/migrations/**/migration_lock.toml
+# Prisma — migration_lock.toml must be tracked: `prisma migrate deploy`
+# requires it and it contains no secrets. Per-migration folders stay tracked.
 
 # Docker
 docker-compose.override.yml
@@ -59,3 +59,7 @@ apps/api/uploads/
 
 # Load test results
 load-testing/results.json
+
+# Playwright artifacts
+apps/web/test-results/
+apps/web/playwright-report/

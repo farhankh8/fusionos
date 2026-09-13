@@ -975,7 +975,6 @@ describe('Assets — Phase 14 Integration Tests', () => {
 
       // Unique constraint should ensure only one succeeds (or both if period allows)
       const succeeded = results.filter(r => r.status === 'fulfilled');
-      const failed = results.filter(r => r.status === 'rejected');
       // At most one should succeed (due to unique constraint on assetId + periodStartDate)
       expect(succeeded.length).toBeLessThanOrEqual(1);
     });
@@ -983,7 +982,7 @@ describe('Assets — Phase 14 Integration Tests', () => {
     it('concurrent status transitions are safe', async () => {
       const asset = assetIds[1];
       // Both try to update the same asset
-      const results = await Promise.allSettled([
+      await Promise.allSettled([
         prisma.asset.update({ where: { id: asset }, data: { status: 'IN_MAINTENANCE' } }),
         prisma.asset.update({ where: { id: asset }, data: { status: 'ASSIGNED' } }),
       ]);

@@ -20,7 +20,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaClient, Prisma, AttendanceEventType, AttendanceEventSource, AttendanceStatus } from '@prisma/client';
+import { PrismaClient, Prisma, AttendanceEventSource, AttendanceStatus } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import {
   ClockInDto,
@@ -106,7 +106,7 @@ export class AttendanceService {
       });
 
       // Get or create today's attendance record
-      const attendance = await this.getOrCreateAttendance(tx, ctx, employee.id, today);
+      await this.getOrCreateAttendance(tx, ctx, employee.id, today);
       await this.recalculateAttendance(tx, employee.id, today, employee.timezone ?? 'UTC');
 
       this.logger.log(`Clock-in: employee=${employee.employeeCode} time=${eventTime.toISOString()} by=${ctx.userId}`);

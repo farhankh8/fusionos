@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Bot, ArrowLeft, PlayCircle, Pause, Play, Settings, CheckCircle, XCircle, Clock, AlertTriangle, Eye, Brain } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { PlayCircle, Pause, Play, Settings, Clock, AlertTriangle, Brain } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -45,7 +45,6 @@ interface Plan {
 
 export default function AgentDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const agentId = (params?.id as string) ?? '';
 
   const [agent, setAgent] = useState<Agent | null>(null);

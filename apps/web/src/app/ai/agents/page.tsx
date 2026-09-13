@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bot, Plus, PlayCircle, Clock, CheckCircle, XCircle, AlertTriangle, Settings, ArrowRight } from 'lucide-react';
+import { Bot, Plus, PlayCircle, Clock, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { StatusBadge } from '@/components/ui/status-badge';

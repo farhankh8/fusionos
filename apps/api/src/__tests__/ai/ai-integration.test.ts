@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { CONTEXT_REGISTRY, getContextSource, getModules } from '../../ai/engine/context-registry';
 import { TOOL_REGISTRY, getToolByName, getToolCategories } from '../../ai/engine/tool-registry';
 import { detectPromptInjection, buildSystemPrompt, buildContextSection } from '../../ai/engine/prompt-builder';

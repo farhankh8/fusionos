@@ -10,7 +10,6 @@
  */
 
 import { Module } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { NotificationService } from './services/notification.service';
 import { EventNotificationProcessor } from './processors/event-notification.processor';
 import { NotificationsController } from './notifications.controller';

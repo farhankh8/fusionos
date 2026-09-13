@@ -21,7 +21,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { NestFactory } from '@nestjs/core';
-import { INestApplication, ValidationPipe, Logger } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { AppModule } from '../../app.module';
@@ -31,8 +31,6 @@ const prisma = new PrismaClient();
 // Same seeded tenant/company IDs used across the FusionOS test suites
 const TENANT_A = '00000000-0000-4000-8000-000000000001';
 const TENANT_B = '10000000-0000-4000-8000-000000000001';
-const COMPANY_A = '00000000-0000-4000-8000-000000000002';
-const COMPANY_B = '10000000-0000-4000-8000-000000000002';
 
 // Unique per run → deterministic, no cross-run collisions
 const RUN = `${Date.now()}`.slice(-8);

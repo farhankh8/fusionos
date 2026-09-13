@@ -41,7 +41,6 @@ let housingComp: any;
 let absenceComp: any;
 let overtimeComp: any;
 let salaryA: any;
-let salaryB: any;
 let periodA: any;
 let periodB: any;
 
@@ -153,7 +152,7 @@ beforeAll(async () => {
     update: { basicSalary: 3000000 },
   });
 
-  salaryB = await prisma.salaryStructure.upsert({
+  await prisma.salaryStructure.upsert({
     where: { id: 'f0b00000-0000-4000-8000-000000000001' },
     create: {
       id: 'f0b00000-0000-4000-8000-000000000001',

@@ -23,9 +23,6 @@ apps/web/out
 .gitignore
 
 # Documentation
-docs/
-*.md
-!README.md
 
 # Test coverage
 coverage/
@@ -35,8 +32,8 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Prisma migrations lock
-packages/database/prisma/migrations/**/migration_lock.toml
+# NOTE: migration_lock.toml MUST be shipped — `prisma migrate deploy` refuses
+# to run without it (provider identity check). It contains no secrets.
 
 # Design system
 design-system/

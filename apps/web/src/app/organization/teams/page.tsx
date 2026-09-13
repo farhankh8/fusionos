@@ -14,7 +14,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
-import { UsersRound, GitBranch, Plus, Users } from 'lucide-react';
+import { UsersRound, Plus, Users } from 'lucide-react';
 
 interface Team {
   id: string;

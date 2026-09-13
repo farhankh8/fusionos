@@ -14,9 +14,8 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { Tabs } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SectionCard } from '@/components/ui/section-card';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
-import { CalendarOff, CheckCircle2, Clock, XCircle, Plus, FileText, Shield, Calendar, Settings } from 'lucide-react';
+import { CalendarOff, CheckCircle2, Clock, XCircle, Plus, FileText, Shield, Settings } from 'lucide-react';
 
 /* ── Types ───────────────────────────────────────────────────────────────── */
 

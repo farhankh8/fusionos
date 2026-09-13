@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@fusionos/shared": "*",
-    "@prisma/client": "^6.9.0"
+    "@prisma/client": "^6.9.0",
+    "prisma": "^6.9.0"
   },
   "devDependencies": {
-    "prisma": "^6.9.0",
     "tsx": "^4.23.12",
     "typescript": "^5.8.3"
   },

@@ -8,7 +8,7 @@
  */
 
 import {
-  Injectable, BadRequestException, NotFoundException, ConflictException, GoneException, Inject,
+  Injectable, BadRequestException, NotFoundException, ConflictException, Inject,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';

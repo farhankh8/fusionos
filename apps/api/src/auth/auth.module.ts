@@ -20,6 +20,7 @@ import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
 import { SessionService } from './session.service';
 import { EmailService } from './email.service';
+import { LoginAttemptService } from './login-attempt.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -34,6 +35,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     TokenService,
     SessionService,
     EmailService,
+    LoginAttemptService,
     JwtStrategy,
   ],
   exports: [AuthService, TokenService, SessionService],

@@ -299,7 +299,7 @@ export class CrmService {
     });
   }
 
-  async qualifyLead(ctx: TenantContext, id: string, dto: QualifyLeadDto) {
+  async qualifyLead(ctx: TenantContext, id: string, _dto: QualifyLeadDto) {
     const lead = await this.prisma.lead.findFirst({
       where: { id, tenantId: ctx.tenantId },
     });
@@ -775,7 +775,7 @@ export class CrmService {
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  async updateNote(ctx: TenantContext, id: string, dto: UpdateNoteDto, authorId: string) {
+  async updateNote(ctx: TenantContext, id: string, dto: UpdateNoteDto, _authorId: string) {
     const note = await this.prisma.crmNote.findFirst({
       where: { id, tenantId: ctx.tenantId },
     });

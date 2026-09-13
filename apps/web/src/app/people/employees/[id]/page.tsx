@@ -12,7 +12,6 @@
 import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
-import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/page-header';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -22,8 +21,8 @@ import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
 import { Tabs } from '@/components/ui/tabs';
 import {
   User, Briefcase, Clock, CalendarOff, Wallet, Receipt,
-  Edit, MoreHorizontal, Mail, Phone, MapPin, Building2,
-  ChevronRight, ArrowRight, Calendar, Users, Shield,
+  Edit, MoreHorizontal, Phone, MapPin, Building2,
+  Users, Shield,
 } from 'lucide-react';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */

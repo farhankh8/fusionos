@@ -385,7 +385,7 @@ export class PayrollService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   async createRun(ctx: TenantContext, dto: CreatePayrollRunDto) {
-    const period = await this.findOnePeriod(ctx, dto.periodId);
+    await this.findOnePeriod(ctx, dto.periodId);
 
     // Check for existing run with same mode
     const existing = await this.prisma.payrollRun.findFirst({
@@ -604,9 +604,6 @@ export class PayrollService {
 
     const items: Array<{ type: string; code: string; name: string; amount: number; source: string; calculationBasis: string }> = [];
 
-    let totalEarnings = 0;
-    let totalDeductions = 0;
-
     if (calculationMode === 'ATTENDANCE' || calculationMode === 'HYBRID') {
       // ── ATTENDANCE-BASED CALCULATIONS ──
 
@@ -618,7 +615,6 @@ export class PayrollService {
           amount: earnedBasic, source: 'SYSTEM',
           calculationBasis: `${basicSalary} × ${workedDays}/${policy.workingDaysPerMonth} days`,
         });
-        totalEarnings += earnedBasic;
       }
 
       // Overtime pay
@@ -633,7 +629,6 @@ export class PayrollService {
             amount: overtimePay, source: 'SYSTEM',
             calculationBasis: `${otMinutes} min × ${perMinuteRate}/min × ${policy.overtimeMultiplier}%`,
           });
-          totalEarnings += overtimePay;
         }
       }
 
@@ -646,7 +641,6 @@ export class PayrollService {
             amount: absenceDeduction, source: 'SYSTEM',
             calculationBasis: `${absentDays} days × ${perDayRate}/day`,
           });
-          totalDeductions += absenceDeduction;
         }
       }
 
@@ -659,7 +653,6 @@ export class PayrollService {
             amount: unpaidDeduction, source: 'SYSTEM',
             calculationBasis: `${unpaidLeaveDays} days × ${perDayRate}/day`,
           });
-          totalDeductions += unpaidDeduction;
         }
       }
     }
@@ -677,14 +670,12 @@ export class PayrollService {
             amount: sc.amount, source: 'MANUAL',
             calculationBasis: `Salary structure component`,
           });
-          totalEarnings += sc.amount;
         } else if (comp.type === 'DEDUCTION') {
           items.push({
             type: 'DEDUCTION', code: comp.code, name: comp.name,
             amount: sc.amount, source: 'MANUAL',
             calculationBasis: `Salary structure component`,
           });
-          totalDeductions += sc.amount;
         }
       }
     }

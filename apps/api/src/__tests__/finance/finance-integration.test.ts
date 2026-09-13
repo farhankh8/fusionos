@@ -15,7 +15,7 @@
  * destroying data from concurrent test files that share the same tenant ID.
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -27,20 +27,20 @@ const COMPANY_A = '00000000-0000-4000-8000-000000000002';
 const COMPANY_B = '10000000-0000-4000-8000-000000000002';
 const USER_ID = '00000000-0000-4000-8000-000000000003';
 
+// Seed employee record for Tenant A (created by packages/database/prisma/seed.ts)
+const SEED_EMPLOYEE_A = '00000000-0000-4000-8000-000000000024';
+
 describe('Finance — Integration & Invariant Tests', () => {
   // Account IDs for Tenant A
   let cashAccountA: string;
   let bankAccountA: string;
-  let arAccountA: string;
   let apAccountA: string;
   let salaryExpenseA: string;
   let payrollPayableA: string;
   let taxPayableA: string;
-  let revenueAccountA: string;
   let periodA: string;
 
   // Account IDs for Tenant B (isolation test)
-  let cashAccountB: string;
 
   // Track IDs for targeted cleanup (NEVER tenant-wide deleteMany)
   const trackedAccountIds: string[] = [];
@@ -69,7 +69,7 @@ describe('Finance — Integration & Invariant Tests', () => {
       code: 'INTG-1200', name: 'Bank', accountType: 'ASSET', accountSubtype: 'BANK',
       normalBalance: 'DEBIT', allowManualPosting: true,
     });
-    arAccountA = await createAccount({
+    await createAccount({
       tenantId: TENANT_A, companyId: COMPANY_A,
       code: 'INTG-1300', name: 'AR', accountType: 'ASSET', accountSubtype: 'ACCOUNTS_RECEIVABLE',
       normalBalance: 'DEBIT', allowManualPosting: true,
@@ -94,7 +94,7 @@ describe('Finance — Integration & Invariant Tests', () => {
       code: 'INTG-2300', name: 'Tax Payable', accountType: 'LIABILITY',
       accountSubtype: 'TAX_PAYABLE', normalBalance: 'CREDIT', allowManualPosting: true,
     });
-    revenueAccountA = await createAccount({
+    await createAccount({
       tenantId: TENANT_A, companyId: COMPANY_A,
       code: 'INTG-4100', name: 'Revenue', accountType: 'INCOME',
       accountSubtype: 'REVENUE', normalBalance: 'CREDIT', allowManualPosting: true,
@@ -112,7 +112,7 @@ describe('Finance — Integration & Invariant Tests', () => {
     trackedPeriodIds.push(periodRecord.id);
 
     // Create a cash account for Tenant B (for isolation test)
-    cashAccountB = await createAccount({
+    await createAccount({
       tenantId: TENANT_B, companyId: COMPANY_B,
       code: 'INTG-B-1100', name: 'Cash B', accountType: 'ASSET', accountSubtype: 'CASH',
       normalBalance: 'DEBIT', allowManualPosting: true,
@@ -177,7 +177,7 @@ describe('Finance — Integration & Invariant Tests', () => {
       trackedJournalIds.push(entry.id);
 
       // DR Salary Expense, CR Payroll Payable, CR Tax Payable
-      const lines = await prisma.journalLine.createMany({
+      await prisma.journalLine.createMany({
         data: [
           {
             tenantId: TENANT_A, companyId: COMPANY_A,
@@ -233,7 +233,7 @@ describe('Finance — Integration & Invariant Tests', () => {
           expenseNumber: 'INTG-EXP-001',
           category: 'OFFICE_SUPPLIES', status: 'DRAFT',
           description: 'Office supplies for integration test',
-          expenseDate: new Date(), employeeId: 'e2e00000-0000-4000-8000-000000000002',
+          expenseDate: new Date(), employeeId: SEED_EMPLOYEE_A,
           createdBy: USER_ID,
         },
       });
@@ -505,10 +505,6 @@ describe('Finance — Integration & Invariant Tests', () => {
 
   describe('Concurrency', () => {
     it('should not create duplicate journals on concurrent post', async () => {
-      const countBefore = await prisma.journalEntry.count({
-        where: { tenantId: TENANT_A, journalNumber: 'INTG-CONCUR-001' },
-      });
-
       // Attempt concurrent creates — one should succeed, one should fail on unique constraint
       // Since journalNumber has a unique constraint, second will fail
       const results = await Promise.allSettled([

@@ -14,7 +14,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
-import { BadgeCheck, Plus, Building2, Users, Layers } from 'lucide-react';
+import { BadgeCheck, Plus, Users } from 'lucide-react';
 
 interface Designation {
   id: string;

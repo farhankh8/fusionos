@@ -5,7 +5,7 @@
  * IDOR, RBAC, file security, and AI security.
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -158,7 +158,6 @@ describe('Security Regression Suite — Phase 23', () => {
     });
 
     it('XSS patterns in names should be safely stored', async () => {
-      const xssPayload = '<script>alert("xss")</script>';
       // Verify that creating an entity with XSS in the name doesn't crash
       const existing = await prisma.employee.findFirst({
         where: { tenantId: TENANT_A },

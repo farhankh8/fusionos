@@ -5,9 +5,9 @@
  */
 
 import {
-  Injectable, BadRequestException, NotFoundException, ConflictException, ForbiddenException,
+  Injectable, BadRequestException, NotFoundException, ConflictException,
 } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { AuditLogService } from '../../common/services/audit-log.service';
 import { EventPublisherService } from '../../common/services/event-publisher.service';
@@ -17,7 +17,7 @@ import {
   CreateProjectTaskDto, UpdateProjectTaskDto,
   CreateMilestoneDto, UpdateMilestoneDto,
   CreateTimeEntryDto, UpdateTimeEntryDto,
-  CreateBudgetDto, UpdateBudgetDto,
+  CreateBudgetDto,
 } from '../dto/projects.dto';
 
 // ── Valid lifecycle transitions ────────────────────────────────────────────

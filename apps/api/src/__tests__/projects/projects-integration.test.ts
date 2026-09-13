@@ -51,14 +51,11 @@ async function cleanupTestProjects() {
 describe('Projects — Phase 11 Integration Tests', () => {
   let EMPLOYEE_A: string;
   let EMPLOYEE_A2: string;
-  let EMPLOYEE_B: string;
   let projectA1: string;
   let projectA2: string;
-  let projectB1: string;
   let memberA1: string;
   let taskA1: string;
   let milestoneA1: string;
-  let timeEntryA1: string;
   let customerA: string;
 
   beforeAll(async () => {
@@ -73,7 +70,7 @@ describe('Projects — Phase 11 Integration Tests', () => {
     const empB = await prisma.employee.findFirst({ where: { tenantId: TENANT_B }, select: { id: true } });
     // If no employee in Tenant B, create one for testing
     if (!empB) {
-      const newEmpB = await prisma.employee.create({
+      await prisma.employee.create({
         data: {
           tenantId: TENANT_B, companyId: COMPANY_B,
           employeeCode: 'PRJ-TEST-EMP-B',
@@ -83,9 +80,6 @@ describe('Projects — Phase 11 Integration Tests', () => {
           employmentStatus: 'ACTIVE',
         },
       });
-      EMPLOYEE_B = newEmpB.id;
-    } else {
-      EMPLOYEE_B = empB.id;
     }
 
     // Find or create a customer for tenant A
@@ -151,7 +145,6 @@ describe('Projects — Phase 11 Integration Tests', () => {
           code: 'PRJ-TEST-001', name: 'Tenant B Project',
         },
       });
-      projectB1 = project.id;
       expect(project.tenantId).toBe(TENANT_B);
     });
 
@@ -182,16 +175,6 @@ describe('Projects — Phase 11 Integration Tests', () => {
   // ══════════════════════════════════════════════════════════════════════════
 
   describe('Project Lifecycle', () => {
-    const VALID_TRANSITIONS: Record<string, string[]> = {
-      DRAFT: ['PLANNED', 'CANCELLED'],
-      PLANNED: ['ACTIVE', 'ON_HOLD', 'CANCELLED'],
-      ACTIVE: ['ON_HOLD', 'COMPLETED', 'CANCELLED'],
-      ON_HOLD: ['ACTIVE', 'CANCELLED'],
-      COMPLETED: ['ARCHIVED'],
-      CANCELLED: ['ARCHIVED'],
-      ARCHIVED: [],
-    };
-
     it('should transition DRAFT → PLANNED', async () => {
       const updated = await prisma.project.update({
         where: { id: projectA1 },
@@ -456,7 +439,6 @@ describe('Projects — Phase 11 Integration Tests', () => {
           isBillable: true,
         },
       });
-      timeEntryA1 = entry.id;
       expect(entry.id).toBeDefined();
       expect(entry.durationMinutes).toBe(120);
       expect(entry.isBillable).toBe(true);

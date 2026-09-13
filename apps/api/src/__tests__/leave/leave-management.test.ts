@@ -11,7 +11,6 @@ const COMPANY_A_ID = '00000000-0000-4000-8000-000000000002';
 
 describe('Leave Management', () => {
   let leaveTypeIdA: string;
-  let leaveTypeIdB: string;
   let employeeIdA: string;
 
   beforeAll(async () => {
@@ -53,10 +52,9 @@ describe('Leave Management', () => {
     });
     leaveTypeIdA = ltA.id;
 
-    const ltB = await prisma.leaveType.create({
+    await prisma.leaveType.create({
       data: { tenantId: TENANT_B_ID, name: 'Annual Leave', code: 'LV-ANNUAL', isPaid: true, requiresApproval: true },
     });
-    leaveTypeIdB = ltB.id;
   });
 
   it('should create a leave type', async () => {

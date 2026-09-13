@@ -106,7 +106,6 @@ export function roundAmount(amount: number, mode: RoundingMode = 'HALF_UP'): num
       return Math.round(amount);
     case 'HALF_DOWN': {
       const floor = Math.floor(amount);
-      const ceil = Math.ceil(amount);
       const diff = amount - floor;
       if (diff === 0.5) return floor; // Round down on exactly 0.5
       return Math.round(amount);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bot, ArrowLeft, Save, Settings, Shield, Clock, Target } from 'lucide-react';
+import { Bot, Save, Settings, Shield, Clock, Target } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 

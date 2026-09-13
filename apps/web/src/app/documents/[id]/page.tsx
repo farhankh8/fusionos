@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -48,14 +48,7 @@ function formatSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-const FILE_ICONS: Record<string, string> = {
-  pdf: '📄', doc: '📝', docx: '📝', xls: '📊', xlsx: '📊',
-  jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', svg: '🖼️',
-  txt: '📃', csv: '📋', zip: '📦',
-};
-
 export default function DocumentDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const documentId = (params?.id ?? '') as string;
 

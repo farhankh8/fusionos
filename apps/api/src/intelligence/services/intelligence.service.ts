@@ -6,7 +6,7 @@
  * and RBAC-protected.
  */
 
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { AuditLogService } from '../../common/services/audit-log.service';

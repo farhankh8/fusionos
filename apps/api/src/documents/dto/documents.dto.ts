@@ -4,7 +4,7 @@
 
 import {
   IsString, IsOptional, IsEnum, IsUUID, IsInt, IsBoolean,
-  MaxLength, Min, IsArray,
+  MaxLength, Min,
 } from 'class-validator';
 
 // ── Document DTOs ────────────────────────────────────────────────────────

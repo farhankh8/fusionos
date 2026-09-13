@@ -15,7 +15,7 @@
  * trigger registry's field whitelist.
  */
 
-import { getTriggerByEventType, type FieldDefinition } from './trigger-registry';
+import type { FieldDefinition } from './trigger-registry';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -220,7 +220,6 @@ function evaluateCondition(condition: ConditionField, entityData: Record<string,
   if (actual === null || actual === undefined) return false;
 
   // Type-dispatch evaluation
-  const triggerDef = getTriggerByEventType('');
   const fieldType = getFieldType(condition.entity, condition.field);
 
   switch (fieldType) {
@@ -253,13 +252,8 @@ function evaluateCondition(condition: ConditionField, entityData: Record<string,
  * Get the field type for a given entity.field combination.
  * Uses the trigger registry to determine the type.
  */
-function getFieldType(entity: string, field: string): string {
+function getFieldType(_entity: string, _field: string): string {
   // Search all triggers for this field definition
-  for (const trigger of getTriggerByEventType('') ? [] : []) {
-    // This is a fallback - in practice the field type is determined during validation
-    break;
-  }
-  // Default to STRING for fields not in registry (should not happen after validation)
   return 'STRING';
 }
 

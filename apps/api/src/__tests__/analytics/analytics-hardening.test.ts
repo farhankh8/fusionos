@@ -69,9 +69,6 @@ let deptD3: string;
 let emp1: string; // active, dept D1, 2026-01-15
 let emp2: string; // terminated, dept D1, 2025-01-01
 let emp3: string; // active, dept D2, 2026-06-10
-let emp4: string; // active, company B, dept D3, 2026-03-01
-let leaveTypeAnnual: string;
-let leaveTypeSick: string;
 
 function bucketFor(list: { currency: string }[], currency: string) {
   const found = list.find(b => b.currency === currency);
@@ -115,10 +112,10 @@ describe('Analytics Hardening (Phase 15.5)', () => {
     const e3 = await prisma.employee.create({
       data: commonEmp('H-E3', 'Cal', { companyId: companyA, departmentId: deptD2, employmentStatus: 'ACTIVE', employmentType: 'PART_TIME', joiningDate: new Date('2026-06-10') }),
     });
-    const e4 = await prisma.employee.create({
+    await prisma.employee.create({
       data: commonEmp('H-E4', 'Dee', { companyId: companyB, departmentId: deptD3, employmentStatus: 'ACTIVE', employmentType: 'FULL_TIME', joiningDate: new Date('2026-03-01') }),
     });
-    emp1 = e1.id; emp2 = e2.id; emp3 = e3.id; emp4 = e4.id;
+    emp1 = e1.id; emp2 = e2.id; emp3 = e3.id;
 
     // ── Attendance (company A employees only) ──
     await prisma.attendance.createMany({
@@ -135,7 +132,6 @@ describe('Analytics Hardening (Phase 15.5)', () => {
     // ── Leave ──
     const lt1 = await prisma.leaveType.create({ data: { tenantId: TENANT, name: 'Annual', code: 'ANNUALH' } });
     const lt2 = await prisma.leaveType.create({ data: { tenantId: TENANT, name: 'Sick', code: 'SICKH' } });
-    leaveTypeAnnual = lt1.id; leaveTypeSick = lt2.id;
 
     await prisma.leaveRequest.createMany({
       data: [

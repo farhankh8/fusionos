@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -62,7 +62,6 @@ const STATUS_TRANSITIONS: Record<string, string[]> = {
 };
 
 export default function ProjectDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const projectId = (params?.id ?? '') as string;
 
@@ -591,7 +590,7 @@ export default function ProjectDetailPage() {
   );
 }
 
-function AddTaskModal({ employees, onClose, onCreate }: {
+function AddTaskModal({ onClose, onCreate }: {
   employees: Array<{ id: string; firstName: string; lastName: string }>;
   onClose: () => void;
   onCreate: (title: string, priority: string, dueDate: string) => void;

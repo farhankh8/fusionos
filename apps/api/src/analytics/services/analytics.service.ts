@@ -969,7 +969,7 @@ export class AnalyticsService {
   }
 
   async deleteReport(ctx: TenantContext, id: string) {
-    const report = await this.getReport(ctx, id);
+    await this.getReport(ctx, id);
     await this.prisma.savedReport.delete({ where: { id } });
 
     await this.auditLog.record({

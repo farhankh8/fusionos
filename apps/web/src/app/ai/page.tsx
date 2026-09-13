@@ -141,7 +141,7 @@ export default function AICommandCenterPage() {
         createdAt: new Date().toISOString(),
       };
       setMessages((prev) => [...prev.filter((m) => !m.id.startsWith('temp-')), userMsg, assistantMsg]);
-    } catch (err) {
+    } catch {
       setError('Failed to process your request. Please try again.');
       setMessages((prev) => prev.filter((m) => !m.id.startsWith('temp-')));
     } finally {

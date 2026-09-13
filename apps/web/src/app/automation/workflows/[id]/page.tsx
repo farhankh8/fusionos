@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause, Archive, CheckCircle, XCircle, Clock, Zap } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Archive, Clock, Zap } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';

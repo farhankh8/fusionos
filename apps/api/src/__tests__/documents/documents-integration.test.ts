@@ -40,7 +40,6 @@ describe('Documents — Phase 12 Integration Tests', () => {
   let rootFolder: string;
   let childFolder: string;
   let EMPLOYEE_A: string;
-  let EMPLOYEE_B: string;
 
   beforeAll(async () => {
     const emp = await prisma.employee.findFirst({ where: { tenantId: TENANT_A }, select: { id: true } });
@@ -49,16 +48,13 @@ describe('Documents — Phase 12 Integration Tests', () => {
 
     const empB = await prisma.employee.findFirst({ where: { tenantId: TENANT_B }, select: { id: true } });
     if (!empB) {
-      const newEmp = await prisma.employee.create({
+      await prisma.employee.create({
         data: {
           tenantId: TENANT_B, companyId: COMPANY_A,
           employeeCode: 'DOC-TEST-EMP-B', firstName: 'Test', lastName: 'EmpB',
           email: 'test.empb@doc-test.com', joiningDate: new Date('2026-01-01'), employmentStatus: 'ACTIVE',
         },
       });
-      EMPLOYEE_B = newEmp.id;
-    } else {
-      EMPLOYEE_B = empB.id;
     }
   });
 
@@ -564,7 +560,6 @@ describe('Documents — Phase 12 Integration Tests', () => {
       const docs = await prisma.document.findMany({ where: { tenantId: TENANT_A, id: { in: createdDocIds } } });
       for (const d of docs) {
         const versions = await prisma.documentVersion.findMany({ where: { documentId: d.id } });
-        const totalSize = versions.reduce((sum, v) => sum + v.fileSize, 0);
         // totalSize may differ due to manual updates, but let's check versions exist
         expect(versions.length).toBeGreaterThan(0);
       }

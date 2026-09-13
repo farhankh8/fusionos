@@ -12,7 +12,7 @@ import {
   Injectable, Logger, NotFoundException, BadRequestException,
   ForbiddenException, ConflictException,
 } from '@nestjs/common';
-import { PrismaClient, Prisma, JournalEntryStatus, AccountingPeriodStatus } from '@prisma/client';
+import { PrismaClient, Prisma, JournalEntryStatus } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import {
   CreateAccountDto, UpdateAccountDto, CreatePeriodDto, ClosePeriodDto,
@@ -92,7 +92,7 @@ export class FinanceService {
   }
 
   async updateAccount(ctx: TenantContext, id: string, dto: UpdateAccountDto) {
-    const account = await this.getAccount(ctx, id);
+    await this.getAccount(ctx, id);
     return this.prisma.account.update({
       where: { id },
       data: {
@@ -215,7 +215,7 @@ export class FinanceService {
     });
   }
 
-  async closePeriod(ctx: TenantContext, id: string, dto: ClosePeriodDto) {
+  async closePeriod(ctx: TenantContext, id: string, _dto: ClosePeriodDto) {
     const period = await this.prisma.accountingPeriod.findUnique({ where: { id } });
     if (!period) throw new NotFoundException('Period not found');
     if (period.tenantId !== ctx.tenantId) throw new ForbiddenException('Access denied');
@@ -335,7 +335,7 @@ export class FinanceService {
     });
   }
 
-  async approveJournal(ctx: TenantContext, id: string, dto: ApproveJournalDto) {
+  async approveJournal(ctx: TenantContext, id: string, _dto: ApproveJournalDto) {
     const entry = await this.prisma.journalEntry.findUnique({ where: { id } });
     if (!entry) throw new NotFoundException('Journal entry not found');
     if (entry.tenantId !== ctx.tenantId) throw new ForbiddenException('Access denied');
@@ -378,13 +378,18 @@ export class FinanceService {
       throw new BadRequestException('Journal is unbalanced — cannot post');
     }
 
-    // Post transactionally
+    // Post transactionally with optimistic locking
+    // The conditional update ensures only one concurrent request can post this entry
     return this.prisma.$transaction(async (tx) => {
-      // Update entry status
-      const posted = await tx.journalEntry.update({
-        where: { id },
+      // Atomic status transition: only update if still APPROVED
+      const posted = await tx.journalEntry.updateMany({
+        where: { id, status: 'APPROVED', tenantId: ctx.tenantId },
         data: { status: 'POSTED', postedBy: ctx.userId, postedAt: new Date() },
       });
+
+      if (posted.count === 0) {
+        throw new ConflictException('Journal entry was already posted or modified by another user');
+      }
 
       // Update account balances for each line
       for (const line of entry.lines) {
@@ -801,12 +806,21 @@ export class FinanceService {
     });
   }
 
+  /**
+   * Post an approved expense to the general ledger.
+   *
+   * Approval flow: DRAFT → SUBMITTED → APPROVED → POSTED
+   * The expense itself goes through the standard approval workflow.
+   * The journal entry is created as POSTED because domain approval already occurred.
+   */
   async postExpenseToFinance(ctx: TenantContext, id: string) {
     const expense = await this.prisma.expense.findUnique({ where: { id } });
     if (!expense) throw new NotFoundException('Expense not found');
     if (expense.tenantId !== ctx.tenantId) throw new ForbiddenException('Access denied');
-    if (expense.status !== 'APPROVED') throw new BadRequestException('Only APPROVED expenses can be posted to finance');
-    if (expense.journalEntryId) throw new ConflictException('Expense already posted to finance');
+    // Optimistic lock: verify status is still APPROVED and no journal linked
+    if (expense.status !== 'APPROVED' || expense.journalEntryId) {
+      throw new ConflictException('Expense was already posted or modified by another user');
+    }
 
     const companyId = expense.companyId;
 
@@ -1036,12 +1050,21 @@ export class FinanceService {
     });
   }
 
+  /**
+   * Post a payment to the general ledger.
+   *
+   * Payment flow: PENDING → COMPLETED
+   * The user authorizing the payment IS the approval.
+   * The journal entry is created as POSTED because user authorization is the approval.
+   */
   async postPaymentToFinance(ctx: TenantContext, id: string) {
     const payment = await this.prisma.payment.findUnique({ where: { id } });
     if (!payment) throw new NotFoundException('Payment not found');
     if (payment.tenantId !== ctx.tenantId) throw new ForbiddenException('Access denied');
-    if (payment.status !== 'PENDING') throw new BadRequestException('Only PENDING payments can be posted');
-    if (payment.journalEntryId) throw new ConflictException('Payment already posted to finance');
+    // Optimistic lock: verify status is still PENDING and no journal linked
+    if (payment.status !== 'PENDING' || payment.journalEntryId) {
+      throw new ConflictException('Payment was already posted or modified by another user');
+    }
 
     const companyId = payment.companyId;
 

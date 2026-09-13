@@ -11,7 +11,6 @@ import {
   IsEnum,
   IsUUID,
   IsArray,
-  IsBoolean,
   IsInt,
   Min,
   Max,

@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton } from '@/components/ui/skeleton';
-import { Package, CheckCircle2, Users, MapPin, Wrench, AlertTriangle, ArrowRight, Plus, Search } from 'lucide-react';
+import { Package, CheckCircle2, Users, Wrench, AlertTriangle, ArrowRight, Plus, Search } from 'lucide-react';
 
 interface DashboardData {
   total: number; active: number; assigned: number; available: number;

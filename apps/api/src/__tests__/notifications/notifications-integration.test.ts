@@ -575,9 +575,6 @@ describe('Notifications — Phase 13 Integration Tests', () => {
 
   describe('Tenant Isolation', () => {
     let tenantBNotification: string;
-    let tenantBTemplate: string;
-    let tenantBDelivery: string;
-    let tenantBPreference: string;
 
     beforeAll(async () => {
       const notif = await prisma.notification.create({
@@ -605,7 +602,6 @@ describe('Notifications — Phase 13 Integration Tests', () => {
           version: 1,
         },
       });
-      tenantBTemplate = template.id;
       createdTemplateIds.push(template.id);
 
       const delivery = await prisma.notificationDelivery.create({
@@ -617,7 +613,6 @@ describe('Notifications — Phase 13 Integration Tests', () => {
           provider: 'internal',
         },
       });
-      tenantBDelivery = delivery.id;
       createdDeliveryIds.push(delivery.id);
 
       const pref = await prisma.notificationPreference.create({
@@ -629,7 +624,6 @@ describe('Notifications — Phase 13 Integration Tests', () => {
           enabled: true,
         },
       });
-      tenantBPreference = pref.id;
       createdPreferenceIds.push(pref.id);
     });
 
@@ -665,9 +659,6 @@ describe('Notifications — Phase 13 Integration Tests', () => {
   describe('Notification Privacy', () => {
     it('User A cannot see User B private notifications', async () => {
       // USER_A_HR has a notification
-      const hrNotifs = await prisma.notification.findMany({
-        where: { tenantId: TENANT_A, recipientUserId: USER_A_HR },
-      });
       // USER_A_ADMIN should not see those
       const adminNotifs = await prisma.notification.findMany({
         where: { tenantId: TENANT_A, recipientUserId: USER_A_ADMIN },

@@ -10,7 +10,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
-import { cn } from '@/lib/utils';
 import { Bell, CheckCircle2, Info, AlertTriangle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 interface Notification {
@@ -56,7 +55,7 @@ export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
-  const [fetchingCount, setFetchingCount] = useState(true);
+  const [, setFetchingCount] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const countIntervalRef = useRef<NodeJS.Timeout | null>(null);

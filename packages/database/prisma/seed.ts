@@ -592,10 +592,62 @@ async function main() {
   }
   console.log('     ✅ Tenant B: company_owner, employee');
 
+  // ── 8. Employee Records ──────────────────────────────────────────────────
+  // Integration tests (CRM, projects, finance, RLS) rely on seeded employees.
+  console.log('  👔 Creating employee records...');
+
+  const seedEmployees = [
+    {
+      id: '00000000-0000-4000-8000-000000000024',
+      tenantId: tenantA.id, companyId: companyA.id, userId: USER_A_ADMIN.id,
+      employeeCode: 'EMP-A-001', firstName: 'Ada', lastName: 'Admin',
+      email: 'ada.admin@fusionos.dev', employmentStatus: 'ACTIVE',
+      joiningDate: new Date('2026-01-15'),
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000025',
+      tenantId: tenantA.id, companyId: companyA.id, userId: USER_A_HR.id,
+      employeeCode: 'EMP-A-002', firstName: 'Hannah', lastName: 'HR',
+      email: 'hannah.hr@fusionos.dev', employmentStatus: 'ACTIVE',
+      joiningDate: new Date('2026-01-15'),
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000026',
+      tenantId: tenantA.id, companyId: companyA.id, userId: USER_A_EMPLOYEE.id,
+      employeeCode: 'EMP-A-003', firstName: 'Test', lastName: 'Employee',
+      email: 'employee@fusionos.dev', employmentStatus: 'ACTIVE',
+      joiningDate: new Date('2026-01-15'),
+    },
+    {
+      id: '10000000-0000-4000-8000-000000000024',
+      tenantId: tenantB.id, companyId: companyB.id, userId: USER_B_ADMIN.id,
+      employeeCode: 'EMP-B-001', firstName: 'Bill', lastName: 'Owner',
+      email: 'bill.owner@acme.dev', employmentStatus: 'ACTIVE',
+      joiningDate: new Date('2026-02-01'),
+    },
+    {
+      id: '10000000-0000-4000-8000-000000000025',
+      tenantId: tenantB.id, companyId: companyB.id, userId: USER_B_EMPLOYEE.id,
+      employeeCode: 'EMP-B-002', firstName: 'Acme', lastName: 'Employee',
+      email: 'employee@acme.dev', employmentStatus: 'ACTIVE',
+      joiningDate: new Date('2026-02-01'),
+    },
+  ];
+
+  for (const emp of seedEmployees) {
+    await prisma.employee.upsert({
+      where: { id: emp.id },
+      update: {},
+      create: emp,
+    });
+  }
+  console.log(`     ✅ Employees: ${seedEmployees.length} created (3 Tenant A / 2 Tenant B)`);
+
   // ── Summary ──────────────────────────────────────────────────────────────
   console.log('\n📊 Seed Summary:');
   console.log(`   Tenants:     2 (A: ${tenantA.slug}, B: ${tenantB.slug})`);
   console.log(`   Companies:   2`);
+  console.log(`   Employees:   5 (3 Tenant A / 2 Tenant B)`);
   console.log(`   Roles:       ${roles.length}`);
   console.log(`   Permissions: ${permissions.length}`);
   console.log(`   Users:       ${allUsers.length}`);

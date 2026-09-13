@@ -21,7 +21,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaClient, Prisma, LeaveRequestStatus, LeaveBalanceTransactionType } from '@prisma/client';
+import { PrismaClient, Prisma, LeaveRequestStatus } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { EventPublisherService } from '../../common/services/event-publisher.service';
 import {
@@ -45,9 +45,6 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   REJECTED: [],
   CANCELLED: [],
 };
-
-// Default working days per week
-const DEFAULT_WORKING_DAYS_PER_WEEK = 5;
 
 @Injectable()
 export class LeaveService {
@@ -381,7 +378,7 @@ export class LeaveService {
     });
   }
 
-  async approveLeaveRequest(ctx: TenantContext, id: string, dto: ReviewLeaveRequestDto) {
+  async approveLeaveRequest(ctx: TenantContext, id: string, _dto: ReviewLeaveRequestDto) {
     const request = await this.findOneLeaveRequest(ctx, id);
 
     // Validate state transition
@@ -591,7 +588,7 @@ export class LeaveService {
     startDate: Date,
     endDate: Date,
     unit: string,
-    timezone: string,
+    _timezone: string,
   ): Promise<number> {
     if (unit === 'HALF_DAY') return 0.5; // Half day = 0.5 working days
     if (unit === 'HOURS') return 1; // Hours-based = 1 day-unit per request (hours tracked separately)
@@ -729,17 +726,6 @@ export class LeaveService {
 
     for (const employee of employees) {
       // Check idempotency: has an ACCRUAL already been recorded for this employee/type/year/policy?
-      const idempotencyKey = `ACCRUAL:${ctx.tenantId}:${employee.id}:${policy.leaveTypeId}:${year}:${policy.id}`;
-      const existingTx = await this.prisma.leaveBalanceTransaction.findFirst({
-        where: {
-          tenantId: ctx.tenantId,
-          employeeId: employee.id,
-          transactionType: 'ACCRUAL',
-          referenceId: policy.id,
-        },
-      });
-
-      // Also check via a more specific pattern in reason
       const alreadyAccrued = await this.prisma.leaveBalanceTransaction.findFirst({
         where: {
           tenantId: ctx.tenantId,

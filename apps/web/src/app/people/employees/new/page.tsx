@@ -27,7 +27,6 @@ import {
   FileText,
   ClipboardCheck,
   ArrowLeft,
-  Save,
   Loader2,
   CheckCircle2,
 } from 'lucide-react';
@@ -332,7 +331,6 @@ export default function AddEmployeePage() {
         <div className="hidden w-60 shrink-0 border-r border-[#DDD0BB] bg-white lg:block">
           <nav className="p-4" aria-label="Employee creation steps">
             {STEPS.map((s, i) => {
-              const Icon = s.icon;
               const isComplete = step > s.id;
               const isCurrent = step === s.id;
               return (

@@ -14,7 +14,7 @@
  * - Audit logging
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient, Prisma } from '@prisma/client';
 import {
   TRIGGER_REGISTRY,
@@ -864,8 +864,6 @@ describe('Automation — Phase 16 Integration Tests', () => {
   // ══════════════════════════════════════════════════════════════════════════
 
   describe('Tenant Isolation', () => {
-    let tenantAWfId: string;
-
     beforeAll(async () => {
       const wf = await prisma.automationWorkflow.create({
         data: {
@@ -874,7 +872,6 @@ describe('Automation — Phase 16 Integration Tests', () => {
           createdById: USER_A_ADMIN,
         },
       });
-      tenantAWfId = wf.id;
       createdWorkflowIds.push(wf.id);
 
       // Create Tenant B workflow

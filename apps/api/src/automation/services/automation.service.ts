@@ -107,7 +107,7 @@ export class AutomationService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   async listWorkflows(ctx: TenantContext, dto: ListWorkflowsDto) {
-    const { page = 1, limit = 20, search, status, triggerType, createdBy } = dto;
+    const { page = 1, limit = 20, search, status, createdBy } = dto;
 
     const where: Prisma.AutomationWorkflowWhereInput = {
       tenantId: ctx.tenantId,
@@ -189,41 +189,44 @@ export class AutomationService {
       throw new ConflictException(`A workflow with name "${dto.name}" already exists.`);
     }
 
-    const workflow = await this.prisma.$transaction(async (tx) => {
-      const wf = await tx.automationWorkflow.create({
-        data: {
+    const workflow = await this.prisma.$transaction(
+      async (tx) => {
+        const wf = await tx.automationWorkflow.create({
+          data: {
+            tenantId: ctx.tenantId,
+            companyId: dto.companyId,
+            name: dto.name,
+            description: dto.description,
+            createdById: ctx.userId,
+          },
+        });
+
+        // Create initial draft version
+        await tx.automationWorkflowVersion.create({
+          data: {
+            tenantId: ctx.tenantId,
+            workflowId: wf.id,
+            versionNumber: 1,
+            status: 'DRAFT',
+            triggerConfig: { type: 'DOMAIN_EVENT', entityType: '', eventType: '' },
+            conditionConfig: Prisma.JsonNull,
+            actionsConfig: [],
+          },
+        });
+
+        await this.auditLog.record({
           tenantId: ctx.tenantId,
-          companyId: dto.companyId,
-          name: dto.name,
-          description: dto.description,
-          createdById: ctx.userId,
-        },
-      });
+          actorId: ctx.userId,
+          action: 'AUTOMATION_WORKFLOW_CREATED',
+          entityType: 'AutomationWorkflow',
+          entityId: wf.id,
+          newValue: { name: dto.name },
+        });
 
-      // Create initial draft version
-      await tx.automationWorkflowVersion.create({
-        data: {
-          tenantId: ctx.tenantId,
-          workflowId: wf.id,
-          versionNumber: 1,
-          status: 'DRAFT',
-          triggerConfig: { type: 'DOMAIN_EVENT', entityType: '', eventType: '' },
-          conditionConfig: Prisma.JsonNull,
-          actionsConfig: [],
-        },
-      });
-
-      await this.auditLog.record({
-        tenantId: ctx.tenantId,
-        actorId: ctx.userId,
-        action: 'AUTOMATION_WORKFLOW_CREATED',
-        entityType: 'AutomationWorkflow',
-        entityId: wf.id,
-        newValue: { name: dto.name },
-      });
-
-      return wf;
-    });
+        return wf;
+      },
+      { timeout: 15000 },
+    );
 
     return workflow;
   }
@@ -503,35 +506,38 @@ export class AutomationService {
     }
 
     // Publish: mark previous published version as SUPERSEDED, new version as PUBLISHED
-    const published = await this.prisma.$transaction(async (tx) => {
-      // Supersede previous published version
-      await tx.automationWorkflowVersion.updateMany({
-        where: { workflowId, status: 'PUBLISHED' },
-        data: { status: 'SUPERSEDED' },
-      });
+    const published = await this.prisma.$transaction(
+      async (tx) => {
+        // Supersede previous published version
+        await tx.automationWorkflowVersion.updateMany({
+          where: { workflowId, status: 'PUBLISHED' },
+          data: { status: 'SUPERSEDED' },
+        });
 
-      // Publish the draft
-      const pub = await tx.automationWorkflowVersion.update({
-        where: { id: draftVersion.id },
-        data: {
-          status: 'PUBLISHED',
-          publishedById: ctx.userId,
-          publishedAt: new Date(),
-          validationErrors: Prisma.JsonNull,
-        },
-      });
+        // Publish the draft
+        const pub = await tx.automationWorkflowVersion.update({
+          where: { id: draftVersion.id },
+          data: {
+            status: 'PUBLISHED',
+            publishedById: ctx.userId,
+            publishedAt: new Date(),
+            validationErrors: Prisma.JsonNull,
+          },
+        });
 
-      // Update workflow status and current version
-      await tx.automationWorkflow.update({
-        where: { id: workflowId },
-        data: {
-          status: 'PUBLISHED',
-          currentVersionId: pub.id,
-        },
-      });
+        // Update workflow status and current version
+        await tx.automationWorkflow.update({
+          where: { id: workflowId },
+          data: {
+            status: 'PUBLISHED',
+            currentVersionId: pub.id,
+          },
+        });
 
-      return pub;
-    });
+        return pub;
+      },
+      { timeout: 15000 },
+    );
 
     await this.auditLog.record({
       tenantId: ctx.tenantId,
@@ -718,7 +724,6 @@ export class AutomationService {
     if (!execution || execution.tenantId !== tenantId) return;
 
     const version = execution.workflowVersion;
-    const triggerConfig = version.triggerConfig as unknown as TriggerConfig;
     const conditionConfig = version.conditionConfig as unknown as ConditionGroup | null;
     const actionsConfig = ((version.actionsConfig as unknown) as ActionConfig[]) ?? [];
 
@@ -1064,7 +1069,7 @@ export class AutomationService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   async listExecutions(ctx: TenantContext, dto: ListExecutionsDto) {
-    const { page = 1, limit = 20, workflowId, status, triggerType, entityType, startDate, endDate } = dto;
+    const { page = 1, limit = 20, workflowId, status, entityType, startDate, endDate } = dto;
 
     const where: Prisma.AutomationExecutionWhereInput = {
       tenantId: ctx.tenantId,

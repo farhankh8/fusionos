@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Play, Plus, Trash2, Zap, CheckCircle, AlertCircle } from 'lucide-react';
+import { Save, Play, Plus, Trash2, Zap } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 
 interface TriggerOption {
@@ -60,9 +60,6 @@ const OPERATORS_BY_TYPE: Record<string, string[]> = {
 export default function NewWorkflowPage() {
   const router = useRouter();
 
-  // Step tracking
-  const [step, setStep] = useState<'configure' | 'review'>('configure');
-
   // Workflow meta
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -81,8 +78,6 @@ export default function NewWorkflowPage() {
 
   // Validation & Saving
   const [saving, setSaving] = useState(false);
-  const [validating, setValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState<{ valid: boolean; errors: string[] } | null>(null);
 
   useEffect(() => {
     async function loadTriggers() {

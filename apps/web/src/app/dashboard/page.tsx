@@ -336,7 +336,7 @@ export default function DashboardPage() {
               <div className="flex">
                 {/* Step List */}
                 <div className="w-[340px] shrink-0 border-r border-border">
-                  {setupSteps.map((step, idx) => (
+                  {setupSteps.map((step) => (
                     <button
                       key={step.id}
                       onClick={() => setSelectedStep(step)}

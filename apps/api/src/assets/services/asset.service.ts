@@ -181,7 +181,7 @@ export class AssetService {
     return updated;
   }
 
-  async transitionAsset(ctx: TenantContext, id: string, targetStatus: string, reason?: string, notes?: string) {
+  async transitionAsset(ctx: TenantContext, id: string, targetStatus: string, reason?: string, _notes?: string) {
     const asset = await this.prisma.asset.findUnique({ where: { id } });
     if (!asset) throw new NotFoundException('Asset not found');
     if (asset.tenantId !== ctx.tenantId) throw new ForbiddenException('Access denied');
@@ -279,7 +279,7 @@ export class AssetService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   async getAssignments(ctx: TenantContext, assetId: string) {
-    const asset = await this.validateAssetTenant(ctx, assetId);
+    await this.validateAssetTenant(ctx, assetId);
     return this.prisma.assetAssignment.findMany({ where: { assetId }, orderBy: { createdAt: 'desc' }, include: { employee: { select: { id: true, firstName: true, lastName: true, employeeCode: true } }, project: { select: { id: true, name: true, code: true } } } });
   }
 

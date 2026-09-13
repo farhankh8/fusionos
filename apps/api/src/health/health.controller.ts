@@ -8,8 +8,12 @@ import { Public } from '../auth/decorators/public.decorator';
  * Health endpoints are exempt from rate limiting.
  * Load balancers, orchestrators, and monitoring probes must always
  * be able to reach liveness/readiness without being throttled.
+ *
+ * NOTE: the throttler is registered under the name 'general' (not 'default'),
+ * so the skip must target `general` explicitly — a bare @SkipThrottle() writes
+ * THROTTLER:SKIPdefault and is ignored by the guard in @nestjs/throttler v6.
  */
-@SkipThrottle()
+@SkipThrottle({ general: true })
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}

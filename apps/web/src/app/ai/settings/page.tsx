@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Server, Cpu, Activity, CheckCircle, XCircle, AlertTriangle, RefreshCw, BarChart3 } from 'lucide-react';
+import { Server, Cpu, Activity, CheckCircle, XCircle, AlertTriangle, RefreshCw, BarChart3 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 

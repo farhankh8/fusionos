@@ -13,7 +13,7 @@ import { KpiCard } from '@/components/ui/kpi-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton } from '@/components/ui/skeleton';
-import { FileStack, FolderOpen, Archive, Clock, Upload, Plus, Search, Download, Eye, Trash2, RotateCcw, Link2, FolderPlus } from 'lucide-react';
+import { FileStack, FolderOpen, Archive, Clock, Upload, Search, Eye, Trash2, RotateCcw, FolderPlus } from 'lucide-react';
 
 interface Document {
   id: string;
@@ -66,7 +66,7 @@ export default function DocumentsPage() {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');

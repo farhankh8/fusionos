@@ -6,7 +6,7 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, Query, ParseUUIDPipe
 import { CurrentTenant, RequirePermission } from '../common/decorators';
 import type { TenantContext } from '../auth/services/tenant-context.service';
 import { AssetService } from './services/asset.service';
-import { CreateAssetDto, UpdateAssetDto, TransitionAssetDto, ListAssetsDto, CreateAssetCategoryDto, UpdateAssetCategoryDto, CreateAssetLocationDto, UpdateAssetLocationDto, CreateAssignmentDto, ReturnAssetDto, CreateTransferDto, CreateMaintenanceDto, UpdateMaintenanceDto, TransitionMaintenanceDto, CreateInspectionDto, CompleteInspectionDto, CreateWarrantyDto, UpdateWarrantyDto, CalculateDepreciationDto, DisposeAssetDto } from './dto/assets.dto';
+import { CreateAssetDto, UpdateAssetDto, TransitionAssetDto, ListAssetsDto, CreateAssetCategoryDto, UpdateAssetCategoryDto, CreateAssetLocationDto, UpdateAssetLocationDto, CreateAssignmentDto, ReturnAssetDto, CreateTransferDto, CreateMaintenanceDto, TransitionMaintenanceDto, CreateInspectionDto, CompleteInspectionDto, CreateWarrantyDto, UpdateWarrantyDto, CalculateDepreciationDto, DisposeAssetDto } from './dto/assets.dto';
 
 @Controller('assets') // global prefix 'api/v1' applies — do NOT repeat it here
 export class AssetsController {

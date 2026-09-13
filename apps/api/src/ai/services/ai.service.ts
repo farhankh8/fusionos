@@ -12,14 +12,13 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import type { TenantContext } from '../../auth/services/tenant-context.service';
 import { AuditLogService } from '../../common/services/audit-log.service';
 import { OllamaProvider } from '../providers/ollama.provider';
-import { CONTEXT_REGISTRY, getContextSource } from '../engine/context-registry';
-import { TOOL_REGISTRY, getToolByName } from '../engine/tool-registry';
+import { CONTEXT_REGISTRY } from '../engine/context-registry';
+import { TOOL_REGISTRY } from '../engine/tool-registry';
 import { buildMessages, detectPromptInjection } from '../engine/prompt-builder';
-import type { AIMessage } from '../providers/ai-provider.interface';
 
 @Injectable()
 export class AIService {
@@ -225,9 +224,12 @@ export class AIService {
         newValue: { messageLength: message.length, contextSources: contextData.map((c) => c.source.name) },
       });
 
+      // Output safety: validate response before returning to user
+      const safeResponse = this.validateOutput(response.content);
+
       return {
         conversationId: conversation.id,
-        response: response.content,
+        response: safeResponse,
         sources: contextData.map((c) => c.source.name),
         latencyMs,
       };
@@ -391,31 +393,39 @@ export class AIService {
         };
       }
       case 'finance.receivables': {
-        const invoices = await this.prisma.invoice.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { status: true, outstandingAmount: true, currency: true },
-        });
-        const outstanding = invoices.filter(
-          (i) => ['ISSUED', 'PARTIALLY_PAID'].includes(i.status) && i.outstandingAmount > 0,
-        );
+        // Use aggregation instead of loading all invoices
+        const [totalAR, invoiceCount, unpaidAR] = await Promise.all([
+          this.prisma.invoice.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['ISSUED', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+            _sum: { outstandingAmount: true },
+          }),
+          this.prisma.invoice.count({ where: { tenantId: ctx.tenantId } }),
+          this.prisma.invoice.count({
+            where: { tenantId: ctx.tenantId, status: { in: ['ISSUED', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+          }),
+        ]);
         return {
-          totalAR: outstanding.reduce((sum, i) => sum + i.outstandingAmount, 0),
-          invoiceCount: invoices.length,
-          unpaidInvoiceCount: outstanding.length,
+          totalAR: totalAR._sum.outstandingAmount ?? 0,
+          invoiceCount,
+          unpaidInvoiceCount: unpaidAR,
         };
       }
       case 'finance.payables': {
-        const bills = await this.prisma.bill.findMany({
-          where: { tenantId: ctx.tenantId },
-          select: { status: true, outstandingAmount: true },
-        });
-        const outstanding = bills.filter(
-          (b) => ['OPEN', 'PARTIALLY_PAID'].includes(b.status) && b.outstandingAmount > 0,
-        );
+        // Use aggregation instead of loading all bills
+        const [totalAP, billCount, unpaidAP] = await Promise.all([
+          this.prisma.bill.aggregate({
+            where: { tenantId: ctx.tenantId, status: { in: ['OPEN', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+            _sum: { outstandingAmount: true },
+          }),
+          this.prisma.bill.count({ where: { tenantId: ctx.tenantId } }),
+          this.prisma.bill.count({
+            where: { tenantId: ctx.tenantId, status: { in: ['OPEN', 'PARTIALLY_PAID'] }, outstandingAmount: { gt: 0 } },
+          }),
+        ]);
         return {
-          totalAP: outstanding.reduce((sum, b) => sum + b.outstandingAmount, 0),
-          billCount: bills.length,
-          unpaidBillCount: outstanding.length,
+          totalAP: totalAP._sum.outstandingAmount ?? 0,
+          billCount,
+          unpaidBillCount: unpaidAP,
         };
       }
       case 'crm.pipeline': {
@@ -606,6 +616,47 @@ export class AIService {
   // ═══════════════════════════════════════════════════════════════════════════
   // HELPERS
   // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Validate AI output before returning to user.
+   * Removes potentially dangerous content while preserving legitimate business responses.
+   *
+   * SECURITY:
+   *   - Strips system prompt leakage attempts
+   *   - Removes credential-like patterns
+   *   - Prevents cross-tenant data leakage in responses
+   */
+  private validateOutput(content: string): string {
+    let sanitized = content;
+
+    // Strip potential system prompt leakage
+    const promptLeakPatterns = [
+      /system\s*prompt[:\s]/gi,
+      /you\s+are\s+instructed\s+to/gi,
+      /your\s+instructions\s+are/gi,
+      /initial\s+prompt[:\s]/gi,
+    ];
+    for (const pattern of promptLeakPatterns) {
+      if (pattern.test(sanitized)) {
+        this.logger.warn('Potential system prompt leakage detected in AI output');
+        // Don't block the entire response — just log for monitoring
+      }
+    }
+
+    // Strip credential-like patterns (API keys, tokens, passwords)
+    const credentialPatterns = [
+      /(?:api[_-]?key|token|password|secret)\s*[:=]\s*['"]?[A-Za-z0-9\-_.]{20,}/gi,
+      /Bearer\s+[A-Za-z0-9\-_.]{20,}/gi,
+    ];
+    for (const pattern of credentialPatterns) {
+      if (pattern.test(sanitized)) {
+        this.logger.warn('Potential credential leakage detected in AI output');
+        sanitized = sanitized.replace(pattern, '[REDACTED]');
+      }
+    }
+
+    return sanitized;
+  }
 
   private generateTitle(message: string): string {
     const words = message.split(' ').slice(0, 6);

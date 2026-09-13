@@ -14,7 +14,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
-import { GitBranch, Building2, Plus, Users, MapPin } from 'lucide-react';
+import { GitBranch, Plus, Users } from 'lucide-react';
 
 interface Department {
   id: string;

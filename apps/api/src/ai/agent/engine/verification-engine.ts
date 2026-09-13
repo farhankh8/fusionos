@@ -28,7 +28,7 @@ export function verifyToolResult(params: {
   output: Record<string, unknown>;
   expectedCriteria?: VerificationCriteria;
 }): VerificationResult {
-  const { toolName, input, output, expectedCriteria } = params;
+  const { toolName, output, expectedCriteria } = params;
 
   const errors: string[] = [];
 

@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Brain, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Activity, BarChart3, Users, Briefcase, FolderKanban, Zap } from 'lucide-react';
+import { Brain, AlertTriangle, CheckCircle, Activity, BarChart3, Users, Briefcase, FolderKanban, Zap } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
-import { KpiCard } from '@/components/ui/kpi-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';

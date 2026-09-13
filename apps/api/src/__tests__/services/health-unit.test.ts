@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { HealthService } from '../../health/health.service';
 import { RedisThrottlerStorage } from '../../common/throttler/redis-throttler.storage';
+import { PrismaClient } from '@prisma/client';
 
 function createRedisMock(overrides: Partial<RedisThrottlerStorage> = {}) {
   return {
@@ -14,6 +15,14 @@ function createRedisMock(overrides: Partial<RedisThrottlerStorage> = {}) {
     isConfigured: vi.fn().mockReturnValue(false),
     ...overrides,
   } as unknown as RedisThrottlerStorage;
+}
+
+function createPrismaMock(overrides: Record<string, unknown> = {}) {
+  return {
+    $queryRaw: vi.fn().mockResolvedValue([{ '?column?': 1 }]),
+    $disconnect: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  } as unknown as PrismaClient;
 }
 
 describe('HealthService', () => {
@@ -29,7 +38,7 @@ describe('HealthService', () => {
         ping: vi.fn().mockResolvedValue(null),
         isConfigured: vi.fn().mockReturnValue(false),
       });
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
 
       // Without DATABASE_URL, DB check reports 'unknown' not 'down'
       const result = await healthService.getHealth();
@@ -44,7 +53,7 @@ describe('HealthService', () => {
 
     it('returns status with application always up', async () => {
       const redisMock = createRedisMock();
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
       const result = await healthService.getHealth();
       expect(result.services.application.status).toBe('up');
     });
@@ -54,7 +63,7 @@ describe('HealthService', () => {
       delete process.env['REDIS_URL'];
 
       const redisMock = createRedisMock();
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
       const result = await healthService.getHealth();
 
       expect(result.services.redis.status).toBe('unknown');
@@ -70,7 +79,7 @@ describe('HealthService', () => {
       const redisMock = createRedisMock({
         ping: vi.fn().mockResolvedValue({ reachable: true, latencyMs: 5 }),
       });
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
       const result = await healthService.getHealth();
 
       expect(result.services.redis.status).toBe('up');
@@ -90,7 +99,7 @@ describe('HealthService', () => {
       const redisMock = createRedisMock({
         ping: vi.fn().mockResolvedValue({ reachable: false, latencyMs: 0 }),
       });
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
       const result = await healthService.getHealth();
 
       expect(result.services.redis.status).toBe('down');
@@ -108,7 +117,7 @@ describe('HealthService', () => {
       delete process.env['DATABASE_URL'];
 
       const redisMock = createRedisMock();
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock());
       const result = await healthService.getHealth();
 
       expect(result.services.database.status).toBe('unknown');
@@ -122,7 +131,9 @@ describe('HealthService', () => {
       process.env['DATABASE_URL'] = 'postgresql://invalid:invalid@localhost:1/invalid';
 
       const redisMock = createRedisMock();
-      healthService = new HealthService(redisMock);
+      healthService = new HealthService(redisMock, createPrismaMock({
+        $queryRaw: vi.fn().mockRejectedValue(new Error('Connection refused')),
+      }));
       const result = await healthService.getHealth();
 
       // Database check will fail (no local DB), overall should be degraded

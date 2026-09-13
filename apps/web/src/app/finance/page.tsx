@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader } from '@/components/ui/page-header';
-import { KpiCard } from '@/components/ui/kpi-card';
 import { SectionCard } from '@/components/ui/section-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -58,7 +57,7 @@ export default function FinanceOverviewPage() {
   const [dashboard, setDashboard] = useState<FinanceDashboard | null>(null);
   const [journals, setJournals] = useState<JournalEntry[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [companyId, setCompanyId] = useState<string>('');
+  const [, setCompanyId] = useState<string>('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
 
   // Load company

@@ -9,17 +9,17 @@
 import {
   Injectable,
   Logger,
-  ConflictException,
   UnauthorizedException,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaClient, UserStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as otpauth from 'otpauth';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
 import { SessionService } from './session.service';
 import { EmailService } from './email.service';
+import { LoginAttemptService } from './login-attempt.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -36,6 +36,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly sessionService: SessionService,
     private readonly emailService: EmailService,
+    private readonly loginAttempts: LoginAttemptService,
   ) {}
 
   // ── Registration ─────────────────────────────────────────────────────────
@@ -137,12 +138,20 @@ export class AuthService {
     // Use a generic error message to prevent email enumeration
     const invalidCredentials = 'Invalid email or password';
 
+    // Check brute force protection BEFORE user lookup
+    const attemptCheck = await this.loginAttempts.checkLoginAllowed(dto.email, ipAddress);
+    if (!attemptCheck.allowed) {
+      await this.loginAttempts.recordFailedAttempt(dto.email, null, ipAddress, userAgent, 'lockout');
+      throw new UnauthorizedException(
+        attemptCheck.lockoutMinutes
+          ? `Account temporarily locked. Try again in ${attemptCheck.lockoutMinutes} minutes.`
+          : 'Account is locked. Please contact support.',
+      );
+    }
+
     if (!user) {
       // Log the attempt against a non-existent email (for security monitoring)
-      await this.logAuthEvent(null, 'login_failure', ipAddress, userAgent, {
-        reason: 'user_not_found',
-        email: dto.email,
-      });
+      await this.loginAttempts.recordFailedAttempt(dto.email, null, ipAddress, userAgent, 'user_not_found');
       throw new UnauthorizedException(invalidCredentials);
     }
 
@@ -160,11 +169,12 @@ export class AuthService {
     // Verify password
     const passwordValid = await this.passwordService.verify(user.passwordHash, dto.password);
     if (!passwordValid) {
-      await this.logAuthEvent(user.id, 'login_failure', ipAddress, userAgent, {
-        reason: 'invalid_password',
-      });
+      await this.loginAttempts.recordFailedAttempt(dto.email, user.id, ipAddress, userAgent, 'invalid_password');
       throw new UnauthorizedException(invalidCredentials);
     }
+
+    // Reset failed attempts on successful login
+    await this.loginAttempts.recordSuccessfulLogin(user.id);
 
     // Check MFA
     if (user.mfaEnabled) {

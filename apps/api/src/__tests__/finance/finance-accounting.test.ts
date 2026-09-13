@@ -25,11 +25,8 @@ const createdPeriodIds: string[] = [];
 
 describe('Finance — Accounting Integrity', () => {
   let cashAccountId: string;
-  let bankAccountId: string;
   let expenseAccountId: string;
   let revenueAccountId: string;
-  let liabilityAccountId: string;
-  let equityAccountId: string;
   let periodId: string;
 
   beforeAll(async () => {
@@ -51,7 +48,6 @@ describe('Finance — Accounting Integrity', () => {
         accountSubtype: 'BANK', normalBalance: 'DEBIT', allowManualPosting: true,
       },
     });
-    bankAccountId = bank.id;
     createdAccountIds.push(bank.id);
 
     const expense = await prisma.account.create({
@@ -81,7 +77,6 @@ describe('Finance — Accounting Integrity', () => {
         accountSubtype: 'ACCOUNTS_PAYABLE', normalBalance: 'CREDIT', allowManualPosting: true,
       },
     });
-    liabilityAccountId = liability.id;
     createdAccountIds.push(liability.id);
 
     const equity = await prisma.account.create({
@@ -91,7 +86,6 @@ describe('Finance — Accounting Integrity', () => {
         normalBalance: 'CREDIT', allowManualPosting: true,
       },
     });
-    equityAccountId = equity.id;
     createdAccountIds.push(equity.id);
 
     // Create an open accounting period

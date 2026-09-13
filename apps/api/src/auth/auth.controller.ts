@@ -9,12 +9,10 @@
   Get,
   Body,
   Req,
-  UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { CurrentUser, type AuthenticatedUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';

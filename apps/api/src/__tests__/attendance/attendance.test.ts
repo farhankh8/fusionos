@@ -108,7 +108,7 @@ describe('Attendance Management', () => {
       const key = `idempotent-${Date.now()}`;
       const now = new Date();
 
-      const event1 = await prisma.attendanceEvent.create({
+      await prisma.attendanceEvent.create({
         data: {
           tenantId: TENANT_A, employeeId: empA,
           eventType: 'CLOCK_IN', eventTime: now,

@@ -12,10 +12,8 @@ import { PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { AuditLogService } from '../../common/services/audit-log.service';
 import {
-  type ScenarioDefinition,
   type ScenarioStep,
   getScenarioById,
-  getScenariosForEvent,
 } from './scenario-registry';
 import { buildCrossModuleContext, type ModuleContext } from './cross-module-context';
 

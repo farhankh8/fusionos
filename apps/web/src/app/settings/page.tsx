@@ -8,7 +8,7 @@
 import { useAuth } from '@/contexts/auth-context';
 import { PageHeader } from '@/components/ui/page-header';
 import { Tabs } from '@/components/ui/tabs';
-import { Building2, Shield, Bell, Palette, User } from 'lucide-react';
+import { Building2, Shield, Bell, Palette } from 'lucide-react';
 import { useState } from 'react';
 
 const SETTINGS_TABS = [

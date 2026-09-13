@@ -2,45 +2,46 @@
  * FusionOS Email Service
  *
  * Provider-agnostic email abstraction.
- * In development, emails are logged to the console.
- * In production, a real email provider (SMTP, SendGrid, etc.) should be configured.
+ * Uses a pluggable EmailProvider for actual delivery.
+ *
+ * Configuration:
+ *   EMAIL_PROVIDER=console|http      — Provider type (default: console in dev, http in prod)
+ *   EMAIL_API_KEY                    — API key for HTTP provider
+ *   EMAIL_API_URL                    — API endpoint for HTTP provider
+ *   EMAIL_FROM                       — Sender email address
+ *
+ * Development mode: emails logged to console (ConsoleEmailProvider).
+ * Production mode: emails sent via HTTP API (HttpEmailProvider).
  *
  * IMPORTANT: Never pretend an email was sent if it was not.
+ * SECURITY: Never log tokens, API keys, or credentials.
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-
-export interface SendEmailParams {
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
-}
+import type { EmailProvider, SendEmailParams } from './providers/email-provider.interface';
+import { ConsoleEmailProvider } from './providers/console-email.provider';
+import { HttpEmailProvider } from './providers/http-email.provider';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly isDev: boolean;
+  private readonly provider: EmailProvider;
 
   constructor() {
-    this.isDev = process.env['NODE_ENV'] !== 'production';
+    this.provider = this.createProvider();
+    this.logger.log(`Email provider initialized: ${this.provider.name}`);
   }
 
   /**
-   * Send an email. In development, logs to console.
+   * Send an email using the configured provider.
    */
   async sendEmail(params: SendEmailParams): Promise<boolean> {
-    if (this.isDev) {
-      this.logger.log(`📧 [DEV] Email to: ${params.to}`);
-      this.logger.log(`   Subject: ${params.subject}`);
-      this.logger.log(`   Body: ${params.text ?? params.html}`);
-      return true;
+    try {
+      return await this.provider.sendEmail(params);
+    } catch (error) {
+      this.logger.error(`Email send failed: ${(error as Error).message}`);
+      return false;
     }
-
-    // TODO: Integrate real email provider (Phase 14)
-    // For now, log and return false to indicate no real delivery
-    this.logger.warn(`📧 Email delivery not configured — email to ${params.to} was NOT sent`);
-    return false;
   }
 
   /**
@@ -81,5 +82,36 @@ export class EmailService {
       `,
       text: `Reset your password: ${resetUrl}`,
     });
+  }
+
+  /**
+   * Create the appropriate email provider based on environment.
+   */
+  private createProvider(): EmailProvider {
+    const providerType = process.env['EMAIL_PROVIDER'] ?? (process.env['NODE_ENV'] === 'production' ? 'http' : 'console');
+
+    if (providerType === 'http') {
+      const apiKey = process.env['EMAIL_API_KEY'];
+      const apiUrl = process.env['EMAIL_API_URL'];
+      const from = process.env['EMAIL_FROM'];
+
+      if (!apiKey || !apiUrl || !from) {
+        this.logger.warn(
+          'EMAIL_PROVIDER=http but EMAIL_API_KEY, EMAIL_API_URL, or EMAIL_FROM not set. ' +
+          'Falling back to console provider. Emails will NOT be delivered.',
+        );
+        return new ConsoleEmailProvider();
+      }
+
+      return new HttpEmailProvider({
+        apiKey,
+        apiUrl,
+        from,
+        providerName: process.env['EMAIL_PROVIDER_NAME'] ?? 'http',
+      });
+    }
+
+    // Default: console provider (development)
+    return new ConsoleEmailProvider();
   }
 }

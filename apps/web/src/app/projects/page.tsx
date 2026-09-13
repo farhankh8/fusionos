@@ -13,7 +13,7 @@ import { KpiCard } from '@/components/ui/kpi-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton } from '@/components/ui/skeleton';
-import { FolderKanban, Users, CheckCircle2, Clock, AlertTriangle, Plus } from 'lucide-react';
+import { FolderKanban, CheckCircle2, Clock, AlertTriangle, Plus } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -35,7 +35,7 @@ export default function ProjectsPage() {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -87,11 +87,6 @@ export default function ProjectsPage() {
 
   useEffect(() => { loadProjects(); }, [loadProjects]);
   useEffect(() => { loadKpis(); }, [loadKpis]);
-
-  const formatBudget = (amount: number | null, currency: string) => {
-    if (!amount) return '—';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency, minimumFractionDigits: 0 }).format(amount / 100);
-  };
 
   return (
     <div className="min-h-full bg-[#FBF5EC]">

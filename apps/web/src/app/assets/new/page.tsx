@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader } from '@/components/ui/page-header';
-import { ArrowLeft, Save, Package } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 
 interface Category { id: string; name: string; code: string; }
 interface Location { id: string; name: string; code: string; }

@@ -11,7 +11,7 @@
  * payroll immutability, and event publishing.
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -20,11 +20,8 @@ const prisma = new PrismaClient();
 
 const TENANT_A_ID = '00000000-0000-4000-8000-000000000001';
 const TENANT_B_ID = '00000000-0000-4000-8000-000000000002';
-const USER_A_ADMIN = '00000000-0000-4000-8000-000000001001';
 const USER_A_HR = '00000000-0000-4000-8000-000000001002';
 const USER_A_EMP1 = '00000000-0000-4000-8000-000000001003';
-const USER_A_EMP2 = '00000000-0000-4000-8000-000000001004';
-const USER_B_ADMIN = '00000000-0000-4000-8000-000000002001';
 const COMPANY_A = 'e2e00000-0000-4000-8000-000000000001';
 const EMP1_ID = 'e2e00000-0000-4000-8000-000000000002';
 const EMP2_ID = 'e2e00000-0000-4000-8000-000000000003';
@@ -36,14 +33,6 @@ const HOLIDAY_ID = 'e2e00000-0000-4000-8000-000000000008';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function ctx(userId: string, tenantId: string = TENANT_A_ID) {
-  return { userId, tenantId };
-}
-
-function dateStr(d: Date): string {
-  return d.toISOString().split('T')[0]!;
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // E2E WORKFLOW: Employee → Attendance → Leave → Payroll → Payslip
 // ═══════════════════════════════════════════════════════════════════════════
@@ -54,15 +43,10 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
   let salaryStructureId1: string;
   let salaryStructureId2: string;
   let leaveTypeId: string;
-  let leavePolicyId: string;
-  let leaveRequestId: string;
-  let holidayId: string;
   let hybridRunId: string;
   let attendancePeriodId: string;
   let attendanceRunId: string;
-  let manualPeriodId: string;
   let manualRunId: string;
-  let hybridPeriodId: string;
 
   beforeAll(async () => {
     // ── Create company for employees ──
@@ -174,7 +158,7 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
     });
     leaveTypeId = lt.id;
 
-    const lp = await prisma.leavePolicy.upsert({
+    await prisma.leavePolicy.upsert({
       where: { id: LEAVE_POLICY_ID },
       create: {
         id: LEAVE_POLICY_ID,
@@ -189,10 +173,9 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
       },
       update: {},
     });
-    leavePolicyId = lp.id;
 
     // ── Create holiday ──
-    const h = await prisma.holiday.upsert({
+    await prisma.holiday.upsert({
       where: { id: HOLIDAY_ID },
       create: {
         id: HOLIDAY_ID,
@@ -202,7 +185,6 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
       },
       update: {},
     });
-    holidayId = h.id;
 
     // ── Create leave balance for employee1 ──
     await prisma.leaveBalance.upsert({
@@ -265,8 +247,6 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
         paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
       },
     });
-    manualPeriodId = manPeriod.id;
-
     const manRun = await prisma.payrollRun.create({
       data: {
         tenantId: TENANT_A_ID, periodId: manPeriod.id,
@@ -283,8 +263,6 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
         paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
       },
     });
-    hybridPeriodId = hybPeriod.id;
-
     const hybRun = await prisma.payrollRun.create({
       data: {
         tenantId: TENANT_A_ID, periodId: hybPeriod.id,
@@ -301,7 +279,7 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
         paymentDate: new Date('2026-09-05'), status: 'OPEN', createdBy: USER_A_HR,
       },
     });
-    const mpRun = await prisma.payrollRun.create({
+    await prisma.payrollRun.create({
       data: {
         tenantId: TENANT_A_ID, periodId: mpPeriod.id,
         calculationMode: 'ATTENDANCE', createdBy: USER_A_HR, status: 'PENDING', currency: 'USD',
@@ -562,7 +540,7 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
       expect(line.netPay).toBe(line.grossPay - line.totalDeductions);
 
       // Create line items showing BOTH system and manual sources
-      const items = await prisma.payrollLineItem.createMany({
+      await prisma.payrollLineItem.createMany({
         data: [
           {
             tenantId: TENANT_A_ID,
@@ -826,7 +804,7 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
   describe('Part 9: Leave → Attendance Integration', () => {
     it('should mark attendance as ON_LEAVE when approved leave exists', async () => {
       // Create approved leave request
-      const leaveReq = await prisma.leaveRequest.create({
+      await prisma.leaveRequest.create({
         data: {
           tenantId: TENANT_A_ID,
           employeeId: employee1Id,
@@ -839,7 +817,6 @@ describe('E2E Workflow: Employee → Attendance → Leave → Payroll', () => {
           reason: 'E2E test leave',
         },
       });
-      leaveRequestId = leaveReq.id;
 
       // Simulate attendance recalculation — approved leave should produce ON_LEAVE
       await prisma.attendance.upsert({

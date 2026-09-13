@@ -16,14 +16,12 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionCard } from '@/components/ui/section-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  Bell,
   BellOff,
   CheckCircle2,
   AlertCircle,
   Info,
   AlertTriangle,
   XCircle,
-  Clock,
   Filter,
   ChevronLeft,
   ChevronRight,
@@ -127,7 +125,7 @@ export default function NotificationsPage() {
       const result = await apiClient.get<{ data: Notification[]; meta: NotificationMeta }>('/notifications', params);
       setNotifications(result.data || []);
       setMeta(result.meta || null);
-    } catch (err) {
+    } catch {
       setError('Failed to load notifications');
     } finally {
       setLoading(false);
@@ -327,9 +325,11 @@ export default function NotificationsPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        notification.readAt
-                          ? handleMarkAsUnread(notification.id)
-                          : handleMarkAsRead(notification.id);
+                        if (notification.readAt) {
+                          handleMarkAsUnread(notification.id);
+                        } else {
+                          handleMarkAsRead(notification.id);
+                        }
                       }}
                       className="text-[11px] text-[#8E7E68] hover:text-[#064E3B]"
                     >

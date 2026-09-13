@@ -15,7 +15,7 @@ import { FilterBar } from '@/components/ui/filter-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiSkeleton, TableSkeleton } from '@/components/ui/skeleton';
 import { SectionCard } from '@/components/ui/section-card';
-import { Receipt, FileText, DollarSign, CheckCircle2, Clock, Download, Eye } from 'lucide-react';
+import { Receipt, FileText, CheckCircle2, Clock, Eye } from 'lucide-react';
 
 /* ── Types ───────────────────────────────────────────────────────────────── */
 
